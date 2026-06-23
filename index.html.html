@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
   --bg: #0d0f14;
@@ -1033,33 +1034,107 @@ tr.cliente-esquecido td:first-child { border-left: 3px solid var(--danger); }
 <div class="notif" id="notif"></div>
 
 <script>
-// ===== STATE =====
-let clientes = JSON.parse(localStorage.getItem('secta_clientes') || '[]');
-let contatos = JSON.parse(localStorage.getItem('secta_contatos') || '[]');
-let agendamentos = JSON.parse(localStorage.getItem('secta_agendamentos') || '[]');
-let orcamentos = JSON.parse(localStorage.getItem('secta_orcamentos') || '[]');
-let concluidos = JSON.parse(localStorage.getItem('secta_concluidos') || '[]');
-let historicoClientes = JSON.parse(localStorage.getItem('secta_hist_clientes') || '[]'); // log de alterações em clientes
+// ===== SUPABASE / STATE =====
+// 1) Substitua pelos dados do seu projeto em Project Settings > API no Supabase.
+// 2) Antes de publicar, execute o SQL do arquivo `supabase_agenda_dinamica.sql` no SQL Editor do Supabase.
+const SUPABASE_URL = 'https://sdbqqsfgfnqtofdbagdk.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkYnFxc2ZnZm5xdG9mZGJhZ2RrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxODQ2NzcsImV4cCI6MjA5Nzc2MDY3N30.imy_ZBDoFYBoufpM_384rZUq0dpQsiDWjpL6HvQpf58';
+const SUPABASE_TABLE = 'agenda_dinamica_storage';
+
+const SUPABASE_CONFIGURADO =
+  SUPABASE_URL.startsWith('https://') &&
+  SUPABASE_URL.includes('.supabase.co') &&
+  !SUPABASE_URL.includes('COLE_AQUI') &&
+  !SUPABASE_ANON_KEY.includes('COLE_AQUI');
+
+const supabaseClient = SUPABASE_CONFIGURADO
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
+
+const STORAGE_KEYS = {
+  clientes: 'secta_clientes',
+  contatos: 'secta_contatos',
+  agendamentos: 'secta_agendamentos',
+  orcamentos: 'secta_orcamentos',
+  concluidos: 'secta_concluidos',
+  historicoClientes: 'secta_hist_clientes',
+  alarmedIds: 'secta_alarmed',
+  theme: 'secta_theme'
+};
+
+let clientes = [];
+let contatos = [];
+let agendamentos = [];
+let orcamentos = [];
+let concluidos = [];
+let historicoClientes = []; // log de alterações em clientes
 let calDate = new Date();
-let alarmedIds = JSON.parse(localStorage.getItem('secta_alarmed') || '[]');
+let alarmedIds = [];
 let alarmQueue = [];
 let alarmAtivo = null;
 let alarmSnoozeTimer = null;
 let snoozedUntil = {};
 let pdfsTempCliente = [];
 let editClienteId = null;
+let appTheme = 'dark';
+let appLoaded = false;
+let saveTimer = null;
 
 const avColors = ['av-blue','av-green','av-purple','av-coral','av-amber'];
 function avColor(id) { return avColors[id % avColors.length]; }
 function initials(nome) { return nome.split(' ').slice(0,2).map(n=>n[0]).join('').toUpperCase(); }
+
+async function carregarDadosSupabase() {
+  if (!supabaseClient) {
+    throw new Error('Supabase não configurado. Preencha SUPABASE_URL e SUPABASE_ANON_KEY no HTML.');
+  }
+
+  const { data, error } = await supabaseClient
+    .from(SUPABASE_TABLE)
+    .select('key,value');
+
+  if (error) throw error;
+
+  const values = Object.fromEntries((data || []).map(row => [row.key, row.value]));
+  clientes = Array.isArray(values[STORAGE_KEYS.clientes]) ? values[STORAGE_KEYS.clientes] : [];
+  contatos = Array.isArray(values[STORAGE_KEYS.contatos]) ? values[STORAGE_KEYS.contatos] : [];
+  agendamentos = Array.isArray(values[STORAGE_KEYS.agendamentos]) ? values[STORAGE_KEYS.agendamentos] : [];
+  orcamentos = Array.isArray(values[STORAGE_KEYS.orcamentos]) ? values[STORAGE_KEYS.orcamentos] : [];
+  concluidos = Array.isArray(values[STORAGE_KEYS.concluidos]) ? values[STORAGE_KEYS.concluidos] : [];
+  historicoClientes = Array.isArray(values[STORAGE_KEYS.historicoClientes]) ? values[STORAGE_KEYS.historicoClientes] : [];
+  alarmedIds = Array.isArray(values[STORAGE_KEYS.alarmedIds]) ? values[STORAGE_KEYS.alarmedIds] : [];
+  appTheme = typeof values[STORAGE_KEYS.theme] === 'string' ? values[STORAGE_KEYS.theme] : 'dark';
+  applyTheme(appTheme, false);
+}
+
+async function persistirDadosSupabase() {
+  if (!appLoaded || !supabaseClient) return;
+
+  const rows = [
+    { key: STORAGE_KEYS.clientes, value: clientes },
+    { key: STORAGE_KEYS.contatos, value: contatos },
+    { key: STORAGE_KEYS.agendamentos, value: agendamentos },
+    { key: STORAGE_KEYS.orcamentos, value: orcamentos },
+    { key: STORAGE_KEYS.concluidos, value: concluidos },
+    { key: STORAGE_KEYS.historicoClientes, value: historicoClientes },
+    { key: STORAGE_KEYS.alarmedIds, value: alarmedIds },
+    { key: STORAGE_KEYS.theme, value: appTheme }
+  ];
+
+  const { error } = await supabaseClient
+    .from(SUPABASE_TABLE)
+    .upsert(rows, { onConflict: 'key' });
+
+  if (error) {
+    console.error('Erro ao salvar no Supabase:', error);
+    notify('Erro ao salvar no Supabase. Verifique o console.', '#7a1a1a');
+  }
+}
+
 function save() {
-  localStorage.setItem('secta_clientes', JSON.stringify(clientes));
-  localStorage.setItem('secta_contatos', JSON.stringify(contatos));
-  localStorage.setItem('secta_agendamentos', JSON.stringify(agendamentos));
-  localStorage.setItem('secta_orcamentos', JSON.stringify(orcamentos));
-  localStorage.setItem('secta_concluidos', JSON.stringify(concluidos));
-  localStorage.setItem('secta_hist_clientes', JSON.stringify(historicoClientes));
-  localStorage.setItem('secta_alarmed', JSON.stringify(alarmedIds));
+  if (!appLoaded) return;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(persistirDadosSupabase, 250);
 }
 
 function resetarTodosDados() {
@@ -1189,16 +1264,17 @@ function aoMudarData(dataInputId, horarioInputId) {
 }
 
 // ===== TEMA CLARO/ESCURO =====
-function applyTheme(theme) {
-  if (theme === 'light') document.body.classList.add('theme-light');
+function applyTheme(theme, shouldSave = true) {
+  appTheme = theme === 'light' ? 'light' : 'dark';
+  if (appTheme === 'light') document.body.classList.add('theme-light');
   else document.body.classList.remove('theme-light');
-  localStorage.setItem('secta_theme', theme);
+  if (shouldSave) save();
 }
 function toggleTheme() {
   const isLight = document.body.classList.contains('theme-light');
   applyTheme(isLight ? 'dark' : 'light');
 }
-applyTheme(localStorage.getItem('secta_theme') || 'dark');
+applyTheme('dark', false);
 
 const usuarioAtivo = 'Patrick Barbosa';
 
@@ -2667,8 +2743,26 @@ function abrirWhatsappAlarme() {
 }
 
 // ===== INIT =====
-solicitarPermissaoPush();
-renderDashboard();
+async function initApp() {
+  try {
+    await carregarDadosSupabase();
+    appLoaded = true;
+    notify('✓ Dados carregados do Supabase', '#0d3d2a');
+  } catch (error) {
+    console.error('Erro ao carregar dados do Supabase:', error);
+    appLoaded = true;
+    notify(error.message || 'Erro ao carregar dados do Supabase', '#7a1a1a');
+  }
+
+  solicitarPermissaoPush();
+  renderDashboard();
+  renderClientes();
+  renderAgenda();
+  renderHistorico();
+  renderOrcamentosTabela();
+}
+
+initApp();
 </script>
 </body>
 </html>
