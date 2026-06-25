@@ -8,7 +8,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Supabase JS — UMD build que expõe window.supabase garantidamente -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
 <style>
 :root {
   --bg: #0d0f14;
@@ -1071,9 +1072,21 @@ const SUPABASE_CONFIGURADO =
   !SUPABASE_URL.includes('COLE_AQUI') &&
   !SUPABASE_ANON_KEY.includes('COLE_AQUI');
 
-const supabaseClient = SUPABASE_CONFIGURADO
-  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-  : null;
+// O supabase-js UMD pode expor window.supabase ou window.supabase.default
+function criarSupabaseClient() {
+  if (!SUPABASE_CONFIGURADO) return null;
+  try {
+    const lib = window.supabase;
+    if (!lib) throw new Error('Biblioteca Supabase não carregada');
+    const fn = lib.createClient || (lib.default && lib.default.createClient);
+    if (!fn) throw new Error('createClient não encontrado no supabase-js');
+    return fn(SUPABASE_URL, SUPABASE_ANON_KEY);
+  } catch(e) {
+    console.error('Erro ao criar cliente Supabase:', e.message);
+    return null;
+  }
+}
+const supabaseClient = criarSupabaseClient();
 
 const STORAGE_KEYS = {
   clientes: 'secta_clientes',
@@ -2813,28 +2826,67 @@ function abrirWhatsappAlarme() {
 // ===== INIT =====
 async function initApp() {
   const overlay = document.getElementById('loadingOverlay');
-  try {
-    await carregarDadosSupabase();
+  const loadingText = overlay?.querySelector('.loading-text');
+
+  function fecharOverlay() {
+    if (overlay) {
+      overlay.style.transition = 'opacity 0.4s';
+      overlay.style.opacity = '0';
+      setTimeout(() => { try { overlay.remove(); } catch(e){} }, 420);
+    }
+  }
+
+  function iniciarApp() {
     appLoaded = true;
+    solicitarPermissaoPush();
+    renderDashboard();
+    renderClientes();
+    renderAgenda();
+    renderHistorico();
+    renderOrcamentosTabela();
+  }
+
+  // Diagnóstico inicial — biblioteca carregou?
+  if (!window.supabase) {
+    console.error('ERRO: window.supabase não encontrado. O CDN não carregou.');
+    if (loadingText) loadingText.textContent = 'Erro: CDN Supabase não carregou.';
+    setSyncStatus('error', 'Sem biblioteca');
+    fecharOverlay();
+    iniciarApp();
+    return;
+  }
+
+  if (!supabaseClient) {
+    console.error('ERRO: supabaseClient é null.');
+    if (loadingText) loadingText.textContent = 'Erro: configuração inválida.';
+    setSyncStatus('error', 'Configuração inválida');
+    fecharOverlay();
+    iniciarApp();
+    return;
+  }
+
+  if (loadingText) loadingText.textContent = 'Carregando dados...';
+
+  // Timeout de 8 segundos — se o Supabase não responder, abre o app mesmo assim
+  const timeoutPromise = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('Timeout: Supabase não respondeu em 8 segundos')), 8000)
+  );
+
+  try {
+    await Promise.race([carregarDadosSupabase(), timeoutPromise]);
     ativarRealtime();
   } catch (error) {
     console.error('Erro ao carregar dados do Supabase:', error);
-    appLoaded = true;
-    setSyncStatus('error', 'Sem conexão');
-    notify(error.message || 'Erro ao conectar ao Supabase', '#7a1a1a');
+    setSyncStatus('error', 'Erro de conexão');
+    if (loadingText) {
+      loadingText.textContent = 'Erro: ' + (error.message || 'falha na conexão');
+      await new Promise(r => setTimeout(r, 1500));
+    }
+    notify('Erro de conexão com Supabase — verifique o console (F12)', '#7a1a1a');
   }
-  // Remove loading overlay com fade
-  if (overlay) {
-    overlay.style.transition = 'opacity 0.4s';
-    overlay.style.opacity = '0';
-    setTimeout(() => overlay.remove(), 400);
-  }
-  solicitarPermissaoPush();
-  renderDashboard();
-  renderClientes();
-  renderAgenda();
-  renderHistorico();
-  renderOrcamentosTabela();
+
+  fecharOverlay();
+  iniciarApp();
 }
 
 initApp();
