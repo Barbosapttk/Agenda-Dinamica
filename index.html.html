@@ -96,6 +96,23 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 body.theme-light .theme-switch-knob { transform: translateX(-22px); background: var(--warning); }
 body.theme-light .theme-switch { background: var(--surface3); }
 
+/* STATUS DE SINCRONIZAÇÃO */
+.sync-status { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text3); flex-shrink: 0; padding: 5px 10px; border-radius: 20px; border: 1px solid var(--border); transition: all 0.3s; }
+.sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text3); flex-shrink: 0; transition: background 0.3s; }
+.sync-status.ok   { color: var(--success); border-color: rgba(34,199,138,0.25); }
+.sync-status.ok .sync-dot { background: var(--success); box-shadow: 0 0 5px rgba(34,199,138,0.4); }
+.sync-status.saving { color: var(--warning); border-color: rgba(245,166,35,0.25); }
+.sync-status.saving .sync-dot { background: var(--warning); animation: syncPulse 0.8s infinite; }
+.sync-status.error  { color: var(--danger); border-color: rgba(240,82,82,0.25); }
+.sync-status.error .sync-dot { background: var(--danger); }
+@keyframes syncPulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* LOADING OVERLAY */
+.loading-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
+.loading-spinner { width: 44px; height: 44px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-size: 14px; color: var(--text2); }
+
 /* BODY ROW */
 .body-row { display: flex; flex: 1; min-height: 0; }
 
@@ -356,6 +373,11 @@ tr.cliente-esquecido td:first-child { border-left: 3px solid var(--danger); }
 </style>
 </head>
 <body>
+<!-- LOADING OVERLAY (some ao carregar dados) -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Conectando ao Supabase...</div>
+</div>
 <div class="app">
 
 <!-- TOP HEADER -->
@@ -392,6 +414,10 @@ tr.cliente-esquecido td:first-child { border-left: 3px solid var(--danger); }
   <button class="btn btn-ghost btn-sm" onclick="openModal('modalAtalhos')" title="Atalhos de teclado" style="flex-shrink:0">
     <i class="fa-regular fa-keyboard"></i>
   </button>
+  <div class="sync-status" id="syncStatus" title="Status da sincronização com Supabase">
+    <div class="sync-dot"></div>
+    <span id="syncLabel">Conectando...</span>
+  </div>
   <div class="theme-toggle-wrap">
     <i class="fa-solid fa-sun" style="color:var(--warning);font-size:13px"></i>
     <button class="theme-switch" id="themeSwitch" onclick="toggleTheme()" title="Alternar tema claro/escuro">
@@ -1035,10 +1061,8 @@ tr.cliente-esquecido td:first-child { border-left: 3px solid var(--danger); }
 
 <script>
 // ===== SUPABASE / STATE =====
-// 1) Substitua pelos dados do seu projeto em Project Settings > API no Supabase.
-// 2) Antes de publicar, execute o SQL do arquivo `supabase_agenda_dinamica.sql` no SQL Editor do Supabase.
 const SUPABASE_URL = 'https://sdbqqsfgfnqtofdbagdk.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkYnFxc2ZnZm5xdG9mZGJhZ2RrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxODQ2NzcsImV4cCI6MjA5Nzc2MDY3N30.imy_ZBDoFYBoufpM_384rZUq0dpQsiDWjpL6HvQpf58';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInJlZiI6InNkYnFxc2ZnZm5xdG9mZGJhZ2RrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxODQ2NzcsImV4cCI6MjA5Nzc2MDY3N30.imy_ZBDoFYBoufpM_384rZUq0dpQsiDWjpL6HvQpf58';
 const SUPABASE_TABLE = 'agenda_dinamica_storage';
 
 const SUPABASE_CONFIGURADO =
@@ -1067,7 +1091,7 @@ let contatos = [];
 let agendamentos = [];
 let orcamentos = [];
 let concluidos = [];
-let historicoClientes = []; // log de alterações em clientes
+let historicoClientes = [];
 let calDate = new Date();
 let alarmedIds = [];
 let alarmQueue = [];
@@ -1080,45 +1104,53 @@ let appTheme = 'dark';
 let appLoaded = false;
 let saveTimer = null;
 
-const avColors = ['av-blue','av-green','av-purple','av-coral','av-amber'];
-function avColor(id) { return avColors[id % avColors.length]; }
-function initials(nome) { return nome.split(' ').slice(0,2).map(n=>n[0]).join('').toUpperCase(); }
+// ===== INDICADOR DE STATUS =====
+function setSyncStatus(estado, label) {
+  const el = document.getElementById('syncStatus');
+  const lbl = document.getElementById('syncLabel');
+  if (!el || !lbl) return;
+  el.className = 'sync-status ' + (estado || '');
+  lbl.textContent = label || '';
+}
 
+// ===== CARREGAR DADOS =====
 async function carregarDadosSupabase() {
-  if (!supabaseClient) {
-    throw new Error('Supabase não configurado. Preencha SUPABASE_URL e SUPABASE_ANON_KEY no HTML.');
-  }
+  if (!supabaseClient) throw new Error('Supabase não configurado.');
+  setSyncStatus('saving', 'Carregando...');
 
   const { data, error } = await supabaseClient
     .from(SUPABASE_TABLE)
     .select('key,value');
 
-  if (error) throw error;
+  if (error) { setSyncStatus('error', 'Erro conexão'); throw error; }
 
   const values = Object.fromEntries((data || []).map(row => [row.key, row.value]));
-  clientes = Array.isArray(values[STORAGE_KEYS.clientes]) ? values[STORAGE_KEYS.clientes] : [];
-  contatos = Array.isArray(values[STORAGE_KEYS.contatos]) ? values[STORAGE_KEYS.contatos] : [];
-  agendamentos = Array.isArray(values[STORAGE_KEYS.agendamentos]) ? values[STORAGE_KEYS.agendamentos] : [];
-  orcamentos = Array.isArray(values[STORAGE_KEYS.orcamentos]) ? values[STORAGE_KEYS.orcamentos] : [];
-  concluidos = Array.isArray(values[STORAGE_KEYS.concluidos]) ? values[STORAGE_KEYS.concluidos] : [];
-  historicoClientes = Array.isArray(values[STORAGE_KEYS.historicoClientes]) ? values[STORAGE_KEYS.historicoClientes] : [];
-  alarmedIds = Array.isArray(values[STORAGE_KEYS.alarmedIds]) ? values[STORAGE_KEYS.alarmedIds] : [];
-  appTheme = typeof values[STORAGE_KEYS.theme] === 'string' ? values[STORAGE_KEYS.theme] : 'dark';
+  clientes           = Array.isArray(values[STORAGE_KEYS.clientes])          ? values[STORAGE_KEYS.clientes]          : [];
+  contatos           = Array.isArray(values[STORAGE_KEYS.contatos])          ? values[STORAGE_KEYS.contatos]          : [];
+  agendamentos       = Array.isArray(values[STORAGE_KEYS.agendamentos])      ? values[STORAGE_KEYS.agendamentos]      : [];
+  orcamentos         = Array.isArray(values[STORAGE_KEYS.orcamentos])        ? values[STORAGE_KEYS.orcamentos]        : [];
+  concluidos         = Array.isArray(values[STORAGE_KEYS.concluidos])        ? values[STORAGE_KEYS.concluidos]        : [];
+  historicoClientes  = Array.isArray(values[STORAGE_KEYS.historicoClientes]) ? values[STORAGE_KEYS.historicoClientes] : [];
+  alarmedIds         = Array.isArray(values[STORAGE_KEYS.alarmedIds])        ? values[STORAGE_KEYS.alarmedIds]        : [];
+  appTheme           = typeof values[STORAGE_KEYS.theme] === 'string'        ? values[STORAGE_KEYS.theme]             : 'dark';
   applyTheme(appTheme, false);
+  setSyncStatus('ok', 'Sincronizado');
 }
 
+// ===== SALVAR (debounce 400ms para não sobrecarregar) =====
 async function persistirDadosSupabase() {
   if (!appLoaded || !supabaseClient) return;
+  setSyncStatus('saving', 'Salvando...');
 
   const rows = [
-    { key: STORAGE_KEYS.clientes, value: clientes },
-    { key: STORAGE_KEYS.contatos, value: contatos },
-    { key: STORAGE_KEYS.agendamentos, value: agendamentos },
-    { key: STORAGE_KEYS.orcamentos, value: orcamentos },
-    { key: STORAGE_KEYS.concluidos, value: concluidos },
+    { key: STORAGE_KEYS.clientes,          value: clientes },
+    { key: STORAGE_KEYS.contatos,          value: contatos },
+    { key: STORAGE_KEYS.agendamentos,      value: agendamentos },
+    { key: STORAGE_KEYS.orcamentos,        value: orcamentos },
+    { key: STORAGE_KEYS.concluidos,        value: concluidos },
     { key: STORAGE_KEYS.historicoClientes, value: historicoClientes },
-    { key: STORAGE_KEYS.alarmedIds, value: alarmedIds },
-    { key: STORAGE_KEYS.theme, value: appTheme }
+    { key: STORAGE_KEYS.alarmedIds,        value: alarmedIds },
+    { key: STORAGE_KEYS.theme,             value: appTheme }
   ];
 
   const { error } = await supabaseClient
@@ -1127,14 +1159,43 @@ async function persistirDadosSupabase() {
 
   if (error) {
     console.error('Erro ao salvar no Supabase:', error);
-    notify('Erro ao salvar no Supabase. Verifique o console.', '#7a1a1a');
+    setSyncStatus('error', 'Erro ao salvar');
+    notify('Erro ao salvar dados. Verifique a conexão.', '#7a1a1a');
+  } else {
+    setSyncStatus('ok', 'Sincronizado');
   }
 }
 
 function save() {
   if (!appLoaded) return;
+  setSyncStatus('saving', 'Salvando...');
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(persistirDadosSupabase, 250);
+  saveTimer = setTimeout(persistirDadosSupabase, 400);
+}
+
+// ===== REALTIME: atualiza dados se outra aba/dispositivo salvar =====
+function ativarRealtime() {
+  if (!supabaseClient) return;
+  supabaseClient
+    .channel('agenda-sync')
+    .on('postgres_changes', {
+      event: 'UPDATE',
+      schema: 'public',
+      table: SUPABASE_TABLE
+    }, async (payload) => {
+      // Só recarrega se a alteração não foi feita por esta aba
+      // (evita loop: esta aba salva → recebe update → recarrega → salva novamente)
+      if (document.hasFocus()) return;
+      await carregarDadosSupabase();
+      // Refaz a view ativa
+      const activeView = document.querySelector('.view.active')?.id?.replace('view-','');
+      if (activeView === 'dashboard') renderDashboard();
+      else if (activeView === 'clientes') renderClientes();
+      else if (activeView === 'agenda') renderAgenda();
+      else if (activeView === 'historico') renderHistorico();
+      else if (activeView === 'orcamentos') renderOrcamentosTabela();
+    })
+    .subscribe();
 }
 
 function resetarTodosDados() {
@@ -1143,6 +1204,13 @@ function resetarTodosDados() {
   clientes = []; contatos = []; agendamentos = []; orcamentos = []; concluidos = []; alarmedIds = []; historicoClientes = [];
   save();
   notify('✓ Todos os dados foram apagados. Comece a cadastrar do zero!','#0d3d2a');
+  closeModal('modalAtalhos');
+  showView('dashboard');
+}
+
+const avColors = ['av-blue','av-green','av-purple','av-coral','av-amber'];
+function avColor(id) { return avColors[id % avColors.length]; }
+function initials(nome) { return nome.split(' ').slice(0,2).map(n=>n[0]).join('').toUpperCase(); }
   closeModal('modalAtalhos');
   showView('dashboard');
 }
@@ -2744,16 +2812,23 @@ function abrirWhatsappAlarme() {
 
 // ===== INIT =====
 async function initApp() {
+  const overlay = document.getElementById('loadingOverlay');
   try {
     await carregarDadosSupabase();
     appLoaded = true;
-    notify('✓ Dados carregados do Supabase', '#0d3d2a');
+    ativarRealtime();
   } catch (error) {
     console.error('Erro ao carregar dados do Supabase:', error);
     appLoaded = true;
-    notify(error.message || 'Erro ao carregar dados do Supabase', '#7a1a1a');
+    setSyncStatus('error', 'Sem conexão');
+    notify(error.message || 'Erro ao conectar ao Supabase', '#7a1a1a');
   }
-
+  // Remove loading overlay com fade
+  if (overlay) {
+    overlay.style.transition = 'opacity 0.4s';
+    overlay.style.opacity = '0';
+    setTimeout(() => overlay.remove(), 400);
+  }
   solicitarPermissaoPush();
   renderDashboard();
   renderClientes();
