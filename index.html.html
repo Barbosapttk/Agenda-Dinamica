@@ -8,8 +8,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
-<!-- Supabase JS — UMD build que expõe window.supabase garantidamente -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
   --bg: #0d0f14;
@@ -96,23 +95,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .theme-switch-knob { position: absolute; top: 2px; left: 22px; width: 18px; height: 18px; border-radius: 50%; background: var(--text2); transition: transform 0.25s ease, background 0.25s; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
 body.theme-light .theme-switch-knob { transform: translateX(-22px); background: var(--warning); }
 body.theme-light .theme-switch { background: var(--surface3); }
-
-/* STATUS DE SINCRONIZAÇÃO */
-.sync-status { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text3); flex-shrink: 0; padding: 5px 10px; border-radius: 20px; border: 1px solid var(--border); transition: all 0.3s; }
-.sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text3); flex-shrink: 0; transition: background 0.3s; }
-.sync-status.ok   { color: var(--success); border-color: rgba(34,199,138,0.25); }
-.sync-status.ok .sync-dot { background: var(--success); box-shadow: 0 0 5px rgba(34,199,138,0.4); }
-.sync-status.saving { color: var(--warning); border-color: rgba(245,166,35,0.25); }
-.sync-status.saving .sync-dot { background: var(--warning); animation: syncPulse 0.8s infinite; }
-.sync-status.error  { color: var(--danger); border-color: rgba(240,82,82,0.25); }
-.sync-status.error .sync-dot { background: var(--danger); }
-@keyframes syncPulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-/* LOADING OVERLAY */
-.loading-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
-.loading-spinner { width: 44px; height: 44px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.loading-text { font-size: 14px; color: var(--text2); }
 
 /* BODY ROW */
 .body-row { display: flex; flex: 1; min-height: 0; }
@@ -374,11 +356,6 @@ tr.cliente-esquecido td:first-child { border-left: 3px solid var(--danger); }
 </style>
 </head>
 <body>
-<!-- LOADING OVERLAY (some ao carregar dados) -->
-<div class="loading-overlay" id="loadingOverlay">
-  <div class="loading-spinner"></div>
-  <div class="loading-text">Conectando ao Supabase...</div>
-</div>
 <div class="app">
 
 <!-- TOP HEADER -->
@@ -415,10 +392,6 @@ tr.cliente-esquecido td:first-child { border-left: 3px solid var(--danger); }
   <button class="btn btn-ghost btn-sm" onclick="openModal('modalAtalhos')" title="Atalhos de teclado" style="flex-shrink:0">
     <i class="fa-regular fa-keyboard"></i>
   </button>
-  <div class="sync-status" id="syncStatus" title="Status da sincronização com Supabase">
-    <div class="sync-dot"></div>
-    <span id="syncLabel">Conectando...</span>
-  </div>
   <div class="theme-toggle-wrap">
     <i class="fa-solid fa-sun" style="color:var(--warning);font-size:13px"></i>
     <button class="theme-switch" id="themeSwitch" onclick="toggleTheme()" title="Alternar tema claro/escuro">
@@ -1062,6 +1035,8 @@ tr.cliente-esquecido td:first-child { border-left: 3px solid var(--danger); }
 
 <script>
 // ===== SUPABASE / STATE =====
+// 1) Substitua pelos dados do seu projeto em Project Settings > API no Supabase.
+// 2) Antes de publicar, execute o SQL do arquivo `supabase_agenda_dinamica.sql` no SQL Editor do Supabase.
 const SUPABASE_URL = 'https://sdbqqsfgfnqtofdbagdk.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInJlZiI6InNkYnFxc2ZnZm5xdG9mZGJhZ2RrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxODQ2NzcsImV4cCI6MjA5Nzc2MDY3N30.imy_ZBDoFYBoufpM_384rZUq0dpQsiDWjpL6HvQpf58';
 const SUPABASE_TABLE = 'agenda_dinamica_storage';
@@ -1072,21 +1047,9 @@ const SUPABASE_CONFIGURADO =
   !SUPABASE_URL.includes('COLE_AQUI') &&
   !SUPABASE_ANON_KEY.includes('COLE_AQUI');
 
-// O supabase-js UMD pode expor window.supabase ou window.supabase.default
-function criarSupabaseClient() {
-  if (!SUPABASE_CONFIGURADO) return null;
-  try {
-    const lib = window.supabase;
-    if (!lib) throw new Error('Biblioteca Supabase não carregada');
-    const fn = lib.createClient || (lib.default && lib.default.createClient);
-    if (!fn) throw new Error('createClient não encontrado no supabase-js');
-    return fn(SUPABASE_URL, SUPABASE_ANON_KEY);
-  } catch(e) {
-    console.error('Erro ao criar cliente Supabase:', e.message);
-    return null;
-  }
-}
-const supabaseClient = criarSupabaseClient();
+const supabaseClient = SUPABASE_CONFIGURADO
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
 
 const STORAGE_KEYS = {
   clientes: 'secta_clientes',
@@ -1104,7 +1067,7 @@ let contatos = [];
 let agendamentos = [];
 let orcamentos = [];
 let concluidos = [];
-let historicoClientes = [];
+let historicoClientes = []; // log de alterações em clientes
 let calDate = new Date();
 let alarmedIds = [];
 let alarmQueue = [];
@@ -1117,53 +1080,45 @@ let appTheme = 'dark';
 let appLoaded = false;
 let saveTimer = null;
 
-// ===== INDICADOR DE STATUS =====
-function setSyncStatus(estado, label) {
-  const el = document.getElementById('syncStatus');
-  const lbl = document.getElementById('syncLabel');
-  if (!el || !lbl) return;
-  el.className = 'sync-status ' + (estado || '');
-  lbl.textContent = label || '';
-}
+const avColors = ['av-blue','av-green','av-purple','av-coral','av-amber'];
+function avColor(id) { return avColors[id % avColors.length]; }
+function initials(nome) { return nome.split(' ').slice(0,2).map(n=>n[0]).join('').toUpperCase(); }
 
-// ===== CARREGAR DADOS =====
 async function carregarDadosSupabase() {
-  if (!supabaseClient) throw new Error('Supabase não configurado.');
-  setSyncStatus('saving', 'Carregando...');
+  if (!supabaseClient) {
+    throw new Error('Supabase não configurado. Preencha SUPABASE_URL e SUPABASE_ANON_KEY no HTML.');
+  }
 
   const { data, error } = await supabaseClient
     .from(SUPABASE_TABLE)
     .select('key,value');
 
-  if (error) { setSyncStatus('error', 'Erro conexão'); throw error; }
+  if (error) throw error;
 
   const values = Object.fromEntries((data || []).map(row => [row.key, row.value]));
-  clientes           = Array.isArray(values[STORAGE_KEYS.clientes])          ? values[STORAGE_KEYS.clientes]          : [];
-  contatos           = Array.isArray(values[STORAGE_KEYS.contatos])          ? values[STORAGE_KEYS.contatos]          : [];
-  agendamentos       = Array.isArray(values[STORAGE_KEYS.agendamentos])      ? values[STORAGE_KEYS.agendamentos]      : [];
-  orcamentos         = Array.isArray(values[STORAGE_KEYS.orcamentos])        ? values[STORAGE_KEYS.orcamentos]        : [];
-  concluidos         = Array.isArray(values[STORAGE_KEYS.concluidos])        ? values[STORAGE_KEYS.concluidos]        : [];
-  historicoClientes  = Array.isArray(values[STORAGE_KEYS.historicoClientes]) ? values[STORAGE_KEYS.historicoClientes] : [];
-  alarmedIds         = Array.isArray(values[STORAGE_KEYS.alarmedIds])        ? values[STORAGE_KEYS.alarmedIds]        : [];
-  appTheme           = typeof values[STORAGE_KEYS.theme] === 'string'        ? values[STORAGE_KEYS.theme]             : 'dark';
+  clientes = Array.isArray(values[STORAGE_KEYS.clientes]) ? values[STORAGE_KEYS.clientes] : [];
+  contatos = Array.isArray(values[STORAGE_KEYS.contatos]) ? values[STORAGE_KEYS.contatos] : [];
+  agendamentos = Array.isArray(values[STORAGE_KEYS.agendamentos]) ? values[STORAGE_KEYS.agendamentos] : [];
+  orcamentos = Array.isArray(values[STORAGE_KEYS.orcamentos]) ? values[STORAGE_KEYS.orcamentos] : [];
+  concluidos = Array.isArray(values[STORAGE_KEYS.concluidos]) ? values[STORAGE_KEYS.concluidos] : [];
+  historicoClientes = Array.isArray(values[STORAGE_KEYS.historicoClientes]) ? values[STORAGE_KEYS.historicoClientes] : [];
+  alarmedIds = Array.isArray(values[STORAGE_KEYS.alarmedIds]) ? values[STORAGE_KEYS.alarmedIds] : [];
+  appTheme = typeof values[STORAGE_KEYS.theme] === 'string' ? values[STORAGE_KEYS.theme] : 'dark';
   applyTheme(appTheme, false);
-  setSyncStatus('ok', 'Sincronizado');
 }
 
-// ===== SALVAR (debounce 400ms para não sobrecarregar) =====
 async function persistirDadosSupabase() {
   if (!appLoaded || !supabaseClient) return;
-  setSyncStatus('saving', 'Salvando...');
 
   const rows = [
-    { key: STORAGE_KEYS.clientes,          value: clientes },
-    { key: STORAGE_KEYS.contatos,          value: contatos },
-    { key: STORAGE_KEYS.agendamentos,      value: agendamentos },
-    { key: STORAGE_KEYS.orcamentos,        value: orcamentos },
-    { key: STORAGE_KEYS.concluidos,        value: concluidos },
+    { key: STORAGE_KEYS.clientes, value: clientes },
+    { key: STORAGE_KEYS.contatos, value: contatos },
+    { key: STORAGE_KEYS.agendamentos, value: agendamentos },
+    { key: STORAGE_KEYS.orcamentos, value: orcamentos },
+    { key: STORAGE_KEYS.concluidos, value: concluidos },
     { key: STORAGE_KEYS.historicoClientes, value: historicoClientes },
-    { key: STORAGE_KEYS.alarmedIds,        value: alarmedIds },
-    { key: STORAGE_KEYS.theme,             value: appTheme }
+    { key: STORAGE_KEYS.alarmedIds, value: alarmedIds },
+    { key: STORAGE_KEYS.theme, value: appTheme }
   ];
 
   const { error } = await supabaseClient
@@ -1172,43 +1127,14 @@ async function persistirDadosSupabase() {
 
   if (error) {
     console.error('Erro ao salvar no Supabase:', error);
-    setSyncStatus('error', 'Erro ao salvar');
-    notify('Erro ao salvar dados. Verifique a conexão.', '#7a1a1a');
-  } else {
-    setSyncStatus('ok', 'Sincronizado');
+    notify('Erro ao salvar no Supabase. Verifique o console.', '#7a1a1a');
   }
 }
 
 function save() {
   if (!appLoaded) return;
-  setSyncStatus('saving', 'Salvando...');
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(persistirDadosSupabase, 400);
-}
-
-// ===== REALTIME: atualiza dados se outra aba/dispositivo salvar =====
-function ativarRealtime() {
-  if (!supabaseClient) return;
-  supabaseClient
-    .channel('agenda-sync')
-    .on('postgres_changes', {
-      event: 'UPDATE',
-      schema: 'public',
-      table: SUPABASE_TABLE
-    }, async (payload) => {
-      // Só recarrega se a alteração não foi feita por esta aba
-      // (evita loop: esta aba salva → recebe update → recarrega → salva novamente)
-      if (document.hasFocus()) return;
-      await carregarDadosSupabase();
-      // Refaz a view ativa
-      const activeView = document.querySelector('.view.active')?.id?.replace('view-','');
-      if (activeView === 'dashboard') renderDashboard();
-      else if (activeView === 'clientes') renderClientes();
-      else if (activeView === 'agenda') renderAgenda();
-      else if (activeView === 'historico') renderHistorico();
-      else if (activeView === 'orcamentos') renderOrcamentosTabela();
-    })
-    .subscribe();
+  saveTimer = setTimeout(persistirDadosSupabase, 250);
 }
 
 function resetarTodosDados() {
@@ -1217,13 +1143,6 @@ function resetarTodosDados() {
   clientes = []; contatos = []; agendamentos = []; orcamentos = []; concluidos = []; alarmedIds = []; historicoClientes = [];
   save();
   notify('✓ Todos os dados foram apagados. Comece a cadastrar do zero!','#0d3d2a');
-  closeModal('modalAtalhos');
-  showView('dashboard');
-}
-
-const avColors = ['av-blue','av-green','av-purple','av-coral','av-amber'];
-function avColor(id) { return avColors[id % avColors.length]; }
-function initials(nome) { return nome.split(' ').slice(0,2).map(n=>n[0]).join('').toUpperCase(); }
   closeModal('modalAtalhos');
   showView('dashboard');
 }
@@ -2825,68 +2744,22 @@ function abrirWhatsappAlarme() {
 
 // ===== INIT =====
 async function initApp() {
-  const overlay = document.getElementById('loadingOverlay');
-  const loadingText = overlay?.querySelector('.loading-text');
-
-  function fecharOverlay() {
-    if (overlay) {
-      overlay.style.transition = 'opacity 0.4s';
-      overlay.style.opacity = '0';
-      setTimeout(() => { try { overlay.remove(); } catch(e){} }, 420);
-    }
-  }
-
-  function iniciarApp() {
-    appLoaded = true;
-    solicitarPermissaoPush();
-    renderDashboard();
-    renderClientes();
-    renderAgenda();
-    renderHistorico();
-    renderOrcamentosTabela();
-  }
-
-  // Diagnóstico inicial — biblioteca carregou?
-  if (!window.supabase) {
-    console.error('ERRO: window.supabase não encontrado. O CDN não carregou.');
-    if (loadingText) loadingText.textContent = 'Erro: CDN Supabase não carregou.';
-    setSyncStatus('error', 'Sem biblioteca');
-    fecharOverlay();
-    iniciarApp();
-    return;
-  }
-
-  if (!supabaseClient) {
-    console.error('ERRO: supabaseClient é null.');
-    if (loadingText) loadingText.textContent = 'Erro: configuração inválida.';
-    setSyncStatus('error', 'Configuração inválida');
-    fecharOverlay();
-    iniciarApp();
-    return;
-  }
-
-  if (loadingText) loadingText.textContent = 'Carregando dados...';
-
-  // Timeout de 8 segundos — se o Supabase não responder, abre o app mesmo assim
-  const timeoutPromise = new Promise((_, reject) =>
-    setTimeout(() => reject(new Error('Timeout: Supabase não respondeu em 8 segundos')), 8000)
-  );
-
   try {
-    await Promise.race([carregarDadosSupabase(), timeoutPromise]);
-    ativarRealtime();
+    await carregarDadosSupabase();
+    appLoaded = true;
+    notify('✓ Dados carregados do Supabase', '#0d3d2a');
   } catch (error) {
     console.error('Erro ao carregar dados do Supabase:', error);
-    setSyncStatus('error', 'Erro de conexão');
-    if (loadingText) {
-      loadingText.textContent = 'Erro: ' + (error.message || 'falha na conexão');
-      await new Promise(r => setTimeout(r, 1500));
-    }
-    notify('Erro de conexão com Supabase — verifique o console (F12)', '#7a1a1a');
+    appLoaded = true;
+    notify(error.message || 'Erro ao carregar dados do Supabase', '#7a1a1a');
   }
 
-  fecharOverlay();
-  iniciarApp();
+  solicitarPermissaoPush();
+  renderDashboard();
+  renderClientes();
+  renderAgenda();
+  renderHistorico();
+  renderOrcamentosTabela();
 }
 
 initApp();
