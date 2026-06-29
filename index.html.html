@@ -735,11 +735,11 @@ img, svg, video { max-width: 100%; }
     <div class="topnav-item" data-view="agenda" onclick="showView('agenda')">
       <i class="fa-solid fa-calendar-days"></i> Agenda
     </div>
-    <div class="topnav-item" data-view="historico" onclick="showView('historico')">
-      <i class="fa-solid fa-clock-rotate-left"></i> Histórico
-    </div>
     <div class="topnav-item" data-view="orcamentos" onclick="showView('orcamentos')">
       <i class="fa-solid fa-file-invoice-dollar"></i> Lembretes de Orçamento
+    </div>
+    <div class="topnav-item" data-view="historico" onclick="showView('historico')">
+      <i class="fa-solid fa-clock-rotate-left"></i> Histórico
     </div>
   </nav>
   <button class="btn btn-ghost btn-sm" onclick="openGlobalSearch()" style="flex-shrink:0" title="Busca rápida (Ctrl+K)">
@@ -852,20 +852,6 @@ img, svg, video { max-width: 100%; }
         <button class="btn btn-ghost btn-sm" onclick="showView('historico')">Ver Tudo</button>
       </div>
       <div id="dash-historico"></div>
-    </div>
-    <div class="card" style="margin-bottom:20px">
-      <div class="card-header">
-        <div class="card-title"><i class="fa-solid fa-circle-check" style="color:var(--success)"></i> Histórico de Retornos Concluídos</div>
-        <span id="concluidos-retorno-count" class="badge badge-gray">0</span>
-      </div>
-      <div id="dash-concluidos-retorno"></div>
-    </div>
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title"><i class="fa-solid fa-circle-check" style="color:var(--purple)"></i> Histórico de Orçamentos Concluídos</div>
-        <span id="concluidos-orcamento-count" class="badge badge-gray">0</span>
-      </div>
-      <div id="dash-concluidos-orcamento"></div>
     </div>
   </div>
 
@@ -999,6 +985,22 @@ img, svg, video { max-width: 100%; }
         </div>
       </div>
       <div id="lista-historico"></div>
+    </div>
+
+    <div class="card" style="margin-top:20px;margin-bottom:20px">
+      <div class="card-header">
+        <div class="card-title"><i class="fa-solid fa-circle-check" style="color:var(--success)"></i> Histórico de Retornos Concluídos</div>
+        <span id="concluidos-retorno-count" class="badge badge-gray">0</span>
+      </div>
+      <div id="dash-concluidos-retorno"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><i class="fa-solid fa-circle-check" style="color:var(--purple)"></i> Histórico de Orçamentos Concluídos</div>
+        <span id="concluidos-orcamento-count" class="badge badge-gray">0</span>
+      </div>
+      <div id="dash-concluidos-orcamento"></div>
     </div>
   </div>
 
@@ -1648,7 +1650,7 @@ function showView(v) {
   if (v==='dashboard') renderDashboard();
   if (v==='clientes') renderClientes();
   if (v==='agenda') renderAgenda();
-  if (v==='historico') renderHistorico();
+  if (v==='historico') { renderHistorico(); renderDashboard(); }
   if (v==='orcamentos') renderOrcamentosTabela();
 }
 
