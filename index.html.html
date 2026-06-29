@@ -712,9 +712,126 @@ img, svg, video { max-width: 100%; }
   }
 }
 
+
+/* AUTH / LOGIN */
+body.auth-locked .app,
+body.auth-locked .detail-panel,
+body.auth-locked .modal-overlay:not(#authScreen) {
+  display: none !important;
+}
+.auth-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: radial-gradient(circle at top, rgba(59,125,232,0.18), transparent 36%), var(--bg);
+}
+body.auth-locked .auth-screen { display: flex; }
+.auth-card {
+  width: 420px;
+  max-width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 20px 70px rgba(0,0,0,0.55);
+}
+.auth-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+.auth-logo .logo-mark { width: 44px; height: 44px; }
+.auth-title {
+  font-size: 21px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.1;
+}
+.auth-subtitle {
+  font-size: 13px;
+  color: var(--text3);
+  margin-top: 4px;
+}
+.auth-form { display: flex; flex-direction: column; gap: 14px; }
+.auth-error {
+  display: none;
+  background: var(--danger-bg);
+  color: var(--danger);
+  border: 1px solid rgba(240,82,82,0.28);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+.auth-error.show { display: block; }
+.auth-user-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  max-width: 190px;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  font-size: 12px;
+  font-weight: 600;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+}
+.auth-user-pill span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.btn-logout {
+  color: var(--danger);
+  border-color: rgba(240,82,82,0.28);
+}
+.btn-logout:hover { background: var(--danger-bg); color: var(--danger); }
+@media (max-width: 760px) {
+  .auth-screen { padding: 16px; align-items: stretch; }
+  .auth-card { margin: auto 0; padding: 22px; }
+  .auth-title { font-size: 19px; }
+  .auth-user-pill { display: none; }
+}
+
 </style>
 </head>
-<body>
+<body class="auth-locked">
+
+<div class="auth-screen" id="authScreen">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="logo-mark"><i class="fa-regular fa-calendar-check"></i></div>
+      <div>
+        <div class="auth-title">Agenda <span style="color:var(--accent);font-style:italic">Dinâmica</span></div>
+        <div class="auth-subtitle">Entre para acessar seus clientes e lembretes.</div>
+      </div>
+    </div>
+    <form class="auth-form" onsubmit="fazerLogin(event)">
+      <div class="form-group">
+        <label>E-mail</label>
+        <input type="email" id="auth-email" placeholder="seuemail@empresa.com" autocomplete="email" required>
+      </div>
+      <div class="form-group">
+        <label>Senha</label>
+        <input type="password" id="auth-password" placeholder="Digite sua senha" autocomplete="current-password" required>
+      </div>
+      <div class="auth-error" id="auth-error"></div>
+      <button class="btn btn-primary" id="auth-submit" type="submit" style="width:100%;justify-content:center;padding:11px 16px">
+        <i class="fa-solid fa-right-to-bracket"></i> Entrar
+      </button>
+    </form>
+  </div>
+</div>
+
 <div class="app">
 
 <!-- TOP HEADER -->
@@ -750,6 +867,10 @@ img, svg, video { max-width: 100%; }
   </button>
   <button class="btn btn-ghost btn-sm" onclick="openModal('modalAtalhos')" title="Atalhos de teclado" style="flex-shrink:0">
     <i class="fa-regular fa-keyboard"></i>
+  </button>
+  <div class="auth-user-pill" title="Usuário logado"><i class="fa-solid fa-user-shield"></i> <span id="auth-user-email">Logado</span></div>
+  <button class="btn btn-ghost btn-sm btn-logout" onclick="sairDoSistema()" style="flex-shrink:0" title="Sair do sistema">
+    <i class="fa-solid fa-right-from-bracket"></i> Sair
   </button>
   <div class="theme-toggle-wrap">
     <i class="fa-solid fa-sun" style="color:var(--warning);font-size:13px"></i>
@@ -1411,6 +1532,113 @@ const SUPABASE_CONFIGURADO =
 const supabaseClient = SUPABASE_CONFIGURADO
   ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
   : null;
+
+
+let usuarioLogado = null;
+
+function mostrarErroLogin(msg) {
+  const box = document.getElementById('auth-error');
+  if (!box) return;
+  box.textContent = msg || '';
+  box.classList.toggle('show', Boolean(msg));
+}
+
+function setLoginLoading(loading) {
+  const btn = document.getElementById('auth-submit');
+  if (!btn) return;
+  btn.disabled = loading;
+  btn.innerHTML = loading
+    ? '<i class="fa-solid fa-spinner fa-spin"></i> Entrando...'
+    : '<i class="fa-solid fa-right-to-bracket"></i> Entrar';
+}
+
+function bloquearSistema(msg) {
+  usuarioLogado = null;
+  appLoaded = false;
+  document.body.classList.add('auth-locked');
+  document.body.classList.remove('auth-ok');
+  const userEmail = document.getElementById('auth-user-email');
+  if (userEmail) userEmail.textContent = '';
+  if (msg) mostrarErroLogin(msg);
+  setTimeout(() => {
+    const emailInput = document.getElementById('auth-email');
+    if (emailInput) emailInput.focus();
+  }, 80);
+}
+
+function liberarSistema(user) {
+  usuarioLogado = user || null;
+  document.body.classList.remove('auth-locked');
+  document.body.classList.add('auth-ok');
+  mostrarErroLogin('');
+  const userEmail = document.getElementById('auth-user-email');
+  if (userEmail) userEmail.textContent = usuarioLogado?.email || 'Logado';
+}
+
+async function fazerLogin(event) {
+  event.preventDefault();
+  if (!supabaseClient) {
+    mostrarErroLogin('Supabase não configurado no HTML.');
+    return;
+  }
+
+  const email = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  if (!email || !password) {
+    mostrarErroLogin('Informe e-mail e senha.');
+    return;
+  }
+
+  try {
+    setLoginLoading(true);
+    mostrarErroLogin('');
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    liberarSistema(data.user);
+    await initApp();
+    const passInput = document.getElementById('auth-password');
+    if (passInput) passInput.value = '';
+  } catch (error) {
+    console.error('Erro no login:', error);
+    mostrarErroLogin('Login não realizado. Confira o e-mail e a senha.');
+  } finally {
+    setLoginLoading(false);
+  }
+}
+
+async function sairDoSistema() {
+  if (!supabaseClient) return;
+  await supabaseClient.auth.signOut();
+  clientes = []; contatos = []; agendamentos = []; orcamentos = []; concluidos = []; historicoClientes = []; alarmedIds = [];
+  bloquearSistema('Sessão encerrada. Entre novamente para acessar o sistema.');
+}
+
+async function iniciarComLogin() {
+  if (!supabaseClient) {
+    bloquearSistema('Supabase não configurado. Confira a URL e a chave anon no HTML.');
+    return;
+  }
+
+  try {
+    const { data, error } = await supabaseClient.auth.getSession();
+    if (error) throw error;
+    if (data.session?.user) {
+      liberarSistema(data.session.user);
+      await initApp();
+    } else {
+      bloquearSistema();
+    }
+  } catch (error) {
+    console.error('Erro ao verificar sessão:', error);
+    bloquearSistema('Não foi possível verificar a sessão. Tente entrar novamente.');
+  }
+
+  supabaseClient.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_OUT') {
+      bloquearSistema();
+    }
+  });
+}
 
 const STORAGE_KEYS = {
   clientes: 'secta_clientes',
@@ -3105,6 +3333,7 @@ function abrirWhatsappAlarme() {
 
 // ===== INIT =====
 async function initApp() {
+  appLoaded = false;
   try {
     await carregarDadosSupabase();
     appLoaded = true;
@@ -3123,7 +3352,7 @@ async function initApp() {
   renderOrcamentosTabela();
 }
 
-initApp();
+iniciarComLogin();
 </script>
 </body>
 </html>
