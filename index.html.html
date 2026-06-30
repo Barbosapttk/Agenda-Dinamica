@@ -111,6 +111,29 @@ body.theme-light .theme-switch { background: var(--surface3); }
 .nav-item i { width: 18px; text-align: center; font-size: 14px; }
 .nav-section { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text3); font-weight: 700; padding: 10px 12px 6px; }
 
+.quick-main-action { min-height: 46px; font-size: 14px !important; letter-spacing: .1px; box-shadow: 0 8px 22px rgba(59,125,232,0.18); }
+.quick-action-grid { display: flex; flex-direction: column; gap: 8px; padding: 12px 10px; }
+.quick-action-card { width: 100%; display: flex; align-items: center; gap: 10px; text-align: left; border: 1px solid var(--border); background: var(--surface2); color: var(--text2); border-radius: 10px; padding: 10px; cursor: pointer; font-family: inherit; transition: all .15s ease; }
+.quick-action-card:hover { background: var(--surface3); color: var(--text); border-color: var(--border2); transform: translateY(-1px); }
+.quick-action-card.highlighted { background: var(--accent-light); border-color: rgba(59,125,232,.35); color: var(--accent); }
+.quick-action-icon { width: 34px; height: 34px; border-radius: 9px; background: var(--surface3); border: 1px solid var(--border); display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; font-size: 14px; }
+.quick-action-card.highlighted .quick-action-icon { background: rgba(59,125,232,.16); border-color: rgba(59,125,232,.28); }
+.quick-action-card strong { display: block; color: var(--text); font-size: 13px; line-height: 1.2; }
+.quick-action-card small { display: block; color: var(--text3); font-size: 11px; line-height: 1.25; margin-top: 2px; }
+.topnav-item.primary-flow { color: var(--accent); }
+.fluxo-resumo { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin-bottom: 14px; }
+.fluxo-resumo-title { font-weight: 800; font-size: 14px; color: var(--text); margin-bottom: 6px; }
+.fluxo-resumo-meta { color: var(--text2); font-size: 12.5px; line-height: 1.45; }
+.fluxo-next-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.fluxo-next-card { display: flex; gap: 10px; align-items: flex-start; border: 1px solid var(--border); background: var(--surface2); border-radius: var(--radius); padding: 12px; cursor: pointer; text-align: left; color: var(--text); font-family: inherit; transition: all .15s ease; }
+.fluxo-next-card:hover { border-color: var(--accent); background: var(--accent-light); transform: translateY(-1px); }
+.fluxo-next-card.disabled { opacity: .55; cursor: not-allowed; }
+.fluxo-next-card.disabled:hover { border-color: var(--border); background: var(--surface2); transform: none; }
+.fluxo-next-card i { color: var(--accent); margin-top: 2px; width: 18px; text-align: center; }
+.fluxo-next-card strong { display:block; font-size:13.2px; margin-bottom:3px; }
+.fluxo-next-card span { display:block; color: var(--text2); font-size:12px; line-height:1.35; }
+
+
 /* MAIN */
 .main { flex: 1; padding: 24px 32px; min-width: 0; }
 .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
@@ -453,6 +476,12 @@ img, svg, video { max-width: 100%; }
     border: 1px solid var(--border);
     background: var(--surface2);
   }
+
+  .quick-action-grid { flex-direction: row; gap: 8px; padding: 10px 12px; }
+  .quick-action-card { flex: 0 0 190px; min-height: 58px; }
+  .quick-action-icon { width: 32px; height: 32px; }
+  .fluxo-next-grid { grid-template-columns: 1fr; }
+
 
   .main {
     width: 100%;
@@ -1084,6 +1113,7 @@ body.auth-locked .auth-screen { display: flex; }
   .daily-priority-grid, .solicitacoes-overview, .productivity-summary, .settings-stats { grid-template-columns: 1fr; }
   .daily-hero h2, .settings-hero h2 { font-size: 20px; }
   .daily-priority-card, .sol-summary-card { min-height: auto; }
+  .fluxo-next-grid { grid-template-columns: 1fr; }
 }
 
 </style>
@@ -1130,17 +1160,17 @@ body.auth-locked .auth-screen { display: flex; }
     <div class="topnav-item active" data-view="dashboard" onclick="showView('dashboard')">
       <i class="fa-solid fa-house"></i> Painel
     </div>
+    <div class="topnav-item primary-flow" data-view="solicitacoes" onclick="showView('solicitacoes')">
+      <i class="fa-solid fa-clipboard-list"></i> Solicitações
+    </div>
     <div class="topnav-item" data-view="clientes" onclick="showView('clientes')">
       <i class="fa-solid fa-users"></i> Clientes
     </div>
     <div class="topnav-item" data-view="agenda" onclick="showView('agenda')">
       <i class="fa-solid fa-calendar-days"></i> Agenda
     </div>
-    <div class="topnav-item" data-view="solicitacoes" onclick="showView('solicitacoes')">
-      <i class="fa-solid fa-clipboard-list"></i> Solicitações
-    </div>
     <div class="topnav-item" data-view="orcamentos" onclick="showView('orcamentos')">
-      <i class="fa-solid fa-file-invoice-dollar"></i> Orçamentos Mensais
+      <i class="fa-solid fa-file-invoice-dollar"></i> Orçamentos Recorrentes
     </div>
     <div class="topnav-item" data-view="historico" onclick="showView('historico')">
       <i class="fa-solid fa-clock-rotate-left"></i> Histórico
@@ -1169,24 +1199,32 @@ body.auth-locked .auth-screen { display: flex; }
 <!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="sidebar-top">
-    <button class="btn btn-primary" onclick="openModal('modalCliente')">
-      <i class="fa-solid fa-user-plus"></i> Novo Cliente
+    <button class="btn btn-primary quick-main-action" onclick="openModal('modalSolicitacao')" title="Registrar uma nova solicitação de orçamento">
+      <i class="fa-solid fa-plus"></i> Novo Orçamento
     </button>
   </div>
-  <nav class="nav">
-    <div class="nav-section">Ação Rápida</div>
-    <div class="nav-item" onclick="openModal('modalSolicitacao')">
-      <i class="fa-solid fa-clipboard-list"></i> Nova Solicitação
-    </div>
-    <div class="nav-item" onclick="openModal('modalContato')">
-      <i class="fa-solid fa-phone"></i> Registrar Contato
-    </div>
-    <div class="nav-item" onclick="openModal('modalAgendamento')">
-      <i class="fa-regular fa-calendar-plus"></i> Agendar Retorno
-    </div>
-    <div class="nav-item" onclick="openModal('modalOrcamento')">
-      <i class="fa-solid fa-file-circle-plus"></i> Orçamento Mensal
-    </div>
+  <nav class="nav quick-action-grid">
+    <div class="nav-section">Ações Rápidas</div>
+    <button class="quick-action-card highlighted" onclick="openModal('modalSolicitacao')" type="button">
+      <span class="quick-action-icon"><i class="fa-solid fa-clipboard-list"></i></span>
+      <span><strong>Solicitação</strong><small>Registrar pedido recebido</small></span>
+    </button>
+    <button class="quick-action-card" onclick="openModal('modalCliente')" type="button">
+      <span class="quick-action-icon"><i class="fa-solid fa-user-plus"></i></span>
+      <span><strong>Cliente</strong><small>Cadastrar novo</small></span>
+    </button>
+    <button class="quick-action-card" onclick="openModal('modalContato')" type="button">
+      <span class="quick-action-icon"><i class="fa-solid fa-phone"></i></span>
+      <span><strong>Contato</strong><small>Registrar conversa</small></span>
+    </button>
+    <button class="quick-action-card" onclick="openModal('modalAgendamento')" type="button">
+      <span class="quick-action-icon"><i class="fa-regular fa-calendar-plus"></i></span>
+      <span><strong>Retorno</strong><small>Agendar próximo passo</small></span>
+    </button>
+    <button class="quick-action-card" onclick="openModal('modalOrcamento')" type="button">
+      <span class="quick-action-icon"><i class="fa-solid fa-repeat"></i></span>
+      <span><strong>Recorrente</strong><small>Orçamento periódico</small></span>
+    </button>
   </nav>
 </aside>
 
@@ -1319,11 +1357,11 @@ body.auth-locked .auth-screen { display: flex; }
     <div class="dashboard-grid-2">
       <div class="card" style="margin-bottom:20px">
         <div class="card-header">
-          <div class="card-title"><i class="fa-solid fa-file-invoice-dollar" style="color:var(--purple)"></i> Próximos Orçamentos Mensais <span style="font-weight:400;color:var(--text3);font-size:11.5px;margin-left:4px">(esta semana)</span></div>
+          <div class="card-title"><i class="fa-solid fa-file-invoice-dollar" style="color:var(--purple)"></i> Próximos Orçamentos Recorrentes <span style="font-weight:400;color:var(--text3);font-size:11.5px;margin-left:4px">(esta semana)</span></div>
           <button class="btn btn-ghost btn-sm" onclick="showView('orcamentos')">Ver Tudo</button>
         </div>
         <div id="dash-orcamentos-semana" class="dash-card-grid">
-          <div class="empty" style="grid-column:1/-1"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento mensal esta semana</p></div>
+          <div class="empty" style="grid-column:1/-1"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento recorrente esta semana</p></div>
         </div>
       </div>
 
@@ -1394,7 +1432,7 @@ body.auth-locked .auth-screen { display: flex; }
           <div class="cal-grid" id="cal-grid" style="margin-top:5px"></div>
           <div style="display:flex;flex-direction:column;gap:6px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:11.5px;color:var(--text2)">
             <div style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:var(--warning);display:inline-block"></span> Solicitação / Retorno</div>
-            <div style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:var(--purple);display:inline-block"></span> Orçamento mensal</div>
+            <div style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:var(--purple);display:inline-block"></span> Orçamento recorrente</div>
             <div style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:var(--success);display:inline-block"></span> Concluído</div>
           </div>
           <div class="agenda-filters">
@@ -1417,7 +1455,7 @@ body.auth-locked .auth-screen { display: flex; }
         </div>
         <div class="card">
           <div class="card-header">
-            <div class="card-title"><i class="fa-solid fa-file-invoice-dollar" style="color:var(--purple)"></i> Próximos Orçamentos Mensais</div>
+            <div class="card-title"><i class="fa-solid fa-file-invoice-dollar" style="color:var(--purple)"></i> Próximos Orçamentos Recorrentes</div>
             <button class="btn btn-ghost btn-sm" onclick="renderOrcamentosLista()"><i class="fa-solid fa-rotate-right"></i></button>
           </div>
           <div id="orcamentos-agenda-lista" class="kanban-col"></div>
@@ -1454,7 +1492,7 @@ body.auth-locked .auth-screen { display: flex; }
             <i class="fa-solid fa-magnifying-glass"></i>
             <input type="text" placeholder="Buscar solicitação..." id="search-solicitacoes" oninput="renderSolicitacoesTabela()">
           </div>
-          <button class="btn btn-primary btn-sm" onclick="openModal('modalSolicitacao')"><i class="fa-solid fa-plus"></i> Nova Solicitação</button>
+          <button class="btn btn-primary btn-sm" onclick="openModal('modalSolicitacao')"><i class="fa-solid fa-plus"></i> Novo Orçamento</button>
         </div>
       </div>
       <div class="solicitacoes-overview">
@@ -1497,7 +1535,7 @@ body.auth-locked .auth-screen { display: flex; }
   <div id="view-orcamentos" class="view">
     <div class="card">
       <div class="card-header">
-        <div class="card-title">Orçamentos Mensais Cadastrados <span id="orcamento-count" class="badge badge-purple" style="margin-left:6px">0</span></div>
+        <div class="card-title">Orçamentos Recorrentes Cadastrados <span id="orcamento-count" class="badge badge-purple" style="margin-left:6px">0</span></div>
         <div class="search-bar">
           <i class="fa-solid fa-magnifying-glass"></i>
           <input type="text" placeholder="Buscar por cliente..." id="search-orcamentos" oninput="renderOrcamentosTabela()">
@@ -1563,7 +1601,7 @@ body.auth-locked .auth-screen { display: flex; }
 
     <div class="card">
       <div class="card-header">
-        <div class="card-title"><i class="fa-solid fa-circle-check" style="color:var(--purple)"></i> Histórico de Orçamentos Mensais Concluídos</div>
+        <div class="card-title"><i class="fa-solid fa-circle-check" style="color:var(--purple)"></i> Histórico de Orçamentos Recorrentes Concluídos</div>
         <span id="concluidos-orcamento-count" class="badge badge-gray">0</span>
       </div>
       <div id="dash-concluidos-orcamento"></div>
@@ -1646,7 +1684,7 @@ body.auth-locked .auth-screen { display: flex; }
         <div><span>Contatos</span><strong id="config-total-contatos">0</strong></div>
         <div><span>Retornos pendentes</span><strong id="config-total-retornos">0</strong></div>
         <div><span>Solicitações pendentes</span><strong id="config-total-solicitacoes">0</strong></div>
-        <div><span>Orçamentos mensais</span><strong id="config-total-orcamentos">0</strong></div>
+        <div><span>Orçamentos recorrentes</span><strong id="config-total-orcamentos">0</strong></div>
         <div><span>Concluídos</span><strong id="config-total-concluidos">0</strong></div>
       </div>
     </div>
@@ -1878,7 +1916,7 @@ body.auth-locked .auth-screen { display: flex; }
 <div class="modal-overlay" id="modalSolicitacao">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title" id="modal-solicitacao-title"><i class="fa-solid fa-clipboard-list" style="color:var(--warning);margin-right:8px"></i>Nova Solicitação de Orçamento</div>
+      <div class="modal-title" id="modal-solicitacao-title"><i class="fa-solid fa-clipboard-list" style="color:var(--warning);margin-right:8px"></i>Novo Orçamento</div>
       <button class="modal-close" onclick="closeModal('modalSolicitacao')"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body">
@@ -1915,7 +1953,27 @@ body.auth-locked .auth-screen { display: flex; }
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('modalSolicitacao')">Cancelar</button>
-      <button class="btn btn-primary" onclick="salvarSolicitacaoOrcamento()" style="background:var(--warning)"><i class="fa-solid fa-floppy-disk"></i> Salvar Solicitação</button>
+      <button class="btn btn-primary" onclick="salvarSolicitacaoOrcamento()" style="background:var(--warning)"><i class="fa-solid fa-floppy-disk"></i> Salvar Orçamento</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- MODAL PRÓXIMOS PASSOS DA SOLICITAÇÃO -->
+<div class="modal-overlay" id="modalFluxoSolicitacao">
+  <div class="modal" style="width:620px">
+    <div class="modal-header">
+      <div class="modal-title"><i class="fa-solid fa-route" style="color:var(--accent);margin-right:8px"></i>Próximos passos do orçamento</div>
+      <button class="modal-close" onclick="closeModal('modalFluxoSolicitacao')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="fluxo-resumo" id="fluxo-solicitacao-resumo"></div>
+      <div style="font-size:12px;color:var(--text3);font-weight:800;text-transform:uppercase;letter-spacing:.7px;margin:2px 0 10px">Continuar fluxo</div>
+      <div class="fluxo-next-grid" id="fluxo-solicitacao-acoes"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalFluxoSolicitacao')">Apenas salvar por enquanto</button>
+      <button class="btn btn-primary" onclick="showView('solicitacoes'); closeModal('modalFluxoSolicitacao')"><i class="fa-solid fa-list-check"></i> Ver solicitações</button>
     </div>
   </div>
 </div>
@@ -1924,7 +1982,7 @@ body.auth-locked .auth-screen { display: flex; }
 <div class="modal-overlay" id="modalOrcamento">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title" id="modal-orcamento-title"><i class="fa-solid fa-file-invoice-dollar" style="color:var(--purple);margin-right:8px"></i>Orçamento Mensal</div>
+      <div class="modal-title" id="modal-orcamento-title"><i class="fa-solid fa-file-invoice-dollar" style="color:var(--purple);margin-right:8px"></i>Orçamento Recorrente</div>
       <button class="modal-close" onclick="closeModal('modalOrcamento')"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body">
@@ -1945,7 +2003,7 @@ body.auth-locked .auth-screen { display: flex; }
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('modalOrcamento')">Cancelar</button>
-      <button class="btn btn-primary" onclick="salvarOrcamento()" style="background:var(--purple)"><i class="fa-solid fa-floppy-disk"></i> Salvar Orçamento Mensal</button>
+      <button class="btn btn-primary" onclick="salvarOrcamento()" style="background:var(--purple)"><i class="fa-solid fa-floppy-disk"></i> Salvar Orçamento Recorrente</button>
     </div>
   </div>
 </div>
@@ -2065,7 +2123,7 @@ body.auth-locked .auth-screen { display: flex; }
             <option value="contatos">Histórico de Contatos</option>
             <option value="retornos">Atividades Programadas</option>
             <option value="solicitacoes">Solicitações de Orçamento</option>
-            <option value="orcamentos">Orçamentos Mensais</option>
+            <option value="orcamentos">Orçamentos Recorrentes</option>
             <option value="relatorio_mensal">Relatório Mensal Completo</option>
           </select>
         </div>
@@ -2495,7 +2553,7 @@ function openModal(id) {
     preencherHorarioAlarme('ag-horario-alarme', 'ag-data');
   }
   if (id==='modalSolicitacao' && !document.getElementById('modalSolicitacao').dataset.editId) {
-    document.getElementById('modal-solicitacao-title').textContent = 'Nova Solicitação de Orçamento';
+    document.getElementById('modal-solicitacao-title').textContent = 'Novo Orçamento';
     document.getElementById('sol-cliente').value = '';
     document.getElementById('sol-nome').value = '';
     document.getElementById('sol-solicitante').value = '';
@@ -2510,7 +2568,7 @@ function openModal(id) {
   }
   if (id==='modalOrcamento' && !document.getElementById('modalOrcamento').dataset.editId) {
     document.getElementById('or-data').value = today();
-    document.getElementById('modal-orcamento-title').textContent = 'Orçamento Mensal';
+    document.getElementById('modal-orcamento-title').textContent = 'Orçamento Recorrente';
     preencherHorarioAlarme('or-horario-alarme', 'or-data');
   }
   if (id==='modalConcluir') {
@@ -2810,7 +2868,7 @@ function renderClientes() {
       <td><div class="action-row">
         <button class="btn btn-success btn-sm" title="Registrar contato" onclick="event.stopPropagation();openContatoFor(${c.id})"><i class="fa-solid fa-phone"></i></button>
         <button class="btn btn-warning btn-sm" title="Agendar retorno" onclick="event.stopPropagation();openAgendamentoFor(${c.id})"><i class="fa-regular fa-calendar-plus"></i></button>
-        <button class="btn btn-sm" title="Orçamento Mensal" style="background:var(--purple-bg);color:var(--purple);border:1px solid rgba(139,125,232,0.3)" onclick="event.stopPropagation();openOrcamentoFor(${c.id})"><i class="fa-solid fa-file-invoice-dollar"></i></button>
+        <button class="btn btn-sm" title="Orçamento Recorrente" style="background:var(--purple-bg);color:var(--purple);border:1px solid rgba(139,125,232,0.3)" onclick="event.stopPropagation();openOrcamentoFor(${c.id})"><i class="fa-solid fa-file-invoice-dollar"></i></button>
         <button class="btn btn-ghost btn-sm" title="Editar cliente" onclick="event.stopPropagation();editarCliente(${c.id})"><i class="fa-solid fa-pen"></i></button>
         <button class="btn btn-danger btn-sm" title="Excluir" onclick="event.stopPropagation();excluirCliente(${c.id})"><i class="fa-solid fa-trash"></i></button>
       </div></td>
@@ -2877,7 +2935,7 @@ function abrirDetalhe(id) {
       <button class="btn btn-primary btn-sm" onclick="openContatoFor(${c.id})"><i class="fa-solid fa-plus"></i> Registrar contato</button>
       <button class="btn btn-ghost btn-sm" onclick="openAgendamentoFor(${c.id})"><i class="fa-regular fa-calendar-plus"></i> Agendar retorno</button>
       <button class="btn btn-ghost btn-sm" style="color:var(--warning);border-color:rgba(245,166,35,0.4)" onclick="openSolicitacaoFor(${c.id})"><i class="fa-solid fa-clipboard-list"></i> Criar solicitação</button>
-      <button class="btn btn-ghost btn-sm" style="color:var(--purple);border-color:rgba(139,125,232,0.4)" onclick="openOrcamentoFor(${c.id})"><i class="fa-solid fa-file-invoice-dollar"></i> Orçamento mensal</button>
+      <button class="btn btn-ghost btn-sm" style="color:var(--purple);border-color:rgba(139,125,232,0.4)" onclick="openOrcamentoFor(${c.id})"><i class="fa-solid fa-file-invoice-dollar"></i> Orçamento recorrente</button>
       <button class="btn btn-ghost btn-sm" onclick="scrollClientHistory()"><i class="fa-solid fa-timeline"></i> Ver histórico</button>
       <button class="btn btn-ghost btn-sm" onclick="exportarFichaClientePDF(${c.id})"><i class="fa-solid fa-file-pdf"></i> Exportar ficha</button>
       <button class="btn btn-ghost btn-sm" onclick="editarCliente(${c.id})"><i class="fa-solid fa-pen"></i> Editar</button>
@@ -3059,7 +3117,87 @@ function limparModalSolicitacao() {
   document.getElementById('sol-descricao').value = '';
   document.getElementById('sol-obs').value = '';
   delete document.getElementById('modalSolicitacao').dataset.editId;
-  document.getElementById('modal-solicitacao-title').innerHTML = '<i class="fa-solid fa-clipboard-list" style="color:var(--warning);margin-right:8px"></i>Nova Solicitação de Orçamento';
+  document.getElementById('modal-solicitacao-title').innerHTML = '<i class="fa-solid fa-clipboard-list" style="color:var(--warning);margin-right:8px"></i>Novo Orçamento';
+}
+
+
+function abrirFluxoSolicitacao(id) {
+  const sol = solicitacoesOrcamento.find(x => x.id === id);
+  if (!sol) return;
+  const d = dadosSolicitacaoCliente(sol);
+  const resumo = document.getElementById('fluxo-solicitacao-resumo');
+  const acoes = document.getElementById('fluxo-solicitacao-acoes');
+  if (!resumo || !acoes) return;
+  resumo.innerHTML = `
+    <div class="fluxo-resumo-title">${d.nome}${d.empresa ? ' — ' + d.empresa : ''}</div>
+    <div class="fluxo-resumo-meta">
+      <strong>Produto/serviço:</strong> ${sol.produto || 'Não informado'}<br>
+      <strong>Prazo:</strong> ${fmtDate(sol.prazo)} • <strong>Prioridade:</strong> ${sol.prioridade || 'normal'}${sol.clienteId ? '<br><strong>Status operacional:</strong> cliente já vinculado' : '<br><strong>Status operacional:</strong> sem cliente cadastrado/vinculado'}
+    </div>`;
+  const bloqueado = !sol.clienteId;
+  acoes.innerHTML = `
+    ${!sol.clienteId ? `<button class="fluxo-next-card" type="button" onclick="criarClienteFromSolicitacao(${sol.id}); closeModal('modalFluxoSolicitacao')"><i class="fa-solid fa-user-plus"></i><span><strong>Cadastrar cliente</strong><span>Criar cadastro usando os dados deste orçamento.</span></span></button>` : `<button class="fluxo-next-card" type="button" onclick="abrirDetalhe(${sol.clienteId}); closeModal('modalFluxoSolicitacao')"><i class="fa-solid fa-user-check"></i><span><strong>Ver cliente vinculado</strong><span>Abrir ficha e histórico do cliente.</span></span></button>`}
+    <button class="fluxo-next-card" type="button" onclick="vincularSolicitacaoExistente(${sol.id}); closeModal('modalFluxoSolicitacao')"><i class="fa-solid fa-link"></i><span><strong>Vincular cliente existente</strong><span>Editar a solicitação para atrelar a um cadastro já criado.</span></span></button>
+    <button class="fluxo-next-card ${bloqueado?'disabled':''}" type="button" onclick="registrarContatoFromSolicitacao(${sol.id})"><i class="fa-solid fa-phone"></i><span><strong>Registrar contato</strong><span>Transformar este pedido em registro no histórico do cliente.</span></span></button>
+    <button class="fluxo-next-card ${bloqueado?'disabled':''}" type="button" onclick="agendarRetornoFromSolicitacao(${sol.id})"><i class="fa-regular fa-calendar-plus"></i><span><strong>Agendar retorno</strong><span>Criar próximo passo para acompanhar este orçamento.</span></span></button>
+    <button class="fluxo-next-card ${bloqueado?'disabled':''}" type="button" onclick="criarOrcamentoRecorrenteFromSolicitacao(${sol.id})"><i class="fa-solid fa-repeat"></i><span><strong>Orçamento recorrente</strong><span>Criar acompanhamento periódico para este cliente.</span></span></button>
+    <button class="fluxo-next-card" type="button" onclick="marcarSolicitacaoFeita(${sol.id}); closeModal('modalFluxoSolicitacao')"><i class="fa-solid fa-check"></i><span><strong>Marcar como feito</strong><span>Enviar para o histórico de solicitações concluídas.</span></span></button>
+  `;
+  openModal('modalFluxoSolicitacao');
+}
+
+function vincularSolicitacaoExistente(id) {
+  editarSolicitacaoOrcamento(id);
+  setTimeout(()=>document.getElementById('sol-cliente')?.focus(), 80);
+}
+
+function exigirClienteParaFluxo(sol) {
+  if (!sol?.clienteId) {
+    notify('Primeiro cadastre ou vincule um cliente para continuar este passo.','#7a1a1a');
+    return false;
+  }
+  return true;
+}
+
+function registrarContatoFromSolicitacao(id) {
+  const sol = solicitacoesOrcamento.find(x => x.id === id);
+  if (!exigirClienteParaFluxo(sol)) return;
+  closeModal('modalFluxoSolicitacao');
+  openModal('modalContato');
+  setTimeout(()=>{
+    document.getElementById('ct-cliente').value = sol.clienteId;
+    document.getElementById('ct-data').value = sol.dataSolicitacao || today();
+    document.getElementById('ct-canal').value = sol.canal || 'whatsapp';
+    document.getElementById('ct-descricao').value = `Solicitação de orçamento recebida.\nProduto/serviço: ${sol.produto || 'Não informado'}\nDescrição: ${sol.descricao || ''}`;
+    document.getElementById('ct-lembrete').value = sol.produto ? `Retornar sobre orçamento: ${sol.produto}` : 'Retornar sobre orçamento solicitado';
+  }, 80);
+}
+
+function agendarRetornoFromSolicitacao(id) {
+  const sol = solicitacoesOrcamento.find(x => x.id === id);
+  if (!exigirClienteParaFluxo(sol)) return;
+  closeModal('modalFluxoSolicitacao');
+  openModal('modalAgendamento');
+  setTimeout(()=>{
+    document.getElementById('ag-cliente').value = sol.clienteId;
+    document.getElementById('ag-data').value = sol.prazo || today();
+    document.getElementById('ag-prioridade').value = sol.prioridade || 'normal';
+    document.getElementById('ag-motivo').value = sol.produto ? `Retornar sobre orçamento solicitado: ${sol.produto}` : 'Retornar sobre orçamento solicitado';
+    preencherHorarioAlarme('ag-horario-alarme','ag-data');
+  }, 80);
+}
+
+function criarOrcamentoRecorrenteFromSolicitacao(id) {
+  const sol = solicitacoesOrcamento.find(x => x.id === id);
+  if (!exigirClienteParaFluxo(sol)) return;
+  closeModal('modalFluxoSolicitacao');
+  openModal('modalOrcamento');
+  setTimeout(()=>{
+    document.getElementById('or-cliente').value = sol.clienteId;
+    document.getElementById('or-data').value = sol.prazo || today();
+    document.getElementById('or-obs').value = sol.produto ? `Acompanhamento recorrente a partir do orçamento solicitado: ${sol.produto}` : 'Acompanhamento recorrente a partir de solicitação de orçamento';
+    preencherHorarioAlarme('or-horario-alarme','or-data');
+  }, 80);
 }
 
 function salvarSolicitacaoOrcamento() {
@@ -3092,19 +3230,22 @@ function salvarSolicitacaoOrcamento() {
   };
 
   const editId = document.getElementById('modalSolicitacao').dataset.editId;
+  let novoFluxoId = null;
   if (editId) {
     const item = solicitacoesOrcamento.find(x => x.id === +editId);
     if (item) Object.assign(item, dados);
-    notify('✓ Solicitação atualizada!','#6a4a00');
+    notify('✓ Orçamento solicitado atualizado!','#6a4a00');
   } else {
-    solicitacoesOrcamento.push({ id: Date.now(), ...dados, criadoEm: today() });
-    notify('✓ Solicitação registrada!','#0d3d2a');
+    novoFluxoId = Date.now();
+    solicitacoesOrcamento.push({ id: novoFluxoId, ...dados, criadoEm: today() });
+    notify('✓ Orçamento registrado!','#0d3d2a');
   }
 
   save();
   closeModal('modalSolicitacao');
   limparModalSolicitacao();
   renderDashboard(); renderSolicitacoesTabela(); renderClientes(); renderAgenda();
+  if (novoFluxoId) setTimeout(()=>abrirFluxoSolicitacao(novoFluxoId), 150);
 }
 
 function editarSolicitacaoOrcamento(id) {
@@ -3113,7 +3254,7 @@ function editarSolicitacaoOrcamento(id) {
   populateClienteSelects();
   document.getElementById('modalSolicitacao').classList.add('open');
   document.getElementById('modalSolicitacao').dataset.editId = id;
-  document.getElementById('modal-solicitacao-title').innerHTML = '<i class="fa-solid fa-pen" style="color:var(--warning);margin-right:8px"></i>Editar Solicitação de Orçamento';
+  document.getElementById('modal-solicitacao-title').innerHTML = '<i class="fa-solid fa-pen" style="color:var(--warning);margin-right:8px"></i>Editar Orçamento Solicitado';
   document.getElementById('sol-cliente').value = sol.clienteId || '';
   document.getElementById('sol-nome').value = sol.nome || '';
   document.getElementById('sol-solicitante').value = sol.solicitante || '';
@@ -3326,7 +3467,7 @@ function salvarOrcamento() {
     notify('✓ Orçamento atualizado!','#3d1f5c');
   } else {
     orcamentos.push({ id: Date.now(), clienteId, data, horario, repetir, obs: document.getElementById('or-obs').value.trim(), criadoEm: today() });
-    notify('✓ Orçamento mensal salvo!','#3d1f5c');
+    notify('✓ Orçamento recorrente salvo!','#3d1f5c');
   }
   save(); closeModal('modalOrcamento');
   document.getElementById('or-obs').value=''; document.getElementById('or-cliente').value=''; document.getElementById('or-data').value=''; document.getElementById('or-horario-alarme').value='09:00';
@@ -3334,9 +3475,9 @@ function salvarOrcamento() {
 }
 
 function excluirOrcamento(id) {
-  if (!confirm('Excluir este orçamento mensal?')) return;
+  if (!confirm('Excluir este orçamento recorrente?')) return;
   orcamentos = orcamentos.filter(o=>o.id!==id);
-  save(); renderOrcamentosTabela(); renderAgenda(); notify('Orçamento mensal excluído.','#7a1a1a');
+  save(); renderOrcamentosTabela(); renderAgenda(); notify('Orçamento recorrente excluído.','#7a1a1a');
 }
 
 function renderOrcamentosTabela() { renderOrcamentosTabelaFull(); }
@@ -3432,7 +3573,7 @@ function editarOrcamento(id) {
   populateClienteSelects();
   document.getElementById('modalOrcamento').classList.add('open');
   document.getElementById('modalOrcamento').dataset.editId = id;
-  document.getElementById('modal-orcamento-title').textContent = 'Editar Orçamento Mensal';
+  document.getElementById('modal-orcamento-title').textContent = 'Editar Orçamento Recorrente';
   document.getElementById('or-cliente').value = o.clienteId;
   document.getElementById('or-data').value = o.data;
   document.getElementById('or-horario-alarme').value = o.horario || '09:00';
@@ -3490,7 +3631,7 @@ function filtrarDia(iso) {
   const elR=document.getElementById('agenda-lista');
   const elO=document.getElementById('orcamentos-agenda-lista');
   elR.innerHTML=(ags.length||sols.length||concl.length)?`<div style="padding:10px 16px;font-size:11.5px;color:var(--text3);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.5px">Itens de ${fmtDate(iso)}</div>${ags.length?renderKanbanItems(ags):''}${sols.length?renderSolicitacaoCards(sols):''}${concl.length?renderConcluidoCards(concl):''}`:`<div class="empty"><i class="fa-regular fa-calendar"></i><p>Nenhum retorno, solicitação ou concluído neste dia</p></div>`;
-  elO.innerHTML=ors.length?`<div style="padding:10px 16px;font-size:11.5px;color:var(--text3);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.5px">Orçamentos de ${fmtDate(iso)}</div>${renderOrcamentoCards(ors)}`:`<div class="empty"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento mensal neste dia</p></div>`;
+  elO.innerHTML=ors.length?`<div style="padding:10px 16px;font-size:11.5px;color:var(--text3);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.5px">Orçamentos de ${fmtDate(iso)}</div>${renderOrcamentoCards(ors)}`:`<div class="empty"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento recorrente neste dia</p></div>`;
 }
 
 function prevMonth(){calDate.setMonth(calDate.getMonth()-1);renderCalendar();}
@@ -3523,7 +3664,7 @@ function renderOrcamentosLista() {
   const atrasados=doMes.filter(o=>o.data<todayISO).sort((a,b)=>b.data.localeCompare(a.data));
   const el=document.getElementById('orcamentos-agenda-lista');
   if(!el) return;
-  if(!upcoming.length && !atrasados.length){el.innerHTML=`<div class="empty"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento mensal com os filtros atuais</p></div>`;return;}
+  if(!upcoming.length && !atrasados.length){el.innerHTML=`<div class="empty"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento recorrente com os filtros atuais</p></div>`;return;}
   el.innerHTML=renderOrcamentoCards([...atrasados.map(o=>({...o,_atrasado:true})),...upcoming]);
 }
 
@@ -3536,7 +3677,7 @@ function renderOrcamentosTabelaFull() {
     return !q || (c&&c.nome.toLowerCase().includes(q));
   });
   document.getElementById('orcamento-count').textContent = sorted.length;
-  if (!sorted.length) { tb.innerHTML = `<tr><td colspan="6"><div class="empty"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento mensal cadastrado.</p></div></td></tr>`; return; }
+  if (!sorted.length) { tb.innerHTML = `<tr><td colspan="6"><div class="empty"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento recorrente cadastrado.</p></div></td></tr>`; return; }
   tb.innerHTML = sorted.map(o=>{
     const c=clientes.find(x=>x.id===o.clienteId);
     const atrasado = o.data < today();
@@ -3673,9 +3814,9 @@ function criarAcoesDoDia() {
       const c = clientes.find(x => x.id === o.clienteId);
       acoes.push({
         tipo: 'orcamento', data: o.data, prioridade: o.data < hoje ? 'urgente' : 'normal', nome: c ? c.nome : 'Cliente',
-        titulo: o.data < hoje ? 'Orçamento mensal atrasado' : 'Orçamento mensal para hoje',
+        titulo: o.data < hoje ? 'Orçamento recorrente atrasado' : 'Orçamento recorrente para hoje',
         meta: `${c ? c.empresa || '' : ''}${o.horario ? ' • ' + o.horario : ''}`,
-        detalhe: o.obs || 'Enviar orçamento mensal.',
+        detalhe: o.obs || 'Enviar orçamento recorrente.',
         classe: o.data < hoje ? 'atrasado' : 'hoje',
         score: (o.data < hoje ? 0 : 2),
         htmlAcoes: `<button class="btn btn-success btn-sm" onclick="concluirOrcamentoDireto(${o.id})"><i class="fa-solid fa-check"></i> Concluir</button><button class="btn btn-ghost btn-sm" onclick="showView('orcamentos')"><i class="fa-solid fa-eye"></i> Ver</button>`
@@ -3831,7 +3972,7 @@ function renderDashboard() {
     const isOrc = cc.tipo === 'orcamento';
     const isSol = cc.tipo === 'solicitacao_orcamento';
     const nomeExibicao = c ? c.nome : (cc.nomeAvulso || '—');
-    const tipoLabel = isSol ? 'Solicitação de orçamento' : isOrc ? 'Orçamento mensal' : 'Retorno agendado';
+    const tipoLabel = isSol ? 'Solicitação de orçamento' : isOrc ? 'Orçamento recorrente' : 'Retorno agendado';
     const iconCls = isSol ? 'fa-clipboard-check' : isOrc ? 'fa-file-invoice-dollar' : 'fa-phone';
     return `<div class="concluido-item">
       <div class="concluido-icon ${(isOrc||isSol)?'orcamento':''}"><i class="fa-solid ${iconCls}"></i></div>
@@ -3864,7 +4005,7 @@ function renderDashboard() {
   document.getElementById('concluidos-orcamento-count').textContent = concluidosOrcamento.length;
   document.getElementById('dash-concluidos-orcamento').innerHTML = concluidosOrcamento.length
     ? concluidosOrcamento.slice(0,8).map(renderConcluidoItem).join('')
-    : `<div class="empty"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento mensal concluído ainda</p></div>`;
+    : `<div class="empty"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento recorrente concluído ainda</p></div>`;
 
   // ===== PARA HOJE (retornos + solicitações + orçamentos do dia) =====
   const retornosHoje = agendamentos.filter(a=>a.data===todayISO).map(a=>({...a,_tipoHoje:'retorno'}));
@@ -3895,7 +4036,7 @@ function renderDashboard() {
   const fimSemana = addDays(todayISO, 7);
   const orcamentosSemana = orcamentos.filter(o=>o.data>=todayISO && o.data<=fimSemana).sort((a,b)=>a.data.localeCompare(b.data));
   const dashOrcSemana = document.getElementById('dash-orcamentos-semana');
-  dashOrcSemana.innerHTML = orcamentosSemana.length ? renderOrcamentoCards(orcamentosSemana) : `<div class="empty" style="grid-column:1/-1"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento mensal esta semana</p></div>`;
+  dashOrcSemana.innerHTML = orcamentosSemana.length ? renderOrcamentoCards(orcamentosSemana) : `<div class="empty" style="grid-column:1/-1"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento recorrente esta semana</p></div>`;
 
   document.getElementById('dash-date').textContent=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 }
@@ -4380,7 +4521,7 @@ function renderResumoHistoricoCliente(clienteId) {
     <div class="client-history-stat"><div class="client-history-stat-label">Sem resposta</div><div class="client-history-stat-value">${tentativasSemResposta}</div></div>
     <div class="client-history-stat"><div class="client-history-stat-label">Retornos pendentes</div><div class="client-history-stat-value">${retornosPendentes}${retornosAtrasados ? ` <span style="font-size:11px;color:var(--danger)">+${retornosAtrasados} atras.</span>` : ''}</div></div>
     <div class="client-history-stat"><div class="client-history-stat-label">Solicitações</div><div class="client-history-stat-value">${solicitacoesPendentes}</div></div>
-    <div class="client-history-stat"><div class="client-history-stat-label">Orçamentos mensais</div><div class="client-history-stat-value">${orcamentosPendentes}</div></div>
+    <div class="client-history-stat"><div class="client-history-stat-label">Orçamentos recorrentes</div><div class="client-history-stat-value">${orcamentosPendentes}</div></div>
     <div class="client-history-stat"><div class="client-history-stat-label">Concluídos</div><div class="client-history-stat-value">${concluidosCliente}</div></div>
     <div class="client-history-stat"><div class="client-history-stat-label">Alterações</div><div class="client-history-stat-value">${alteracoesCliente}</div></div>
   </div>`;
@@ -4494,7 +4635,7 @@ function renderHistoricoCompletoCliente(clienteId) {
     eventos.push({
       tipo: 'orcamento',
       icon: 'fa-file-invoice-dollar',
-      title: atrasado ? 'Orçamento mensal atrasado' : hoje ? 'Orçamento mensal para hoje' : 'Orçamento mensal',
+      title: atrasado ? 'Orçamento recorrente atrasado' : hoje ? 'Orçamento recorrente para hoje' : 'Orçamento recorrente',
       data: o.data || todayISO,
       hora: o.horario || '09:00',
       badges: [
@@ -4502,7 +4643,7 @@ function renderHistoricoCompletoCliente(clienteId) {
         ...(o.repetir ? [{ text: 'Recorrente', className: 'badge-gray', icon: 'fa-rotate-right' }] : [])
       ],
       meta: o.criadoEm ? `Criado em ${fmtDate(o.criadoEm)}` : '',
-      desc: o.obs || 'Orçamento mensal recorrente.',
+      desc: o.obs || 'Acompanhamento recorrente.',
       actions: `<button class="btn btn-success btn-sm" onclick="marcarFeitoOrcamento(${o.id})"><i class="fa-solid fa-check"></i> Concluir</button><button class="btn btn-warning btn-sm" onclick="editarOrcamento(${o.id})"><i class="fa-solid fa-pen"></i> Editar</button><button class="btn btn-danger btn-sm" onclick="excluirOrcamento(${o.id})"><i class="fa-solid fa-trash"></i> Excluir</button>`
     });
   });
@@ -4513,7 +4654,7 @@ function renderHistoricoCompletoCliente(clienteId) {
     eventos.push({
       tipo: 'concluido',
       icon: isSol ? 'fa-clipboard-check' : isOrc ? 'fa-file-circle-check' : 'fa-circle-check',
-      title: isSol ? 'Solicitação de orçamento feita' : isOrc ? 'Orçamento mensal concluído' : 'Retorno concluído',
+      title: isSol ? 'Solicitação de orçamento feita' : isOrc ? 'Orçamento recorrente concluído' : 'Retorno concluído',
       data: cc.concluidoEm || cc.dataOriginal || todayISO,
       hora: '',
       badges: [{ text: 'Concluído', className: 'badge-success', icon: 'fa-check' }],
@@ -4667,7 +4808,7 @@ function resumoMensalRows(range) {
     ['Tentativas sem resposta', semRespostaMes],
     ['Retornos programados no período', retornosMes.length],
     ['Solicitações pendentes no período', solicitacoesMes.length],
-    ['Orçamentos mensais no período', orcamentosMes.length],
+    ['Orçamentos recorrentes no período', orcamentosMes.length],
     ['Itens concluídos no período', concluidosMes.length]
   ];
 }
@@ -4695,7 +4836,7 @@ function exportarFichaClientePDF(clienteId) {
   const orcamentosCliente = orcamentos.filter(o=>o.clienteId===clienteId).sort((a,b)=>a.data.localeCompare(b.data));
   const concluidosCliente = concluidos.filter(cc=>cc.clienteId===clienteId).sort((a,b)=>(b.concluidoEm||'').localeCompare(a.concluidoEm||''));
 
-  doc.autoTable({ head:[['Resumo','Valor']], body:[['Contatos', contatosCliente.length], ['Tentativas sem resposta', contatosCliente.filter(ct=>ct.semResposta).length], ['Retornos pendentes', retornosCliente.length], ['Solicitações pendentes', solicitacoesCliente.length], ['Orçamentos mensais', orcamentosCliente.length], ['Concluídos', concluidosCliente.length]], startY: Math.max(y, 82), theme:'grid', styles:{fontSize:8.5}, headStyles:{fillColor:[37,99,199]} });
+  doc.autoTable({ head:[['Resumo','Valor']], body:[['Contatos', contatosCliente.length], ['Tentativas sem resposta', contatosCliente.filter(ct=>ct.semResposta).length], ['Retornos pendentes', retornosCliente.length], ['Solicitações pendentes', solicitacoesCliente.length], ['Orçamentos recorrentes', orcamentosCliente.length], ['Concluídos', concluidosCliente.length]], startY: Math.max(y, 82), theme:'grid', styles:{fontSize:8.5}, headStyles:{fillColor:[37,99,199]} });
   let sy = doc.lastAutoTable.finalY + 8;
   if (contatosCliente.length) doc.autoTable({ head:[['Data','Canal','Sem resposta','Descrição']], body:contatosCliente.slice(0,25).map(ct=>[fmtDate(ct.data),ct.canal,ct.semResposta?'Sim':'Não',ct.descricao]), startY:sy, theme:'striped', styles:{fontSize:8}, headStyles:{fillColor:[37,99,199]}, columnStyles:{3:{cellWidth:90}} });
   sy = (doc.lastAutoTable?.finalY || sy) + 8;
@@ -4761,7 +4902,7 @@ function exportarPdf() {
     let lista = filtrarPorRange([...orcamentos], 'data', range);
     if (!lista.length) { notify('Nenhum orçamento no período selecionado','#7a1a1a'); return; }
     lista.sort((a,b)=>a.data.localeCompare(b.data));
-    pdfHeader(doc, 'Relatório de Orçamentos Mensais' + (range?` (${fmtDate(range[0])} a ${fmtDate(range[1])})`:''));
+    pdfHeader(doc, 'Relatório de Orçamentos Recorrentes' + (range?` (${fmtDate(range[0])} a ${fmtDate(range[1])})`:''));
     const body = lista.map(o => { const c = clientes.find(x=>x.id===o.clienteId); return [fmtDate(o.data), o.horario||'09:00', c?c.nome:'—', c?c.empresa||'—':'—', o.repetir?'Sim':'Não', o.obs||'—']; });
     doc.autoTable({ head: [['Data','Horário','Cliente','Empresa','Mensal','Observação']], body, startY: 28, theme:'striped', headStyles:{fillColor:[108,80,201]}, styles:{fontSize:8.5} });
     pdfFooter(doc); doc.save(`relatorio_orcamentos_${today()}.pdf`);
