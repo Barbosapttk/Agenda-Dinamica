@@ -275,6 +275,9 @@ input::placeholder, textarea::placeholder { color: var(--text3); }
 /* ORÇAMENTO CARDS (cor diferente - roxo) */
 .kanban-card.orcamento { border-left: 3px solid var(--purple); background: rgba(139,125,232,0.06); }
 .kanban-card.orcamento .kanban-date { color: var(--purple); }
+.kanban-card.solicitacao { border-left: 3px solid var(--warning); background: rgba(245,166,35,0.06); }
+.kanban-card.solicitacao .kanban-date { color: var(--warning); }
+.client-timeline-icon.solicitacao { background: var(--warning-bg); color: var(--warning); }
 .cal-day.has-orcamento::before { content: ''; width: 5px; height: 5px; background: var(--purple); border-radius: 50%; position: absolute; bottom: 4px; left: calc(50% - 8px); }
 .cal-day.has-event.has-orcamento::after { left: calc(50% + 3px); }
 .cal-day.has-orcamento:not(.has-event)::before { left: calc(50% - 2.5px); }
@@ -926,7 +929,7 @@ body.auth-locked .auth-screen { display: flex; }
       <div class="logo-mark"><i class="fa-regular fa-calendar-check"></i></div>
       <div>
         <div class="auth-title">Agenda <span style="color:var(--accent);font-style:italic">Dinâmica</span></div>
-        <div class="auth-subtitle">Entre para acessar seus clientes e lembretes.</div>
+        <div class="auth-subtitle">Entre para acessar seus clientes e agenda.</div>
       </div>
     </div>
     <form class="auth-form" onsubmit="fazerLogin(event)">
@@ -966,8 +969,11 @@ body.auth-locked .auth-screen { display: flex; }
     <div class="topnav-item" data-view="agenda" onclick="showView('agenda')">
       <i class="fa-solid fa-calendar-days"></i> Agenda
     </div>
+    <div class="topnav-item" data-view="solicitacoes" onclick="showView('solicitacoes')">
+      <i class="fa-solid fa-clipboard-list"></i> Solicitações
+    </div>
     <div class="topnav-item" data-view="orcamentos" onclick="showView('orcamentos')">
-      <i class="fa-solid fa-file-invoice-dollar"></i> Lembretes de Orçamento
+      <i class="fa-solid fa-file-invoice-dollar"></i> Orçamentos Mensais
     </div>
     <div class="topnav-item" data-view="historico" onclick="showView('historico')">
       <i class="fa-solid fa-clock-rotate-left"></i> Histórico
@@ -1005,6 +1011,9 @@ body.auth-locked .auth-screen { display: flex; }
   </div>
   <nav class="nav">
     <div class="nav-section">Ação Rápida</div>
+    <div class="nav-item" onclick="openModal('modalSolicitacao')">
+      <i class="fa-solid fa-clipboard-list"></i> Nova Solicitação
+    </div>
     <div class="nav-item" onclick="openModal('modalContato')">
       <i class="fa-solid fa-phone"></i> Registrar Contato
     </div>
@@ -1074,11 +1083,20 @@ body.auth-locked .auth-screen { display: flex; }
     </div>
     <div class="card" style="margin-bottom:20px">
       <div class="card-header">
+        <div class="card-title"><i class="fa-solid fa-clipboard-list" style="color:var(--warning)"></i> Solicitações de Orçamento Pendentes</div>
+        <button class="btn btn-ghost btn-sm" onclick="showView('solicitacoes')">Ver Tudo</button>
+      </div>
+      <div id="dash-solicitacoes-pendentes" style="padding:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">
+        <div class="empty" style="grid-column:1/-1"><i class="fa-solid fa-clipboard-list"></i><p>Nenhuma solicitação pendente</p></div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-header">
         <div class="card-title"><i class="fa-solid fa-file-invoice-dollar" style="color:var(--purple)"></i> Próximos Orçamentos Mensais <span style="font-weight:400;color:var(--text3);font-size:11.5px;margin-left:4px">(esta semana)</span></div>
         <button class="btn btn-ghost btn-sm" onclick="showView('orcamentos')">Ver Tudo</button>
       </div>
       <div id="dash-orcamentos-semana" style="padding:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">
-        <div class="empty" style="grid-column:1/-1"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento esta semana</p></div>
+        <div class="empty" style="grid-column:1/-1"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento mensal esta semana</p></div>
       </div>
     </div>
     <div class="card" style="margin-bottom:20px">
@@ -1147,7 +1165,7 @@ body.auth-locked .auth-screen { display: flex; }
           <div class="cal-grid" id="cal-grid" style="margin-top:5px"></div>
           <div style="display:flex;flex-direction:column;gap:6px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:11.5px;color:var(--text2)">
             <div style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:var(--warning);display:inline-block"></span> Retorno agendado</div>
-            <div style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:var(--purple);display:inline-block"></span> Lembrete de orçamento</div>
+            <div style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:var(--purple);display:inline-block"></span> Orçamento mensal</div>
           </div>
         </div>
       </div>
@@ -1161,7 +1179,7 @@ body.auth-locked .auth-screen { display: flex; }
         </div>
         <div class="card">
           <div class="card-header">
-            <div class="card-title"><i class="fa-solid fa-file-invoice-dollar" style="color:var(--purple)"></i> Próximos Orçamentos</div>
+            <div class="card-title"><i class="fa-solid fa-file-invoice-dollar" style="color:var(--purple)"></i> Próximos Orçamentos Mensais</div>
             <button class="btn btn-ghost btn-sm" onclick="renderOrcamentosLista()"><i class="fa-solid fa-rotate-right"></i></button>
           </div>
           <div id="orcamentos-agenda-lista" class="kanban-col"></div>
@@ -1170,11 +1188,51 @@ body.auth-locked .auth-screen { display: flex; }
     </div>
   </div>
 
-  <!-- ORÇAMENTOS (aba dedicada) -->
+  <!-- SOLICITAÇÕES DE ORÇAMENTO -->
+  <div id="view-solicitacoes" class="view">
+    <div class="card">
+      <div class="card-header" style="flex-wrap:wrap;gap:10px">
+        <div class="card-title">Solicitações de Orçamento <span id="solicitacao-count" class="badge badge-warning" style="margin-left:6px">0</span></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <select id="filtro-prioridade-solicitacoes" onchange="renderSolicitacoesTabela()" style="width:auto;min-width:140px;padding:6px 10px;font-size:12.5px">
+            <option value="">Prioridade: Todas</option>
+            <option value="normal">Normal</option>
+            <option value="alta">Alta</option>
+            <option value="urgente">Urgente</option>
+          </select>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text2);cursor:pointer;text-transform:none;letter-spacing:0;font-weight:500">
+            <input type="checkbox" id="filtro-atrasadas-solicitacoes" onchange="renderSolicitacoesTabela()" style="width:auto"> Apenas atrasadas
+          </label>
+          <div class="search-bar">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" placeholder="Buscar solicitação..." id="search-solicitacoes" oninput="renderSolicitacoesTabela()">
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openModal('modalSolicitacao')"><i class="fa-solid fa-plus"></i> Nova Solicitação</button>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Cliente/Solicitante</th>
+            <th>Empresa</th>
+            <th>Solicitado em</th>
+            <th>Prazo</th>
+            <th>Canal</th>
+            <th>Prioridade</th>
+            <th>Solicitação</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tabela-solicitacoes"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ORÇAMENTOS MENSAIS (aba dedicada) -->
   <div id="view-orcamentos" class="view">
     <div class="card">
       <div class="card-header">
-        <div class="card-title">Lembretes Cadastrados <span id="orcamento-count" class="badge badge-purple" style="margin-left:6px">0</span></div>
+        <div class="card-title">Orçamentos Mensais Cadastrados <span id="orcamento-count" class="badge badge-purple" style="margin-left:6px">0</span></div>
         <div class="search-bar">
           <i class="fa-solid fa-magnifying-glass"></i>
           <input type="text" placeholder="Buscar por cliente..." id="search-orcamentos" oninput="renderOrcamentosTabela()">
@@ -1232,7 +1290,7 @@ body.auth-locked .auth-screen { display: flex; }
 
     <div class="card">
       <div class="card-header">
-        <div class="card-title"><i class="fa-solid fa-circle-check" style="color:var(--purple)"></i> Histórico de Orçamentos Concluídos</div>
+        <div class="card-title"><i class="fa-solid fa-circle-check" style="color:var(--purple)"></i> Histórico de Orçamentos/Solicitações Concluídos</div>
         <span id="concluidos-orcamento-count" class="badge badge-gray">0</span>
       </div>
       <div id="dash-concluidos-orcamento"></div>
@@ -1454,6 +1512,50 @@ body.auth-locked .auth-screen { display: flex; }
   </div>
 </div>
 
+<!-- MODAL SOLICITAÇÃO DE ORÇAMENTO -->
+<div class="modal-overlay" id="modalSolicitacao">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-solicitacao-title"><i class="fa-solid fa-clipboard-list" style="color:var(--warning);margin-right:8px"></i>Nova Solicitação de Orçamento</div>
+      <button class="modal-close" onclick="closeModal('modalSolicitacao')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group full"><label>Cliente cadastrado (opcional)</label>
+          <select id="sol-cliente" onchange="preencherDadosSolicitacaoCliente()"><option value="">Não atrelar a cliente cadastrado</option></select>
+        </div>
+        <div class="form-group"><label>Nome do cliente/solicitante *</label><input type="text" id="sol-nome" placeholder="Ex: João / Hospital São Lucas"></div>
+        <div class="form-group"><label>Empresa</label><input type="text" id="sol-empresa" placeholder="Ex: Hospital São Lucas"></div>
+        <div class="form-group"><label>Data da solicitação *</label><input type="date" id="sol-data"></div>
+        <div class="form-group"><label>Prazo para fazer *</label><input type="date" id="sol-prazo"></div>
+        <div class="form-group"><label>Canal da solicitação</label>
+          <select id="sol-canal">
+            <option value="whatsapp">WhatsApp</option>
+            <option value="telefone">Telefone</option>
+            <option value="email">E-mail</option>
+            <option value="presencial">Presencial</option>
+            <option value="videochamada">Videochamada</option>
+            <option value="outro">Outro</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Prioridade</label>
+          <select id="sol-prioridade">
+            <option value="normal">Normal</option>
+            <option value="alta">Alta</option>
+            <option value="urgente">Urgente</option>
+          </select>
+        </div>
+        <div class="form-group full"><label>Descrição do que foi solicitado *</label><textarea id="sol-descricao" placeholder="Ex: Cliente pediu orçamento de calibração/manutenção do equipamento X..."></textarea></div>
+        <div class="form-group full"><label>Observações</label><textarea id="sol-obs" placeholder="Ex: pediu retorno ainda hoje, precisa de condição especial, enviar por e-mail..."></textarea></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalSolicitacao')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarSolicitacaoOrcamento()" style="background:var(--warning)"><i class="fa-solid fa-floppy-disk"></i> Salvar Solicitação</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL ORÇAMENTO -->
 <div class="modal-overlay" id="modalOrcamento">
   <div class="modal">
@@ -1479,7 +1581,7 @@ body.auth-locked .auth-screen { display: flex; }
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('modalOrcamento')">Cancelar</button>
-      <button class="btn btn-primary" onclick="salvarOrcamento()" style="background:var(--purple)"><i class="fa-solid fa-floppy-disk"></i> Salvar Lembrete</button>
+      <button class="btn btn-primary" onclick="salvarOrcamento()" style="background:var(--purple)"><i class="fa-solid fa-floppy-disk"></i> Salvar Orçamento Mensal</button>
     </div>
   </div>
 </div>
@@ -1598,7 +1700,8 @@ body.auth-locked .auth-screen { display: flex; }
             <option value="clientes">Clientes</option>
             <option value="contatos">Histórico de Contatos</option>
             <option value="retornos">Atividades Programadas</option>
-            <option value="orcamentos">Lembretes de Orçamento</option>
+            <option value="solicitacoes">Solicitações de Orçamento</option>
+            <option value="orcamentos">Orçamentos Mensais</option>
           </select>
         </div>
         <div class="form-group full" id="pdf-periodo-wrap">
@@ -1723,7 +1826,7 @@ async function fazerLogin(event) {
 async function sairDoSistema() {
   if (!supabaseClient) return;
   await supabaseClient.auth.signOut();
-  clientes = []; contatos = []; agendamentos = []; orcamentos = []; concluidos = []; historicoClientes = []; alarmedIds = [];
+  clientes = []; contatos = []; agendamentos = []; solicitacoesOrcamento = []; orcamentos = []; concluidos = []; historicoClientes = []; alarmedIds = [];
   bloquearSistema('Sessão encerrada. Entre novamente para acessar o sistema.');
 }
 
@@ -1758,6 +1861,7 @@ const STORAGE_KEYS = {
   clientes: 'secta_clientes',
   contatos: 'secta_contatos',
   agendamentos: 'secta_agendamentos',
+  solicitacoesOrcamento: 'secta_solicitacoes_orcamento',
   orcamentos: 'secta_orcamentos',
   concluidos: 'secta_concluidos',
   historicoClientes: 'secta_hist_clientes',
@@ -1768,6 +1872,7 @@ const STORAGE_KEYS = {
 let clientes = [];
 let contatos = [];
 let agendamentos = [];
+let solicitacoesOrcamento = [];
 let orcamentos = [];
 let concluidos = [];
 let historicoClientes = []; // log de alterações em clientes
@@ -1802,6 +1907,7 @@ async function carregarDadosSupabase() {
   clientes = Array.isArray(values[STORAGE_KEYS.clientes]) ? values[STORAGE_KEYS.clientes] : [];
   contatos = Array.isArray(values[STORAGE_KEYS.contatos]) ? values[STORAGE_KEYS.contatos] : [];
   agendamentos = Array.isArray(values[STORAGE_KEYS.agendamentos]) ? values[STORAGE_KEYS.agendamentos] : [];
+  solicitacoesOrcamento = Array.isArray(values[STORAGE_KEYS.solicitacoesOrcamento]) ? values[STORAGE_KEYS.solicitacoesOrcamento] : [];
   orcamentos = Array.isArray(values[STORAGE_KEYS.orcamentos]) ? values[STORAGE_KEYS.orcamentos] : [];
   concluidos = Array.isArray(values[STORAGE_KEYS.concluidos]) ? values[STORAGE_KEYS.concluidos] : [];
   historicoClientes = Array.isArray(values[STORAGE_KEYS.historicoClientes]) ? values[STORAGE_KEYS.historicoClientes] : [];
@@ -1817,6 +1923,7 @@ async function persistirDadosSupabase() {
     { key: STORAGE_KEYS.clientes, value: clientes },
     { key: STORAGE_KEYS.contatos, value: contatos },
     { key: STORAGE_KEYS.agendamentos, value: agendamentos },
+    { key: STORAGE_KEYS.solicitacoesOrcamento, value: solicitacoesOrcamento },
     { key: STORAGE_KEYS.orcamentos, value: orcamentos },
     { key: STORAGE_KEYS.concluidos, value: concluidos },
     { key: STORAGE_KEYS.historicoClientes, value: historicoClientes },
@@ -1841,9 +1948,9 @@ function save() {
 }
 
 function resetarTodosDados() {
-  if (!confirm('Isso vai apagar TODOS os clientes, contatos, retornos e orçamentos cadastrados. Esta ação não pode ser desfeita. Deseja continuar?')) return;
+  if (!confirm('Isso vai apagar TODOS os clientes, contatos, retornos, solicitações e orçamentos cadastrados. Esta ação não pode ser desfeita. Deseja continuar?')) return;
   if (!confirm('Tem certeza mesmo? Todos os dados serão perdidos permanentemente.')) return;
-  clientes = []; contatos = []; agendamentos = []; orcamentos = []; concluidos = []; alarmedIds = []; historicoClientes = [];
+  clientes = []; contatos = []; agendamentos = []; solicitacoesOrcamento = []; orcamentos = []; concluidos = []; alarmedIds = []; historicoClientes = [];
   save();
   notify('✓ Todos os dados foram apagados. Comece a cadastrar do zero!','#0d3d2a');
   closeModal('modalAtalhos');
@@ -1993,13 +2100,14 @@ function showView(v) {
   if (v==='clientes') renderClientes();
   if (v==='agenda') renderAgenda();
   if (v==='historico') { renderHistorico(); renderDashboard(); }
+  if (v==='solicitacoes') renderSolicitacoesTabela();
   if (v==='orcamentos') renderOrcamentosTabela();
 }
 
 // ===== MODALS =====
 function openModal(id) {
   document.getElementById(id).classList.add('open');
-  if (id==='modalContato' || id==='modalAgendamento' || id==='modalOrcamento') populateClienteSelects();
+  if (id==='modalContato' || id==='modalAgendamento' || id==='modalSolicitacao' || id==='modalOrcamento') populateClienteSelects();
   if (id==='modalContato') {
     document.getElementById('ct-data').value = today();
     preencherHorarioAlarme('ct-horario-alarme', 'ct-retorno');
@@ -2007,6 +2115,18 @@ function openModal(id) {
   if (id==='modalAgendamento' && !document.getElementById('modalAgendamento').dataset.editId) {
     document.getElementById('modal-agendamento-title').textContent = 'Agendar Retorno';
     preencherHorarioAlarme('ag-horario-alarme', 'ag-data');
+  }
+  if (id==='modalSolicitacao' && !document.getElementById('modalSolicitacao').dataset.editId) {
+    document.getElementById('modal-solicitacao-title').textContent = 'Nova Solicitação de Orçamento';
+    document.getElementById('sol-cliente').value = '';
+    document.getElementById('sol-nome').value = '';
+    document.getElementById('sol-empresa').value = '';
+    document.getElementById('sol-data').value = today();
+    document.getElementById('sol-prazo').value = today();
+    document.getElementById('sol-canal').value = 'whatsapp';
+    document.getElementById('sol-prioridade').value = 'normal';
+    document.getElementById('sol-descricao').value = '';
+    document.getElementById('sol-obs').value = '';
   }
   if (id==='modalOrcamento' && !document.getElementById('modalOrcamento').dataset.editId) {
     document.getElementById('or-data').value = today();
@@ -2040,11 +2160,11 @@ document.querySelectorAll('.modal-overlay').forEach(el =>
 );
 
 function populateClienteSelects() {
-  ['ct-cliente','ag-cliente','or-cliente'].forEach(id => {
+  ['ct-cliente','ag-cliente','sol-cliente','or-cliente'].forEach(id => {
     const sel = document.getElementById(id);
     if (!sel) return;
     const prev = sel.value;
-    sel.innerHTML = '<option value="">Selecione o cliente...</option>';
+    sel.innerHTML = id==='sol-cliente' ? '<option value="">Não atrelar a cliente cadastrado</option>' : '<option value="">Selecione o cliente...</option>';
     clientes.forEach(c => sel.innerHTML += `<option value="${c.id}">${c.nome}${c.empresa?' — '+c.empresa:''}</option>`);
     if (prev) sel.value = prev;
   });
@@ -2493,6 +2613,215 @@ function salvarAgendamento() {
   renderDashboard(); renderAgenda();
 }
 
+// ===== SOLICITAÇÕES DE ORÇAMENTO =====
+function dadosSolicitacaoCliente(sol) {
+  const c = sol.clienteId ? clientes.find(x => x.id === sol.clienteId) : null;
+  return {
+    cliente: c,
+    nome: c ? c.nome : (sol.nome || 'Cliente não cadastrado'),
+    empresa: c ? (c.empresa || '') : (sol.empresa || ''),
+    iniciais: c ? initials(c.nome) : initials(sol.nome || 'SN'),
+    avatar: c ? avColor(c.id) : 'av-amber'
+  };
+}
+
+function preencherDadosSolicitacaoCliente() {
+  const clienteId = +document.getElementById('sol-cliente').value;
+  const c = clientes.find(x => x.id === clienteId);
+  if (!c) return;
+  if (!document.getElementById('sol-nome').value.trim()) document.getElementById('sol-nome').value = c.nome || '';
+  if (!document.getElementById('sol-empresa').value.trim()) document.getElementById('sol-empresa').value = c.empresa || '';
+}
+
+function limparModalSolicitacao() {
+  document.getElementById('sol-cliente').value = '';
+  document.getElementById('sol-nome').value = '';
+  document.getElementById('sol-empresa').value = '';
+  document.getElementById('sol-data').value = today();
+  document.getElementById('sol-prazo').value = today();
+  document.getElementById('sol-canal').value = 'whatsapp';
+  document.getElementById('sol-prioridade').value = 'normal';
+  document.getElementById('sol-descricao').value = '';
+  document.getElementById('sol-obs').value = '';
+  delete document.getElementById('modalSolicitacao').dataset.editId;
+  document.getElementById('modal-solicitacao-title').innerHTML = '<i class="fa-solid fa-clipboard-list" style="color:var(--warning);margin-right:8px"></i>Nova Solicitação de Orçamento';
+}
+
+function salvarSolicitacaoOrcamento() {
+  const clienteId = +document.getElementById('sol-cliente').value || null;
+  const cliente = clienteId ? clientes.find(c => c.id === clienteId) : null;
+  const nome = (document.getElementById('sol-nome').value.trim() || (cliente ? cliente.nome : '')).trim();
+  const empresa = (document.getElementById('sol-empresa').value.trim() || (cliente ? cliente.empresa || '' : '')).trim();
+  const dataSolicitacao = document.getElementById('sol-data').value;
+  const prazo = document.getElementById('sol-prazo').value;
+  const descricao = document.getElementById('sol-descricao').value.trim();
+  if (!nome) { notify('Informe o nome do cliente/solicitante','#7a1a1a'); return; }
+  if (!dataSolicitacao || !prazo) { notify('Informe a data da solicitação e o prazo','#7a1a1a'); return; }
+  if (!descricao) { notify('Descreva o que foi solicitado','#7a1a1a'); return; }
+
+  const dados = {
+    clienteId,
+    nome,
+    empresa,
+    dataSolicitacao,
+    prazo,
+    canal: document.getElementById('sol-canal').value,
+    prioridade: document.getElementById('sol-prioridade').value,
+    descricao,
+    obs: document.getElementById('sol-obs').value.trim(),
+    atualizadoEm: today()
+  };
+
+  const editId = document.getElementById('modalSolicitacao').dataset.editId;
+  if (editId) {
+    const item = solicitacoesOrcamento.find(x => x.id === +editId);
+    if (item) Object.assign(item, dados);
+    notify('✓ Solicitação atualizada!','#6a4a00');
+  } else {
+    solicitacoesOrcamento.push({ id: Date.now(), ...dados, criadoEm: today() });
+    notify('✓ Solicitação registrada!','#0d3d2a');
+  }
+
+  save();
+  closeModal('modalSolicitacao');
+  limparModalSolicitacao();
+  renderDashboard(); renderSolicitacoesTabela(); renderClientes();
+}
+
+function editarSolicitacaoOrcamento(id) {
+  const sol = solicitacoesOrcamento.find(x => x.id === id);
+  if (!sol) return;
+  populateClienteSelects();
+  document.getElementById('modalSolicitacao').classList.add('open');
+  document.getElementById('modalSolicitacao').dataset.editId = id;
+  document.getElementById('modal-solicitacao-title').innerHTML = '<i class="fa-solid fa-pen" style="color:var(--warning);margin-right:8px"></i>Editar Solicitação de Orçamento';
+  document.getElementById('sol-cliente').value = sol.clienteId || '';
+  document.getElementById('sol-nome').value = sol.nome || '';
+  document.getElementById('sol-empresa').value = sol.empresa || '';
+  document.getElementById('sol-data').value = sol.dataSolicitacao || today();
+  document.getElementById('sol-prazo').value = sol.prazo || today();
+  document.getElementById('sol-canal').value = sol.canal || 'whatsapp';
+  document.getElementById('sol-prioridade').value = sol.prioridade || 'normal';
+  document.getElementById('sol-descricao').value = sol.descricao || '';
+  document.getElementById('sol-obs').value = sol.obs || '';
+}
+
+function excluirSolicitacaoOrcamento(id) {
+  if (!confirm('Excluir esta solicitação de orçamento?')) return;
+  solicitacoesOrcamento = solicitacoesOrcamento.filter(s => s.id !== id);
+  save();
+  renderSolicitacoesTabela(); renderDashboard();
+  notify('Solicitação excluída.','#7a1a1a');
+}
+
+function marcarSolicitacaoFeita(id) {
+  const sol = solicitacoesOrcamento.find(x => x.id === id);
+  if (!sol) return;
+  const dados = dadosSolicitacaoCliente(sol);
+  concluidos.push({
+    id: Date.now(),
+    tipo: 'solicitacao_orcamento',
+    clienteId: sol.clienteId || null,
+    nomeAvulso: dados.nome,
+    empresaAvulsa: dados.empresa,
+    dataOriginal: sol.prazo,
+    dataSolicitacao: sol.dataSolicitacao,
+    motivo: sol.descricao,
+    obsConclusao: sol.obs || '',
+    concluidoEm: today()
+  });
+  solicitacoesOrcamento = solicitacoesOrcamento.filter(s => s.id !== id);
+  save();
+  renderSolicitacoesTabela(); renderDashboard(); renderHistorico();
+  notify('✓ Solicitação marcada como feita!','#0d3d2a');
+}
+
+function renderSolicitacaoCards(list) {
+  const priorBadge = {normal:'badge-info', alta:'badge-warning', urgente:'badge-danger'};
+  const canalLabel = {whatsapp:'WhatsApp', telefone:'Telefone', email:'E-mail', presencial:'Presencial', videochamada:'Videochamada', outro:'Outro'};
+  return list.map(sol => {
+    const d = dadosSolicitacaoCliente(sol);
+    const atrasado = sol.prazo < today();
+    const hoje = sol.prazo === today();
+    const cardCls = atrasado ? 'atrasado' : 'solicitacao';
+    return `<div class="kanban-card ${cardCls}">
+      <div class="kanban-date">
+        <i class="fa-regular fa-calendar"></i> Prazo: ${fmtDatetime(sol.prazo)}
+        ${atrasado?'<span class="badge badge-danger" style="margin-left:4px;font-size:10.5px">Atrasada</span>':hoje?'<span class="badge badge-warning" style="margin-left:4px;font-size:10.5px">Hoje</span>':''}
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <div class="avatar ${d.avatar}" style="width:26px;height:26px;font-size:10px">${d.iniciais}</div>
+        <div>
+          <div class="kanban-client">${d.nome}</div>
+          ${d.empresa?`<div style="font-size:11px;color:var(--text3)">${d.empresa}</div>`:''}
+        </div>
+      </div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px">
+        <span class="badge ${priorBadge[sol.prioridade]||'badge-gray'}">${sol.prioridade||'normal'}</span>
+        <span class="badge badge-gray">${canalLabel[sol.canal]||sol.canal||'Canal'}</span>
+      </div>
+      ${sol.descricao?`<div class="kanban-note">${sol.descricao.length>120?sol.descricao.slice(0,120)+'…':sol.descricao}</div>`:''}
+      <div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-top:8px">
+        <button class="btn btn-warning btn-sm" title="Editar" onclick="editarSolicitacaoOrcamento(${sol.id})"><i class="fa-solid fa-pen"></i></button>
+        <button class="btn btn-success btn-sm" onclick="marcarSolicitacaoFeita(${sol.id})"><i class="fa-solid fa-check"></i> Feito</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderSolicitacoesTabela() {
+  const tb = document.getElementById('tabela-solicitacoes');
+  if (!tb) return;
+  const q = (document.getElementById('search-solicitacoes')?.value || '').trim().toLowerCase();
+  const prioridade = document.getElementById('filtro-prioridade-solicitacoes')?.value || '';
+  const apenasAtrasadas = document.getElementById('filtro-atrasadas-solicitacoes')?.checked || false;
+  const priorBadge = {normal:'badge-info', alta:'badge-warning', urgente:'badge-danger'};
+  const canalLabel = {whatsapp:'WhatsApp', telefone:'Telefone', email:'E-mail', presencial:'Presencial', videochamada:'Videochamada', outro:'Outro'};
+  let lista = [...solicitacoesOrcamento].filter(sol => {
+    const d = dadosSolicitacaoCliente(sol);
+    const hay = [d.nome, d.empresa, sol.descricao, sol.obs, sol.canal, sol.prioridade].filter(Boolean).join(' ').toLowerCase();
+    if (q && !hay.includes(q)) return false;
+    if (prioridade && sol.prioridade !== prioridade) return false;
+    if (apenasAtrasadas && !(sol.prazo < today())) return false;
+    return true;
+  }).sort((a,b) => {
+    const pr = {urgente:0, alta:1, normal:2};
+    const pa = pr[a.prioridade] ?? 3, pb = pr[b.prioridade] ?? 3;
+    if (a.prazo !== b.prazo) return a.prazo.localeCompare(b.prazo);
+    return pa - pb;
+  });
+  document.getElementById('solicitacao-count').textContent = lista.length;
+  if (!lista.length) {
+    tb.innerHTML = `<tr><td colspan="8"><div class="empty"><i class="fa-solid fa-clipboard-list"></i><p>Nenhuma solicitação de orçamento pendente.</p></div></td></tr>`;
+    return;
+  }
+  tb.innerHTML = lista.map(sol => {
+    const d = dadosSolicitacaoCliente(sol);
+    const atrasado = sol.prazo < today();
+    const hoje = sol.prazo === today();
+    return `<tr>
+      <td><div style="display:flex;align-items:center;gap:10px">
+        <div class="avatar ${d.avatar}" style="width:30px;height:30px;font-size:11px">${d.iniciais}</div>
+        <div>
+          <div class="client-name">${d.nome}</div>
+          <div class="client-email">${sol.clienteId?'Cliente cadastrado':'Sem cadastro vinculado'}</div>
+        </div>
+      </div></td>
+      <td style="color:var(--text2)">${d.empresa || '—'}</td>
+      <td>${fmtDate(sol.dataSolicitacao)}</td>
+      <td>${fmtDate(sol.prazo)} ${atrasado?'<span class="badge badge-danger" style="margin-left:4px">Atrasada</span>':hoje?'<span class="badge badge-warning" style="margin-left:4px">Hoje</span>':''}</td>
+      <td><span class="badge badge-gray">${canalLabel[sol.canal]||sol.canal||'—'}</span></td>
+      <td><span class="badge ${priorBadge[sol.prioridade]||'badge-gray'}">${sol.prioridade||'normal'}</span></td>
+      <td style="color:var(--text2);max-width:260px">${sol.descricao.length>90?sol.descricao.slice(0,90)+'…':sol.descricao}</td>
+      <td><div class="action-row">
+        <button class="btn btn-warning btn-sm" title="Editar" onclick="editarSolicitacaoOrcamento(${sol.id})"><i class="fa-solid fa-pen"></i></button>
+        <button class="btn btn-success btn-sm" title="Marcar como feito" onclick="marcarSolicitacaoFeita(${sol.id})"><i class="fa-solid fa-check"></i></button>
+        <button class="btn btn-danger btn-sm" title="Excluir" onclick="excluirSolicitacaoOrcamento(${sol.id})"><i class="fa-solid fa-trash"></i></button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
 // ===== ORÇAMENTOS =====
 function salvarOrcamento() {
   const clienteId = +document.getElementById('or-cliente').value;
@@ -2511,7 +2840,7 @@ function salvarOrcamento() {
     notify('✓ Orçamento atualizado!','#3d1f5c');
   } else {
     orcamentos.push({ id: Date.now(), clienteId, data, horario, repetir, obs: document.getElementById('or-obs').value.trim(), criadoEm: today() });
-    notify('✓ Lembrete de orçamento salvo!','#3d1f5c');
+    notify('✓ Orçamento mensal salvo!','#3d1f5c');
   }
   save(); closeModal('modalOrcamento');
   document.getElementById('or-obs').value=''; document.getElementById('or-cliente').value=''; document.getElementById('or-data').value=''; document.getElementById('or-horario-alarme').value='09:00';
@@ -2519,9 +2848,9 @@ function salvarOrcamento() {
 }
 
 function excluirOrcamento(id) {
-  if (!confirm('Excluir este lembrete de orçamento?')) return;
+  if (!confirm('Excluir este orçamento mensal?')) return;
   orcamentos = orcamentos.filter(o=>o.id!==id);
-  save(); renderOrcamentosTabela(); renderAgenda(); notify('Lembrete excluído.','#7a1a1a');
+  save(); renderOrcamentosTabela(); renderAgenda(); notify('Orçamento mensal excluído.','#7a1a1a');
 }
 
 function renderOrcamentosTabela() { renderOrcamentosTabelaFull(); }
@@ -2693,7 +3022,7 @@ function renderOrcamentosTabelaFull() {
     return !q || (c&&c.nome.toLowerCase().includes(q));
   });
   document.getElementById('orcamento-count').textContent = sorted.length;
-  if (!sorted.length) { tb.innerHTML = `<tr><td colspan="6"><div class="empty"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum lembrete cadastrado.</p></div></td></tr>`; return; }
+  if (!sorted.length) { tb.innerHTML = `<tr><td colspan="6"><div class="empty"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento mensal cadastrado.</p></div></td></tr>`; return; }
   tb.innerHTML = sorted.map(o=>{
     const c=clientes.find(x=>x.id===o.clienteId);
     const atrasado = o.data < today();
@@ -2776,7 +3105,7 @@ function renderDashboard() {
   document.getElementById('stat-clientes').textContent=clientes.length;
   document.getElementById('stat-contatos').textContent=contatos.filter(c=>c.data.startsWith(mesAtual)).length;
   document.getElementById('stat-retornos').textContent=agendamentos.filter(a=>a.data>=todayISO).length;
-  document.getElementById('stat-hoje').textContent=agendamentos.filter(a=>a.data===todayISO).length + orcamentos.filter(o=>o.data===todayISO).length;
+  document.getElementById('stat-hoje').textContent=agendamentos.filter(a=>a.data===todayISO).length + orcamentos.filter(o=>o.data===todayISO).length + solicitacoesOrcamento.filter(s=>s.prazo===todayISO).length;
 
   // ===== META SEMANAL DE CONTATOS (30/semana, seg-dom) =====
   const META_SEMANAL = 30;
@@ -2825,19 +3154,24 @@ function renderDashboard() {
   }).join(''):`<div class="empty"><i class="fa-solid fa-inbox"></i><p>Nenhum contato registrado ainda</p></div>`;
 
   // Histórico de retornos concluídos (separado de orçamentos concluídos)
-  const concluidosRetorno = [...concluidos].filter(cc=>cc.tipo!=='orcamento').sort((a,b)=>b.concluidoEm.localeCompare(a.concluidoEm));
-  const concluidosOrcamento = [...concluidos].filter(cc=>cc.tipo==='orcamento').sort((a,b)=>b.concluidoEm.localeCompare(a.concluidoEm));
+  const concluidosRetorno = [...concluidos].filter(cc=>cc.tipo==='retorno').sort((a,b)=>b.concluidoEm.localeCompare(a.concluidoEm));
+  const concluidosOrcamento = [...concluidos].filter(cc=>cc.tipo==='orcamento' || cc.tipo==='solicitacao_orcamento').sort((a,b)=>b.concluidoEm.localeCompare(a.concluidoEm));
 
   function renderConcluidoItem(cc) {
     const c=clientes.find(x=>x.id===cc.clienteId);
+    const isOrc = cc.tipo === 'orcamento';
+    const isSol = cc.tipo === 'solicitacao_orcamento';
+    const nomeExibicao = c ? c.nome : (cc.nomeAvulso || '—');
+    const tipoLabel = isSol ? 'Solicitação de orçamento' : isOrc ? 'Orçamento mensal' : 'Retorno agendado';
+    const iconCls = isSol ? 'fa-clipboard-check' : isOrc ? 'fa-file-invoice-dollar' : 'fa-phone';
     return `<div class="concluido-item">
-      <div class="concluido-icon ${cc.tipo==='orcamento'?'orcamento':''}"><i class="fa-solid ${cc.tipo==='orcamento'?'fa-file-invoice-dollar':'fa-phone'}"></i></div>
+      <div class="concluido-icon ${(isOrc||isSol)?'orcamento':''}"><i class="fa-solid ${iconCls}"></i></div>
       <div style="flex:1">
         <div style="display:flex;justify-content:space-between;margin-bottom:3px">
-          <span style="font-weight:700;font-size:13.5px">${c?c.nome:'—'}</span>
+          <span style="font-weight:700;font-size:13.5px">${nomeExibicao}</span>
           <span style="font-size:12px;color:var(--text3)">Concluído em ${fmtDate(cc.concluidoEm)}</span>
         </div>
-        <div style="font-size:11.5px;color:var(--text3);margin-bottom:4px">${cc.tipo==='orcamento'?'Lembrete de orçamento':'Retorno agendado'} — previsto para ${fmtDate(cc.dataOriginal)}</div>
+        <div style="font-size:11.5px;color:var(--text3);margin-bottom:4px">${tipoLabel} — previsto para ${fmtDate(cc.dataOriginal)}</div>
         ${cc.motivo?`<div style="font-size:12.5px;color:var(--text2);margin-bottom:4px"><i class="fa-solid fa-circle-info" style="margin-right:4px;color:var(--text3)"></i>${cc.motivo}</div>`:''}
         ${cc.obsConclusao?`<div style="font-size:12.5px;color:var(--success);background:var(--success-bg);border-radius:6px;padding:7px 10px;margin-top:4px"><i class="fa-solid fa-check" style="margin-right:5px"></i>${cc.obsConclusao}</div>`:''}
       </div>
@@ -2852,12 +3186,13 @@ function renderDashboard() {
   document.getElementById('concluidos-orcamento-count').textContent = concluidosOrcamento.length;
   document.getElementById('dash-concluidos-orcamento').innerHTML = concluidosOrcamento.length
     ? concluidosOrcamento.slice(0,8).map(renderConcluidoItem).join('')
-    : `<div class="empty"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento concluído ainda</p></div>`;
+    : `<div class="empty"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento ou solicitação concluído ainda</p></div>`;
 
-  // ===== PARA HOJE (retornos + orçamentos do dia, ordenados por horário, com ação de concluir direta) =====
+  // ===== PARA HOJE (retornos + solicitações + orçamentos do dia) =====
   const retornosHoje = agendamentos.filter(a=>a.data===todayISO).map(a=>({...a,_tipoHoje:'retorno'}));
+  const solicitacoesHoje = solicitacoesOrcamento.filter(s=>s.prazo===todayISO).map(s=>({...s,_tipoHoje:'solicitacao'}));
   const orcamentosHoje = orcamentos.filter(o=>o.data===todayISO).map(o=>({...o,_tipoHoje:'orcamento'}));
-  const todosHoje = [...retornosHoje, ...orcamentosHoje].sort((a,b)=>(a.horario||'09:00').localeCompare(b.horario||'09:00'));
+  const todosHoje = [...retornosHoje, ...solicitacoesHoje, ...orcamentosHoje].sort((a,b)=>(a.horario||'09:00').localeCompare(b.horario||'09:00'));
   const totalHoje = todosHoje.length;
   const cardHoje = document.getElementById('card-para-hoje');
   document.getElementById('hoje-count').textContent = totalHoje;
@@ -2865,17 +3200,24 @@ function renderDashboard() {
     cardHoje.style.display = 'block';
     const dashHoje = document.getElementById('dash-hoje');
     dashHoje.innerHTML = todosHoje.map(item =>
-      item._tipoHoje === 'orcamento' ? renderOrcamentoCards([item]) : renderKanbanItems([item])
+      item._tipoHoje === 'orcamento' ? renderOrcamentoCards([item]) : item._tipoHoje === 'solicitacao' ? renderSolicitacaoCards([item]) : renderKanbanItems([item])
     ).join('');
   } else {
     cardHoje.style.display = 'none';
   }
 
-  // ===== PRÓXIMOS ORÇAMENTOS DA SEMANA =====
+  // ===== SOLICITAÇÕES DE ORÇAMENTO PENDENTES =====
+  const solicitacoesAtrasadas = solicitacoesOrcamento.filter(s=>s.prazo<todayISO).sort((a,b)=>a.prazo.localeCompare(b.prazo));
+  const solicitacoesProximas = solicitacoesOrcamento.filter(s=>s.prazo>=todayISO).sort((a,b)=>a.prazo.localeCompare(b.prazo)).slice(0,6);
+  const solicitacoesPainel = [...solicitacoesAtrasadas.map(s=>({...s,_atrasado:true})), ...solicitacoesProximas].slice(0,8);
+  const dashSol = document.getElementById('dash-solicitacoes-pendentes');
+  if (dashSol) dashSol.innerHTML = solicitacoesPainel.length ? renderSolicitacaoCards(solicitacoesPainel) : `<div class="empty" style="grid-column:1/-1"><i class="fa-solid fa-clipboard-list"></i><p>Nenhuma solicitação pendente</p></div>`;
+
+  // ===== PRÓXIMOS ORÇAMENTOS MENSAIS DA SEMANA =====
   const fimSemana = addDays(todayISO, 7);
   const orcamentosSemana = orcamentos.filter(o=>o.data>=todayISO && o.data<=fimSemana).sort((a,b)=>a.data.localeCompare(b.data));
   const dashOrcSemana = document.getElementById('dash-orcamentos-semana');
-  dashOrcSemana.innerHTML = orcamentosSemana.length ? renderOrcamentoCards(orcamentosSemana) : `<div class="empty" style="grid-column:1/-1"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento esta semana</p></div>`;
+  dashOrcSemana.innerHTML = orcamentosSemana.length ? renderOrcamentoCards(orcamentosSemana) : `<div class="empty" style="grid-column:1/-1"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento mensal esta semana</p></div>`;
 
   document.getElementById('dash-date').textContent=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 }
@@ -3164,6 +3506,19 @@ function exportarExcel() {
     closeModal('modalExportarPdf');
     notify('✓ Exportado!','#0d3d2a'); return;
   }
+  if (tipo === 'solicitacoes') {
+    let lista = [...solicitacoesOrcamento];
+    if (range) lista = lista.filter(sol => sol.prazo >= range[0] && sol.prazo <= range[1]);
+    lista.sort((a,b)=>a.prazo.localeCompare(b.prazo));
+    const header = ['Prazo','Data da Solicitação','Cliente/Solicitante','Empresa','Canal','Prioridade','Descrição','Observações','Vinculado a Cliente'];
+    const rows = [header, ...lista.map(sol => {
+      const d = dadosSolicitacaoCliente(sol);
+      return [fmtDate(sol.prazo), fmtDate(sol.dataSolicitacao), d.nome, d.empresa||'', sol.canal||'', sol.prioridade||'normal', sol.descricao||'', sol.obs||'', sol.clienteId?'Sim':'Não'];
+    })];
+    downloadCSV(`solicitacoes_orcamento_${today()}.csv`, rows);
+    closeModal('modalExportarPdf');
+    notify('✓ Exportado!','#0d3d2a'); return;
+  }
   if (tipo === 'orcamentos') {
     let lista = [...orcamentos];
     if (range) lista = lista.filter(o => o.data >= range[0] && o.data <= range[1]);
@@ -3230,6 +3585,7 @@ function renderResumoHistoricoCliente(clienteId) {
   const retornosPendentes = agendamentos.filter(a => a.clienteId === clienteId && a.data >= todayISO).length;
   const retornosAtrasados = agendamentos.filter(a => a.clienteId === clienteId && a.data < todayISO).length;
   const orcamentosPendentes = orcamentos.filter(o => o.clienteId === clienteId).length;
+  const solicitacoesPendentes = solicitacoesOrcamento.filter(sol => sol.clienteId === clienteId).length;
   const concluidosCliente = concluidos.filter(cc => cc.clienteId === clienteId).length;
   const alteracoesCliente = historicoClientes.filter(h => h.clienteId === clienteId).length;
   const ultimo = ultimoContato(clienteId);
@@ -3237,7 +3593,8 @@ function renderResumoHistoricoCliente(clienteId) {
     <div class="client-history-stat"><div class="client-history-stat-label">Contatos</div><div class="client-history-stat-value">${contatosCliente.length}</div></div>
     <div class="client-history-stat"><div class="client-history-stat-label">Último contato</div><div class="client-history-stat-value" style="font-size:15px">${ultimo ? fmtDate(ultimo.data) : '—'}</div></div>
     <div class="client-history-stat"><div class="client-history-stat-label">Retornos pendentes</div><div class="client-history-stat-value">${retornosPendentes}${retornosAtrasados ? ` <span style="font-size:11px;color:var(--danger)">+${retornosAtrasados} atras.</span>` : ''}</div></div>
-    <div class="client-history-stat"><div class="client-history-stat-label">Orçamentos pendentes</div><div class="client-history-stat-value">${orcamentosPendentes}</div></div>
+    <div class="client-history-stat"><div class="client-history-stat-label">Solicitações</div><div class="client-history-stat-value">${solicitacoesPendentes}</div></div>
+    <div class="client-history-stat"><div class="client-history-stat-label">Orçamentos mensais</div><div class="client-history-stat-value">${orcamentosPendentes}</div></div>
     <div class="client-history-stat"><div class="client-history-stat-label">Concluídos</div><div class="client-history-stat-value">${concluidosCliente}</div></div>
     <div class="client-history-stat"><div class="client-history-stat-label">Alterações</div><div class="client-history-stat-value">${alteracoesCliente}</div></div>
   </div>`;
@@ -3325,13 +3682,32 @@ function renderHistoricoCompletoCliente(clienteId) {
     });
   });
 
+  solicitacoesOrcamento.filter(sol => sol.clienteId === clienteId).forEach(sol => {
+    const atrasado = sol.prazo < todayISO;
+    const hoje = sol.prazo === todayISO;
+    eventos.push({
+      tipo: 'solicitacao',
+      icon: atrasado ? 'fa-triangle-exclamation' : 'fa-clipboard-list',
+      title: atrasado ? 'Solicitação de orçamento atrasada' : hoje ? 'Solicitação de orçamento para hoje' : 'Solicitação de orçamento pendente',
+      data: sol.prazo || sol.dataSolicitacao || todayISO,
+      hora: '',
+      badges: [
+        { text: atrasado ? 'Atrasada' : hoje ? 'Hoje' : 'Pendente', className: atrasado ? 'badge-danger' : hoje ? 'badge-warning' : 'badge-info' },
+        { text: sol.prioridade || 'normal', className: sol.prioridade === 'urgente' ? 'badge-danger' : sol.prioridade === 'alta' ? 'badge-warning' : 'badge-gray' }
+      ],
+      meta: sol.dataSolicitacao ? `Solicitado em ${fmtDate(sol.dataSolicitacao)}${sol.canal ? ' • ' + sol.canal : ''}` : '',
+      desc: [sol.descricao || 'Solicitação registrada.', sol.obs ? `Obs.: ${sol.obs}` : ''].filter(Boolean).join('\\n'),
+      actions: `<button class="btn btn-success btn-sm" onclick="marcarSolicitacaoFeita(${sol.id})"><i class="fa-solid fa-check"></i> Feito</button><button class="btn btn-warning btn-sm" onclick="editarSolicitacaoOrcamento(${sol.id})"><i class="fa-solid fa-pen"></i> Editar</button><button class="btn btn-danger btn-sm" onclick="excluirSolicitacaoOrcamento(${sol.id})"><i class="fa-solid fa-trash"></i> Excluir</button>`
+    });
+  });
+
   orcamentos.filter(o => o.clienteId === clienteId).forEach(o => {
     const atrasado = o.data < todayISO;
     const hoje = o.data === todayISO;
     eventos.push({
       tipo: 'orcamento',
       icon: 'fa-file-invoice-dollar',
-      title: atrasado ? 'Orçamento atrasado' : hoje ? 'Orçamento para hoje' : 'Lembrete de orçamento',
+      title: atrasado ? 'Orçamento mensal atrasado' : hoje ? 'Orçamento mensal para hoje' : 'Orçamento mensal',
       data: o.data || todayISO,
       hora: o.horario || '09:00',
       badges: [
@@ -3339,22 +3715,23 @@ function renderHistoricoCompletoCliente(clienteId) {
         ...(o.repetir ? [{ text: 'Recorrente', className: 'badge-gray', icon: 'fa-rotate-right' }] : [])
       ],
       meta: o.criadoEm ? `Criado em ${fmtDate(o.criadoEm)}` : '',
-      desc: o.obs || 'Lembrete de orçamento mensal.',
+      desc: o.obs || 'Orçamento mensal recorrente.',
       actions: `<button class="btn btn-success btn-sm" onclick="marcarFeitoOrcamento(${o.id})"><i class="fa-solid fa-check"></i> Concluir</button><button class="btn btn-warning btn-sm" onclick="editarOrcamento(${o.id})"><i class="fa-solid fa-pen"></i> Editar</button><button class="btn btn-danger btn-sm" onclick="excluirOrcamento(${o.id})"><i class="fa-solid fa-trash"></i> Excluir</button>`
     });
   });
 
   concluidos.filter(cc => cc.clienteId === clienteId).forEach(cc => {
     const isOrc = cc.tipo === 'orcamento';
+    const isSol = cc.tipo === 'solicitacao_orcamento';
     eventos.push({
       tipo: 'concluido',
-      icon: isOrc ? 'fa-file-circle-check' : 'fa-circle-check',
-      title: isOrc ? 'Orçamento concluído' : 'Retorno concluído',
+      icon: isSol ? 'fa-clipboard-check' : isOrc ? 'fa-file-circle-check' : 'fa-circle-check',
+      title: isSol ? 'Solicitação de orçamento feita' : isOrc ? 'Orçamento mensal concluído' : 'Retorno concluído',
       data: cc.concluidoEm || cc.dataOriginal || todayISO,
       hora: '',
       badges: [{ text: 'Concluído', className: 'badge-success', icon: 'fa-check' }],
       meta: cc.dataOriginal ? `Previsto originalmente para ${fmtDate(cc.dataOriginal)}` : '',
-      desc: [cc.motivo, cc.obsConclusao ? `Conclusão: ${cc.obsConclusao}` : ''].filter(Boolean).join('\n') || 'Registro concluído.'
+      desc: [cc.motivo, cc.obsConclusao ? `Conclusão: ${cc.obsConclusao}` : ''].filter(Boolean).join('\\n') || 'Registro concluído.'
     });
   });
 
@@ -3557,12 +3934,44 @@ function exportarPdf() {
     doc.save(`relatorio_retornos_${today()}.pdf`);
   }
 
+  if (tipo === 'solicitacoes') {
+    let lista = [...solicitacoesOrcamento];
+    if (range) lista = lista.filter(sol => sol.prazo >= range[0] && sol.prazo <= range[1]);
+    lista.sort((a,b)=>a.prazo.localeCompare(b.prazo));
+    const header = ['Prazo','Data da Solicitação','Cliente/Solicitante','Empresa','Canal','Prioridade','Descrição','Observações','Vinculado a Cliente'];
+    const rows = [header, ...lista.map(sol => {
+      const d = dadosSolicitacaoCliente(sol);
+      return [fmtDate(sol.prazo), fmtDate(sol.dataSolicitacao), d.nome, d.empresa||'', sol.canal||'', sol.prioridade||'normal', sol.descricao||'', sol.obs||'', sol.clienteId?'Sim':'Não'];
+    })];
+    downloadCSV(`solicitacoes_orcamento_${today()}.csv`, rows);
+    closeModal('modalExportarPdf');
+    notify('✓ Exportado!','#0d3d2a'); return;
+  }
+  if (tipo === 'solicitacoes') {
+    let lista = [...solicitacoesOrcamento];
+    if (range) lista = lista.filter(sol => sol.prazo >= range[0] && sol.prazo <= range[1]);
+    if (!lista.length) { notify('Nenhuma solicitação no período selecionado','#7a1a1a'); return; }
+    lista.sort((a,b)=>a.prazo.localeCompare(b.prazo));
+    pdfHeader(doc, 'Relatório de Solicitações de Orçamento' + (range?` (${fmtDate(range[0])} a ${fmtDate(range[1])})`:''));
+    const body = lista.map(sol => {
+      const d = dadosSolicitacaoCliente(sol);
+      return [fmtDate(sol.prazo), fmtDate(sol.dataSolicitacao), d.nome, d.empresa||'—', sol.canal||'—', sol.prioridade||'normal', sol.descricao||'—'];
+    });
+    doc.autoTable({
+      head: [['Prazo','Solicitado em','Cliente/Solicitante','Empresa','Canal','Prioridade','Descrição']],
+      body, startY: 28, theme:'striped', headStyles:{fillColor:[245,166,35]}, styles:{fontSize:8.5},
+      columnStyles:{6:{cellWidth:90}}
+    });
+    pdfFooter(doc);
+    doc.save(`relatorio_solicitacoes_orcamento_${today()}.pdf`);
+  }
+
   if (tipo === 'orcamentos') {
     let lista = [...orcamentos];
     if (range) lista = lista.filter(o => o.data >= range[0] && o.data <= range[1]);
     if (!lista.length) { notify('Nenhum orçamento no período selecionado','#7a1a1a'); return; }
     lista.sort((a,b)=>a.data.localeCompare(b.data));
-    pdfHeader(doc, 'Relatório de Lembretes de Orçamento' + (range?` (${fmtDate(range[0])} a ${fmtDate(range[1])})`:''));
+    pdfHeader(doc, 'Relatório de Orçamentos Mensais' + (range?` (${fmtDate(range[0])} a ${fmtDate(range[1])})`:''));
     const body = lista.map(o => {
       const c = clientes.find(x=>x.id===o.clienteId);
       return [fmtDate(o.data), o.horario||'09:00', c?c.nome:'—', c?c.empresa||'—':'—', o.repetir?'Sim':'Não', o.obs||'—'];
@@ -3608,6 +4017,7 @@ async function initApp() {
   renderClientes();
   renderAgenda();
   renderHistorico();
+  renderSolicitacoesTabela();
   renderOrcamentosTabela();
 }
 
