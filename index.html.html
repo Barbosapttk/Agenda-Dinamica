@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
@@ -919,6 +920,35 @@ body.auth-locked .auth-screen { display: flex; }
   .auth-user-pill { display: none; }
 }
 
+/* ===== NOVAS FUNÇÕES COMERCIAIS ===== */
+.fixed-note-card { background: var(--warning-bg); border: 1px solid rgba(245,166,35,0.28); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 16px; color: var(--warning); font-size: 12.8px; line-height: 1.45; }
+.fixed-note-card .fixed-note-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .7px; margin-bottom: 6px; color: var(--warning); display:flex; align-items:center; gap:6px; }
+.quick-actions-client { display:flex; gap:7px; flex-wrap:wrap; margin-bottom:20px; }
+.client-history-summary { display:grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap:8px; margin: 12px 0 14px; }
+.client-history-stat { background: var(--surface2); border:1px solid var(--border); border-radius: var(--radius-sm); padding:9px 10px; }
+.client-history-stat-label { color: var(--text3); font-size:10.5px; text-transform:uppercase; letter-spacing:.6px; font-weight:800; }
+.client-history-stat-value { color: var(--text); font-size:18px; font-weight:800; margin-top:3px; }
+.client-timeline { display:flex; flex-direction:column; gap:10px; margin-top: 10px; }
+.client-timeline-item { display:grid; grid-template-columns: 32px 1fr; gap:10px; padding: 12px; border:1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface2); }
+.client-timeline-icon { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:var(--accent-light); color:var(--accent); font-size:12px; }
+.client-timeline-icon.orcamento, .client-timeline-icon.solicitacao, .client-timeline-icon.solicitacao_orcamento { background:var(--warning-bg); color:var(--warning); }
+.client-timeline-icon.concluido { background:var(--success-bg); color:var(--success); }
+.client-timeline-icon.cadastro { background:var(--accent-light); color:var(--accent); }
+.client-timeline-icon.alteracao { background:var(--purple-bg); color:var(--purple); }
+.client-timeline-head { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:4px; }
+.client-timeline-title { font-weight:800; font-size:13px; color:var(--text); }
+.client-timeline-date { font-size:11.5px; color:var(--text3); white-space:nowrap; }
+.client-timeline-meta { display:flex; gap:5px; flex-wrap:wrap; margin:4px 0 6px; }
+.client-timeline-desc { font-size:12.5px; color:var(--text2); line-height:1.45; white-space:pre-line; }
+.client-timeline-actions { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+.agenda-filters { display:flex; gap:7px; flex-wrap:wrap; margin-top:12px; padding-top:12px; border-top:1px solid var(--border); }
+.agenda-filter-pill { display:flex; align-items:center; gap:6px; border:1px solid var(--border); background:var(--surface2); color:var(--text2); border-radius:20px; padding:5px 10px; font-size:11.5px; font-weight:700; cursor:pointer; user-select:none; }
+.agenda-filter-pill input { width:auto !important; }
+.cal-day.has-solicitacao::before { content: ''; width: 5px; height: 5px; background: var(--warning); border-radius: 50%; position: absolute; bottom: 4px; left: calc(50% - 13px); }
+.cal-day.has-concluido span.cal-concluido-dot { width:5px; height:5px; background:var(--success); border-radius:50%; position:absolute; bottom:4px; left:calc(50% + 10px); }
+.backup-actions { display:grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap:8px; margin-top:10px; }
+@media (max-width: 760px) { .backup-actions { grid-template-columns:1fr; } .client-history-summary { grid-template-columns:1fr 1fr; } .quick-actions-client .btn { flex:1 1 100%; justify-content:center; } }
+
 </style>
 </head>
 <body class="auth-locked">
@@ -984,6 +1014,9 @@ body.auth-locked .auth-screen { display: flex; }
   </button>
   <button class="btn btn-ghost btn-sm" onclick="openModal('modalExportarPdf')" style="flex-shrink:0" title="Exportar dados">
     <i class="fa-solid fa-file-export"></i> Exportar
+  </button>
+  <button class="btn btn-ghost btn-sm" onclick="baixarBackupJson()" style="flex-shrink:0" title="Backup completo em JSON">
+    <i class="fa-solid fa-database"></i> Backup
   </button>
   <button class="btn btn-ghost btn-sm" onclick="openModal('modalAtalhos')" title="Atalhos de teclado" style="flex-shrink:0">
     <i class="fa-regular fa-keyboard"></i>
@@ -1054,6 +1087,16 @@ body.auth-locked .auth-screen { display: flex; }
         <div class="stat-label">Vence Hoje</div>
         <i class="fa-solid fa-bell stat-icon" style="color:var(--danger)"></i>
         <div class="stat-value" id="stat-hoje">0</div>
+      </div>
+      <div class="stat-card" style="--stat-color:var(--warning)">
+        <div class="stat-label">Solicitações Pendentes</div>
+        <i class="fa-solid fa-clipboard-list stat-icon" style="color:var(--warning)"></i>
+        <div class="stat-value" id="stat-solicitacoes">0</div>
+      </div>
+      <div class="stat-card" style="--stat-color:var(--danger)">
+        <div class="stat-label">Solicitações Atrasadas</div>
+        <i class="fa-solid fa-triangle-exclamation stat-icon" style="color:var(--danger)"></i>
+        <div class="stat-value" id="stat-solicitacoes-atrasadas">0</div>
       </div>
     </div>
     <div class="card" style="margin-bottom:20px">
@@ -1164,8 +1207,17 @@ body.auth-locked .auth-screen { display: flex; }
           <div class="cal-grid" id="cal-day-names"></div>
           <div class="cal-grid" id="cal-grid" style="margin-top:5px"></div>
           <div style="display:flex;flex-direction:column;gap:6px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:11.5px;color:var(--text2)">
-            <div style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:var(--warning);display:inline-block"></span> Retorno agendado</div>
+            <div style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:var(--warning);display:inline-block"></span> Solicitação / Retorno</div>
             <div style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:var(--purple);display:inline-block"></span> Orçamento mensal</div>
+            <div style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:var(--success);display:inline-block"></span> Concluído</div>
+          </div>
+          <div class="agenda-filters">
+            <label class="agenda-filter-pill"><input type="checkbox" id="cal-filter-retornos" checked onchange="renderAgenda()"> Retornos</label>
+            <label class="agenda-filter-pill"><input type="checkbox" id="cal-filter-solicitacoes" checked onchange="renderAgenda()"> Solicitações</label>
+            <label class="agenda-filter-pill"><input type="checkbox" id="cal-filter-orcamentos" checked onchange="renderAgenda()"> Orçamentos</label>
+            <label class="agenda-filter-pill"><input type="checkbox" id="cal-filter-atrasados" checked onchange="renderAgenda()"> Atrasados</label>
+            <label class="agenda-filter-pill"><input type="checkbox" id="cal-filter-concluidos" checked onchange="renderAgenda()"> Concluídos</label>
+            <label class="agenda-filter-pill"><input type="checkbox" id="cal-filter-alta" checked onchange="renderAgenda()"> Alta prioridade</label>
           </div>
         </div>
       </div>
@@ -1194,6 +1246,15 @@ body.auth-locked .auth-screen { display: flex; }
       <div class="card-header" style="flex-wrap:wrap;gap:10px">
         <div class="card-title">Solicitações de Orçamento <span id="solicitacao-count" class="badge badge-warning" style="margin-left:6px">0</span></div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <select id="filtro-situacao-solicitacoes" onchange="renderSolicitacoesTabela()" style="width:auto;min-width:150px;padding:6px 10px;font-size:12.5px">
+            <option value="pendentes">Situação: Pendentes</option>
+            <option value="todas">Todas pendentes</option>
+            <option value="hoje">Para hoje</option>
+            <option value="atrasadas">Atrasadas</option>
+            <option value="urgentes">Urgentes</option>
+            <option value="sem_cliente">Sem cliente vinculado</option>
+            <option value="concluidas">Concluídas</option>
+          </select>
           <select id="filtro-prioridade-solicitacoes" onchange="renderSolicitacoesTabela()" style="width:auto;min-width:140px;padding:6px 10px;font-size:12.5px">
             <option value="">Prioridade: Todas</option>
             <option value="normal">Normal</option>
@@ -1219,6 +1280,7 @@ body.auth-locked .auth-screen { display: flex; }
             <th>Prazo</th>
             <th>Canal</th>
             <th>Prioridade</th>
+            <th>Produto/Serviço</th>
             <th>Solicitação</th>
             <th>Ações</th>
           </tr>
@@ -1288,9 +1350,17 @@ body.auth-locked .auth-screen { display: flex; }
       <div id="dash-concluidos-retorno"></div>
     </div>
 
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-header">
+        <div class="card-title"><i class="fa-solid fa-clipboard-check" style="color:var(--warning)"></i> Histórico de Solicitações Concluídas</div>
+        <span id="concluidos-solicitacao-count" class="badge badge-gray">0</span>
+      </div>
+      <div id="dash-concluidos-solicitacao"></div>
+    </div>
+
     <div class="card">
       <div class="card-header">
-        <div class="card-title"><i class="fa-solid fa-circle-check" style="color:var(--purple)"></i> Histórico de Orçamentos/Solicitações Concluídos</div>
+        <div class="card-title"><i class="fa-solid fa-circle-check" style="color:var(--purple)"></i> Histórico de Orçamentos Mensais Concluídos</div>
         <span id="concluidos-orcamento-count" class="badge badge-gray">0</span>
       </div>
       <div id="dash-concluidos-orcamento"></div>
@@ -1374,6 +1444,7 @@ body.auth-locked .auth-screen { display: flex; }
           <label>Equipamentos do Cliente</label>
           <textarea id="c-equipamentos" placeholder="Descreva os equipamentos do cliente..."></textarea>
         </div>
+        <div class="form-group full"><label>Observação Importante Fixa</label><textarea id="c-obs-importante" placeholder="Ex: Só fala com financeiro; pedir pedido de compra antes de faturar; exige orçamento formal em PDF..."></textarea></div>
         <div class="form-group full"><label>Observações</label><textarea id="c-obs" placeholder="Informações relevantes sobre o cliente..."></textarea></div>
         <div class="form-group full">
           <label>Anexar PDF</label>
@@ -1414,6 +1485,12 @@ body.auth-locked .auth-screen { display: flex; }
             <option value="presencial">Presencial</option>
             <option value="videochamada">Videochamada</option>
           </select>
+        </div>
+        <div class="form-group full" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px">
+          <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:13px;color:var(--text);cursor:pointer">
+            <input type="checkbox" id="ct-sem-resposta" style="width:auto"> Tentativa sem resposta
+          </label>
+          <div style="font-size:11.5px;color:var(--text3);margin-top:4px">Marque quando você tentou contato e o cliente não respondeu. Isso entra no contador do cliente.</div>
         </div>
         <div class="form-group full"><label>O que foi tratado *</label><textarea id="ct-descricao" placeholder="Descreva o que foi discutido, acordos firmados, próximos passos..."></textarea></div>
         <div class="form-group full">
@@ -1524,8 +1601,10 @@ body.auth-locked .auth-screen { display: flex; }
         <div class="form-group full"><label>Cliente cadastrado (opcional)</label>
           <select id="sol-cliente" onchange="preencherDadosSolicitacaoCliente()"><option value="">Não atrelar a cliente cadastrado</option></select>
         </div>
-        <div class="form-group"><label>Nome do cliente/solicitante *</label><input type="text" id="sol-nome" placeholder="Ex: João / Hospital São Lucas"></div>
+        <div class="form-group"><label>Cliente/Empresa *</label><input type="text" id="sol-nome" placeholder="Ex: Hospital São Lucas / João"></div>
+        <div class="form-group"><label>Solicitante / Responsável</label><input type="text" id="sol-solicitante" placeholder="Ex: João do financeiro"></div>
         <div class="form-group"><label>Empresa</label><input type="text" id="sol-empresa" placeholder="Ex: Hospital São Lucas"></div>
+        <div class="form-group"><label>Produto/Serviço Solicitado</label><input type="text" id="sol-produto" placeholder="Ex: Calibração, manutenção, peça X..."></div>
         <div class="form-group"><label>Data da solicitação *</label><input type="date" id="sol-data"></div>
         <div class="form-group"><label>Prazo para fazer *</label><input type="date" id="sol-prazo"></div>
         <div class="form-group"><label>Canal da solicitação</label>
@@ -1702,6 +1781,7 @@ body.auth-locked .auth-screen { display: flex; }
             <option value="retornos">Atividades Programadas</option>
             <option value="solicitacoes">Solicitações de Orçamento</option>
             <option value="orcamentos">Orçamentos Mensais</option>
+            <option value="relatorio_mensal">Relatório Mensal Completo</option>
           </select>
         </div>
         <div class="form-group full" id="pdf-periodo-wrap">
@@ -1719,6 +1799,16 @@ body.auth-locked .auth-screen { display: flex; }
         </div>
         <div class="form-group" id="pdf-data-fim-wrap" style="display:none">
           <label>Até</label><input type="date" id="pdf-data-fim">
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="form-group full" id="backup-actions-exportar">
+        <label>Backup completo</label>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:8px">Baixe uma cópia de segurança de todos os dados do sistema.</div>
+        <div class="backup-actions">
+          <button class="btn btn-ghost" onclick="baixarBackupJson()"><i class="fa-solid fa-file-code"></i> JSON</button>
+          <button class="btn btn-ghost" onclick="baixarBackupCsv()"><i class="fa-solid fa-file-csv"></i> CSV</button>
+          <button class="btn btn-ghost" onclick="baixarBackupXlsx()"><i class="fa-solid fa-file-excel"></i> XLSX</button>
         </div>
       </div>
     </div>
@@ -2110,6 +2200,7 @@ function openModal(id) {
   if (id==='modalContato' || id==='modalAgendamento' || id==='modalSolicitacao' || id==='modalOrcamento') populateClienteSelects();
   if (id==='modalContato') {
     document.getElementById('ct-data').value = today();
+    document.getElementById('ct-sem-resposta').checked = false;
     preencherHorarioAlarme('ct-horario-alarme', 'ct-retorno');
   }
   if (id==='modalAgendamento' && !document.getElementById('modalAgendamento').dataset.editId) {
@@ -2120,7 +2211,9 @@ function openModal(id) {
     document.getElementById('modal-solicitacao-title').textContent = 'Nova Solicitação de Orçamento';
     document.getElementById('sol-cliente').value = '';
     document.getElementById('sol-nome').value = '';
+    document.getElementById('sol-solicitante').value = '';
     document.getElementById('sol-empresa').value = '';
+    document.getElementById('sol-produto').value = '';
     document.getElementById('sol-data').value = today();
     document.getElementById('sol-prazo').value = today();
     document.getElementById('sol-canal').value = 'whatsapp';
@@ -2140,6 +2233,9 @@ function openModal(id) {
     pdfsTempCliente = [];
     document.getElementById('c-pdf-list').innerHTML = '';
     document.getElementById('modal-cliente-title').textContent = 'Novo Cliente';
+    if (!document.getElementById('modalCliente').dataset.fromSolicitacaoId) {
+      document.getElementById('c-obs-importante').value = '';
+    }
   }
   if (id==='modalExportarPdf') {
     document.getElementById('pdf-tipo').value = 'clientes';
@@ -2153,7 +2249,7 @@ function openModal(id) {
 function closeModal(id) {
   document.getElementById(id).classList.remove('open');
   delete document.getElementById(id).dataset.editId;
-  if (id==='modalCliente') editClienteId = null;
+  if (id==='modalCliente') { editClienteId = null; delete document.getElementById('modalCliente').dataset.fromSolicitacaoId; }
 }
 document.querySelectorAll('.modal-overlay').forEach(el =>
   el.addEventListener('click', e => { if(e.target===el) { el.classList.remove('open'); delete el.dataset.editId; if(el.id==='modalCliente') editClienteId=null; } })
@@ -2219,19 +2315,34 @@ function salvarCliente() {
     pedidoCompra: pedidoVal,
     status: document.getElementById('c-status').value,
     equipamentos: document.getElementById('c-equipamentos').value.trim(),
+    obsImportante: document.getElementById('c-obs-importante').value.trim(),
     obs: document.getElementById('c-obs').value.trim(),
     anexos: [...pdfsTempCliente]
   };
+  let clienteSalvoId = editClienteId;
   if (editClienteId !== null) {
     const idx = clientes.findIndex(c=>c.id===editClienteId);
     if (idx !== -1) {
       const anterior = { ...clientes[idx] };
       clientes[idx] = { ...clientes[idx], ...dadosBase };
       registrarAlteracoesCliente(anterior, clientes[idx]);
+      clienteSalvoId = clientes[idx].id;
     }
     notify('✓ Cliente atualizado!', '#0d3d2a');
   } else {
-    clientes.push({ id: Date.now(), ...dadosBase, criadoEm: today() });
+    const novoCliente = { id: Date.now(), ...dadosBase, criadoEm: today() };
+    clientes.push(novoCliente);
+    clienteSalvoId = novoCliente.id;
+    const solId = +document.getElementById('modalCliente').dataset.fromSolicitacaoId || null;
+    if (solId) {
+      const sol = solicitacoesOrcamento.find(x => x.id === solId);
+      if (sol) {
+        sol.clienteId = clienteSalvoId;
+        sol.nome = novoCliente.nome;
+        sol.empresa = novoCliente.empresa || sol.empresa || '';
+        sol.atualizadoEm = today();
+      }
+    }
     notify('✓ Cliente cadastrado!', '#0d3d2a');
   }
   save();
@@ -2245,7 +2356,8 @@ function salvarCliente() {
   document.querySelectorAll('input[name="c-pedido"]')[1].checked = true;
   pdfsTempCliente = []; editClienteId = null;
   document.getElementById('c-pdf-list').innerHTML = '';
-  renderDashboard(); renderClientes();
+  renderDashboard(); renderClientes(); renderSolicitacoesTabela();
+  if (clienteSalvoId) abrirDetalhe(clienteSalvoId);
 }
 
 function editarCliente(id) {
@@ -2264,6 +2376,7 @@ function editarCliente(id) {
   document.getElementById('c-estado').value = c.estado || '';
   document.getElementById('c-status').value = c.status || 'ativo';
   document.getElementById('c-equipamentos').value = c.equipamentos || '';
+  document.getElementById('c-obs-importante').value = c.obsImportante || '';
   document.getElementById('c-obs').value = c.obs || '';
   document.querySelector(`input[name="c-final"][value="${c.clienteFinal==='sim'?'sim':'nao'}"]`).checked = true;
   document.querySelector(`input[name="c-ie"][value="${c.inscricaoEstadual==='sim'?'sim':'nao'}"]`).checked = true;
@@ -2423,27 +2536,28 @@ function ultimoContato(clienteId) {
 }
 
 function excluirCliente(id) {
-  if (!confirm('Excluir este cliente e todos os seus registros?')) return;
+  if (!confirm('Excluir este cliente e todos os seus registros vinculados?')) return;
   clientes = clientes.filter(c=>c.id!==id);
   contatos = contatos.filter(c=>c.clienteId!==id);
   agendamentos = agendamentos.filter(a=>a.clienteId!==id);
-  save(); renderClientes(); renderDashboard(); notify('Cliente excluído.','#7a1a1a');
+  orcamentos = orcamentos.filter(o=>o.clienteId!==id);
+  solicitacoesOrcamento = solicitacoesOrcamento.map(s => s.clienteId===id ? {...s, clienteId:null} : s);
+  save(); renderClientes(); renderDashboard(); renderSolicitacoesTabela(); notify('Cliente excluído. Solicitações avulsas foram mantidas sem vínculo.','#7a1a1a');
 }
 
 function openContatoFor(id) { openModal('modalContato'); setTimeout(()=>{ document.getElementById('ct-cliente').value=id; },10); }
 function openAgendamentoFor(id) { openModal('modalAgendamento'); setTimeout(()=>{ document.getElementById('ag-cliente').value=id; },10); }
 function openOrcamentoFor(id) { openModal('modalOrcamento'); setTimeout(()=>{ document.getElementById('or-cliente').value=id; },10); }
+function openSolicitacaoFor(id) { openModal('modalSolicitacao'); setTimeout(()=>{ document.getElementById('sol-cliente').value=id; preencherDadosSolicitacaoCliente(); },10); }
 
 // ===== DETALHE CLIENTE =====
 function abrirDetalhe(id) {
   const c = clientes.find(x=>x.id===id);
   if (!c) return;
-  const cs = contatos.filter(x=>x.clienteId===id).sort((a,b)=>b.data.localeCompare(a.data));
-  const ags = agendamentos.filter(x=>x.clienteId===id && x.data>=today()).sort((a,b)=>a.data.localeCompare(b.data));
   const statusBadge = {ativo:'badge-success',prospecto:'badge-info',inativo:'badge-gray'};
   const statusLabel = {ativo:'Ativo',prospecto:'Prospecto',inativo:'Inativo'};
-  const canalIcon = {telefone:'fa-phone',whatsapp:'fa-brands fa-whatsapp',email:'fa-envelope',presencial:'fa-handshake',videochamada:'fa-video'};
   const esquecido = isClienteEsquecido(c.id);
+  const tentativasSemResposta = contatos.filter(ct => ct.clienteId===id && ct.semResposta).length;
   document.getElementById('detalhe-content').innerHTML = `
     <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;padding-top:8px">
       <div class="avatar ${avColor(c.id)}" style="width:52px;height:52px;font-size:18px">${initials(c.nome)}</div>
@@ -2457,10 +2571,12 @@ function abrirDetalhe(id) {
           ${c.clienteFinal==='sim'?'<span class="badge badge-info">Cliente Final</span>':''}
           ${c.inscricaoEstadual==='sim'?'<span class="badge badge-gray">Insc. Estadual</span>':''}
           ${c.pedidoCompra==='sim'?'<span class="badge badge-success"><i class="fa-solid fa-cart-shopping" style="margin-right:3px"></i>Pedido de Compra</span>':''}
+          ${tentativasSemResposta?`<span class="badge badge-danger"><i class="fa-solid fa-phone-slash" style="margin-right:3px"></i>${tentativasSemResposta} tentativa${tentativasSemResposta>1?'s':''} sem resposta</span>`:''}
           ${esquecido?'<span class="badge badge-esquecido"><i class="fa-solid fa-clock" style="margin-right:3px"></i>Sem contato há +15 dias</span>':''}
         </div>
       </div>
     </div>
+    ${c.obsImportante?`<div class="fixed-note-card"><div class="fixed-note-title"><i class="fa-solid fa-thumbtack"></i>Observação importante fixa</div>${c.obsImportante}</div>`:''}
     <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px;margin-bottom:16px;font-size:13px;display:flex;flex-direction:column;gap:7px">
       ${c.cnpj?`<div><i class="fa-solid fa-id-card" style="width:18px;color:var(--text3)"></i> ${c.cnpj}</div>`:''}
       ${c.telefone?`<div style="display:flex;align-items:center;justify-content:space-between"><span><i class="fa-solid fa-phone" style="width:18px;color:var(--text3)"></i> ${c.telefone}</span><a href="https://wa.me/55${c.telefone.replace(/\D/g,'')}" target="_blank" style="color:#25d366;font-size:14px"><i class="fa-brands fa-whatsapp"></i></a></div>`:''}
@@ -2470,17 +2586,21 @@ function abrirDetalhe(id) {
     ${c.obs?`<div style="background:var(--warning-bg);border:1px solid rgba(245,166,35,0.2);border-radius:var(--radius-sm);padding:10px;margin-bottom:16px;font-size:12.5px;color:var(--warning)"><i class="fa-solid fa-note-sticky" style="margin-right:6px"></i>${c.obs}</div>`:''}
     ${c.equipamentos?`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;margin-bottom:16px;font-size:12.5px;color:var(--text2)"><div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px"><i class="fa-solid fa-toolbox" style="margin-right:5px"></i>Equipamentos</div>${c.equipamentos}</div>`:''}
     ${c.anexos&&c.anexos.length?`<div style="margin-bottom:16px"><div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px"><i class="fa-solid fa-paperclip" style="margin-right:5px"></i>Anexos (${c.anexos.length})</div>${c.anexos.map(p=>`<div class="attach-item"><i class="fa-solid fa-file-pdf"></i><span class="attach-name">${p.name}</span><span class="attach-size">${formatBytes(p.size)}</span><button class="btn btn-ghost btn-sm" onclick="window.open('${p.data}','_blank')"><i class="fa-solid fa-eye"></i></button></div>`).join('')}</div>`:''}
-    <div class="action-row" style="margin-bottom:20px">
-      <button class="btn btn-primary btn-sm" onclick="openContatoFor(${c.id})"><i class="fa-solid fa-plus"></i> Registrar Contato</button>
-      <button class="btn btn-ghost btn-sm" onclick="openAgendamentoFor(${c.id})"><i class="fa-regular fa-calendar-plus"></i> Agendar</button>
-      <button class="btn btn-ghost btn-sm" style="color:var(--purple);border-color:rgba(139,125,232,0.4)" onclick="openOrcamentoFor(${c.id})"><i class="fa-solid fa-file-invoice-dollar"></i> Orçamento Mensal</button>
+    <div class="quick-actions-client">
+      <button class="btn btn-primary btn-sm" onclick="openContatoFor(${c.id})"><i class="fa-solid fa-plus"></i> Registrar contato</button>
+      <button class="btn btn-ghost btn-sm" onclick="openAgendamentoFor(${c.id})"><i class="fa-regular fa-calendar-plus"></i> Agendar retorno</button>
+      <button class="btn btn-ghost btn-sm" style="color:var(--warning);border-color:rgba(245,166,35,0.4)" onclick="openSolicitacaoFor(${c.id})"><i class="fa-solid fa-clipboard-list"></i> Criar solicitação</button>
+      <button class="btn btn-ghost btn-sm" style="color:var(--purple);border-color:rgba(139,125,232,0.4)" onclick="openOrcamentoFor(${c.id})"><i class="fa-solid fa-file-invoice-dollar"></i> Orçamento mensal</button>
+      <button class="btn btn-ghost btn-sm" onclick="scrollClientHistory()"><i class="fa-solid fa-timeline"></i> Ver histórico</button>
+      <button class="btn btn-ghost btn-sm" onclick="exportarFichaClientePDF(${c.id})"><i class="fa-solid fa-file-pdf"></i> Exportar ficha</button>
       <button class="btn btn-ghost btn-sm" onclick="editarCliente(${c.id})"><i class="fa-solid fa-pen"></i> Editar</button>
     </div>
-    ${renderHistoricoCompletoCliente(c.id)}
+    <div id="cliente-historico-anchor">${renderHistoricoCompletoCliente(c.id)}</div>
   `;
   document.getElementById('detalhe-panel').classList.add('open');
 }
 function closePanel() { document.getElementById('detalhe-panel').classList.remove('open'); }
+function scrollClientHistory() { document.getElementById('cliente-historico-anchor')?.scrollIntoView({behavior:'smooth', block:'start'}); }
 
 // ===== CONTATOS =====
 function salvarContato() {
@@ -2490,15 +2610,17 @@ function salvarContato() {
   const retorno = document.getElementById('ct-retorno').value;
   const lembrete = document.getElementById('ct-lembrete').value.trim();
   const horario = document.getElementById('ct-horario-alarme').value || '09:00';
-  contatos.push({ id: Date.now(), clienteId, data: document.getElementById('ct-data').value||today(), canal: document.getElementById('ct-canal').value, descricao, editado: false, edicoes: [] });
+  const semResposta = document.getElementById('ct-sem-resposta')?.checked || false;
+  contatos.push({ id: Date.now(), clienteId, data: document.getElementById('ct-data').value||today(), canal: document.getElementById('ct-canal').value, descricao, semResposta, editado: false, edicoes: [] });
   if (retorno) agendamentos.push({ id: Date.now()+1, clienteId, data: retorno, horario, motivo: lembrete||'Retorno agendado', prioridade:'normal', criadoEm: today() });
   save();
   closeModal('modalContato');
   ['ct-descricao','ct-retorno','ct-lembrete'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('ct-cliente').value='';
+  document.getElementById('ct-sem-resposta').checked=false;
   document.getElementById('ct-horario-alarme').value='09:00';
-  notify('✓ Contato registrado!', '#0d3d2a');
-  renderDashboard(); renderHistorico(); renderAgenda();
+  notify(semResposta ? '✓ Tentativa sem resposta registrada!' : '✓ Contato registrado!', '#0d3d2a');
+  renderDashboard(); renderHistorico(); renderAgenda(); renderClientes();
 }
 
 let ordenacaoHistorico = 'desc'; // 'desc' = mais recentes primeiro (padrão)
@@ -2520,7 +2642,7 @@ function renderHistorico() {
   const sorted = [...contatos].sort((a,b)=> ordenacaoHistorico==='desc' ? b.data.localeCompare(a.data) : a.data.localeCompare(b.data));
   const filtered = sorted.filter(ct => {
     const c = clientes.find(x=>x.id===ct.clienteId);
-    const matchQ = !q || (c&&c.nome.toLowerCase().includes(q)) || ct.descricao.toLowerCase().includes(q);
+    const matchQ = !q || (c&&[c.nome,c.empresa,c.cnpj].filter(Boolean).join(' ').toLowerCase().includes(q)) || (ct.descricao||'').toLowerCase().includes(q);
     const matchCanal = !fCanal || ct.canal === fCanal;
     return matchQ && matchCanal;
   });
@@ -2548,7 +2670,7 @@ function renderHistorico() {
             <button class="btn btn-danger btn-sm" title="Apagar" onclick="apagarContato(${ct.id})"><i class="fa-solid fa-trash"></i></button>
           </div>
         </div>
-        <div style="margin-bottom:6px"><span class="badge badge-gray"><i class="fa-solid ${canalIcon[ct.canal]||'fa-phone'}" style="margin-right:4px"></i>${ct.canal}</span>${ct.editado?'<span class="badge badge-warning" style="margin-left:5px"><i class="fa-solid fa-pen" style="margin-right:3px"></i>Editado</span>':''}</div>
+        <div style="margin-bottom:6px"><span class="badge badge-gray"><i class="fa-solid ${canalIcon[ct.canal]||'fa-phone'}" style="margin-right:4px"></i>${ct.canal}</span>${ct.semResposta?'<span class="badge badge-danger" style="margin-left:5px"><i class="fa-solid fa-phone-slash" style="margin-right:3px"></i>Sem resposta</span>':''}${ct.editado?'<span class="badge badge-warning" style="margin-left:5px"><i class="fa-solid fa-pen" style="margin-right:3px"></i>Editado</span>':''}</div>
         <div class="history-text">${ct.descricao}</div>
         ${edicoesList}
       </div>
@@ -2616,11 +2738,15 @@ function salvarAgendamento() {
 // ===== SOLICITAÇÕES DE ORÇAMENTO =====
 function dadosSolicitacaoCliente(sol) {
   const c = sol.clienteId ? clientes.find(x => x.id === sol.clienteId) : null;
+  const nomeBase = c ? c.nome : (sol.nome || 'Cliente não cadastrado');
+  const empresaBase = c ? (c.empresa || '') : (sol.empresa || '');
   return {
     cliente: c,
-    nome: c ? c.nome : (sol.nome || 'Cliente não cadastrado'),
-    empresa: c ? (c.empresa || '') : (sol.empresa || ''),
-    iniciais: c ? initials(c.nome) : initials(sol.nome || 'SN'),
+    nome: nomeBase,
+    empresa: empresaBase,
+    solicitante: sol.solicitante || '',
+    produto: sol.produto || '',
+    iniciais: c ? initials(c.nome) : initials(sol.nome || sol.solicitante || 'SN'),
     avatar: c ? avColor(c.id) : 'av-amber'
   };
 }
@@ -2636,7 +2762,9 @@ function preencherDadosSolicitacaoCliente() {
 function limparModalSolicitacao() {
   document.getElementById('sol-cliente').value = '';
   document.getElementById('sol-nome').value = '';
+  document.getElementById('sol-solicitante').value = '';
   document.getElementById('sol-empresa').value = '';
+  document.getElementById('sol-produto').value = '';
   document.getElementById('sol-data').value = today();
   document.getElementById('sol-prazo').value = today();
   document.getElementById('sol-canal').value = 'whatsapp';
@@ -2651,18 +2779,22 @@ function salvarSolicitacaoOrcamento() {
   const clienteId = +document.getElementById('sol-cliente').value || null;
   const cliente = clienteId ? clientes.find(c => c.id === clienteId) : null;
   const nome = (document.getElementById('sol-nome').value.trim() || (cliente ? cliente.nome : '')).trim();
+  const solicitante = document.getElementById('sol-solicitante').value.trim();
   const empresa = (document.getElementById('sol-empresa').value.trim() || (cliente ? cliente.empresa || '' : '')).trim();
+  const produto = document.getElementById('sol-produto').value.trim();
   const dataSolicitacao = document.getElementById('sol-data').value;
   const prazo = document.getElementById('sol-prazo').value;
   const descricao = document.getElementById('sol-descricao').value.trim();
-  if (!nome) { notify('Informe o nome do cliente/solicitante','#7a1a1a'); return; }
+  if (!nome) { notify('Informe o cliente/empresa da solicitação','#7a1a1a'); return; }
   if (!dataSolicitacao || !prazo) { notify('Informe a data da solicitação e o prazo','#7a1a1a'); return; }
   if (!descricao) { notify('Descreva o que foi solicitado','#7a1a1a'); return; }
 
   const dados = {
     clienteId,
     nome,
+    solicitante,
     empresa,
+    produto,
     dataSolicitacao,
     prazo,
     canal: document.getElementById('sol-canal').value,
@@ -2685,7 +2817,7 @@ function salvarSolicitacaoOrcamento() {
   save();
   closeModal('modalSolicitacao');
   limparModalSolicitacao();
-  renderDashboard(); renderSolicitacoesTabela(); renderClientes();
+  renderDashboard(); renderSolicitacoesTabela(); renderClientes(); renderAgenda();
 }
 
 function editarSolicitacaoOrcamento(id) {
@@ -2697,7 +2829,9 @@ function editarSolicitacaoOrcamento(id) {
   document.getElementById('modal-solicitacao-title').innerHTML = '<i class="fa-solid fa-pen" style="color:var(--warning);margin-right:8px"></i>Editar Solicitação de Orçamento';
   document.getElementById('sol-cliente').value = sol.clienteId || '';
   document.getElementById('sol-nome').value = sol.nome || '';
+  document.getElementById('sol-solicitante').value = sol.solicitante || '';
   document.getElementById('sol-empresa').value = sol.empresa || '';
+  document.getElementById('sol-produto').value = sol.produto || '';
   document.getElementById('sol-data').value = sol.dataSolicitacao || today();
   document.getElementById('sol-prazo').value = sol.prazo || today();
   document.getElementById('sol-canal').value = sol.canal || 'whatsapp';
@@ -2717,6 +2851,7 @@ function excluirSolicitacaoOrcamento(id) {
 function marcarSolicitacaoFeita(id) {
   const sol = solicitacoesOrcamento.find(x => x.id === id);
   if (!sol) return;
+  const obsFinal = prompt('Observação sobre o orçamento feito/enviado (opcional):', '') || '';
   const dados = dadosSolicitacaoCliente(sol);
   concluidos.push({
     id: Date.now(),
@@ -2724,15 +2859,19 @@ function marcarSolicitacaoFeita(id) {
     clienteId: sol.clienteId || null,
     nomeAvulso: dados.nome,
     empresaAvulsa: dados.empresa,
+    solicitanteAvulso: sol.solicitante || '',
+    produto: sol.produto || '',
     dataOriginal: sol.prazo,
     dataSolicitacao: sol.dataSolicitacao,
+    prioridade: sol.prioridade || 'normal',
+    canal: sol.canal || '',
     motivo: sol.descricao,
-    obsConclusao: sol.obs || '',
+    obsConclusao: obsFinal.trim() || sol.obs || '',
     concluidoEm: today()
   });
   solicitacoesOrcamento = solicitacoesOrcamento.filter(s => s.id !== id);
   save();
-  renderSolicitacoesTabela(); renderDashboard(); renderHistorico();
+  renderSolicitacoesTabela(); renderDashboard(); renderHistorico(); renderAgenda();
   notify('✓ Solicitação marcada como feita!','#0d3d2a');
 }
 
@@ -2753,15 +2892,19 @@ function renderSolicitacaoCards(list) {
         <div class="avatar ${d.avatar}" style="width:26px;height:26px;font-size:10px">${d.iniciais}</div>
         <div>
           <div class="kanban-client">${d.nome}</div>
+          ${d.solicitante?`<div style="font-size:11px;color:var(--text3)">Solicitante: ${d.solicitante}</div>`:''}
           ${d.empresa?`<div style="font-size:11px;color:var(--text3)">${d.empresa}</div>`:''}
         </div>
       </div>
       <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px">
         <span class="badge ${priorBadge[sol.prioridade]||'badge-gray'}">${sol.prioridade||'normal'}</span>
         <span class="badge badge-gray">${canalLabel[sol.canal]||sol.canal||'Canal'}</span>
+        ${sol.produto?`<span class="badge badge-warning">${sol.produto}</span>`:''}
+        ${!sol.clienteId?'<span class="badge badge-danger">Sem cliente</span>':''}
       </div>
       ${sol.descricao?`<div class="kanban-note">${sol.descricao.length>120?sol.descricao.slice(0,120)+'…':sol.descricao}</div>`:''}
-      <div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-top:8px">
+      <div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-top:8px;flex-wrap:wrap">
+        ${!sol.clienteId?`<button class="btn btn-ghost btn-sm" title="Criar cliente" onclick="criarClienteFromSolicitacao(${sol.id})"><i class="fa-solid fa-user-plus"></i></button>`:''}
         <button class="btn btn-warning btn-sm" title="Editar" onclick="editarSolicitacaoOrcamento(${sol.id})"><i class="fa-solid fa-pen"></i></button>
         <button class="btn btn-success btn-sm" onclick="marcarSolicitacaoFeita(${sol.id})"><i class="fa-solid fa-check"></i> Feito</button>
       </div>
@@ -2774,52 +2917,107 @@ function renderSolicitacoesTabela() {
   if (!tb) return;
   const q = (document.getElementById('search-solicitacoes')?.value || '').trim().toLowerCase();
   const prioridade = document.getElementById('filtro-prioridade-solicitacoes')?.value || '';
+  const situacao = document.getElementById('filtro-situacao-solicitacoes')?.value || 'pendentes';
   const apenasAtrasadas = document.getElementById('filtro-atrasadas-solicitacoes')?.checked || false;
   const priorBadge = {normal:'badge-info', alta:'badge-warning', urgente:'badge-danger'};
   const canalLabel = {whatsapp:'WhatsApp', telefone:'Telefone', email:'E-mail', presencial:'Presencial', videochamada:'Videochamada', outro:'Outro'};
-  let lista = [...solicitacoesOrcamento].filter(sol => {
+  const hojeISO = today();
+
+  let lista = [];
+  if (situacao === 'concluidas') {
+    lista = concluidos.filter(cc => cc.tipo === 'solicitacao_orcamento').map(cc => ({
+      _concluida: true,
+      id: cc.id,
+      clienteId: cc.clienteId || null,
+      nome: cc.nomeAvulso || (clientes.find(c=>c.id===cc.clienteId)?.nome) || 'Cliente não cadastrado',
+      empresa: cc.empresaAvulsa || (clientes.find(c=>c.id===cc.clienteId)?.empresa) || '',
+      solicitante: cc.solicitanteAvulso || '',
+      produto: cc.produto || '',
+      dataSolicitacao: cc.dataSolicitacao || cc.dataOriginal || cc.concluidoEm,
+      prazo: cc.dataOriginal || cc.concluidoEm,
+      canal: cc.canal || '',
+      prioridade: cc.prioridade || 'normal',
+      descricao: cc.motivo || '',
+      obs: cc.obsConclusao || '',
+      concluidoEm: cc.concluidoEm
+    }));
+  } else {
+    lista = [...solicitacoesOrcamento];
+  }
+
+  lista = lista.filter(sol => {
     const d = dadosSolicitacaoCliente(sol);
-    const hay = [d.nome, d.empresa, sol.descricao, sol.obs, sol.canal, sol.prioridade].filter(Boolean).join(' ').toLowerCase();
+    const hay = [d.nome, d.empresa, d.solicitante, d.produto, sol.descricao, sol.obs, sol.canal, sol.prioridade].filter(Boolean).join(' ').toLowerCase();
     if (q && !hay.includes(q)) return false;
     if (prioridade && sol.prioridade !== prioridade) return false;
-    if (apenasAtrasadas && !(sol.prazo < today())) return false;
+    if (apenasAtrasadas && !(sol.prazo < hojeISO)) return false;
+    if (situacao === 'hoje' && sol.prazo !== hojeISO) return false;
+    if (situacao === 'atrasadas' && !(sol.prazo < hojeISO)) return false;
+    if (situacao === 'urgentes' && sol.prioridade !== 'urgente') return false;
+    if (situacao === 'sem_cliente' && sol.clienteId) return false;
     return true;
   }).sort((a,b) => {
     const pr = {urgente:0, alta:1, normal:2};
     const pa = pr[a.prioridade] ?? 3, pb = pr[b.prioridade] ?? 3;
-    if (a.prazo !== b.prazo) return a.prazo.localeCompare(b.prazo);
+    if ((a.prazo||'') !== (b.prazo||'')) return (a.prazo||'').localeCompare(b.prazo||'');
     return pa - pb;
   });
+
   document.getElementById('solicitacao-count').textContent = lista.length;
   if (!lista.length) {
-    tb.innerHTML = `<tr><td colspan="8"><div class="empty"><i class="fa-solid fa-clipboard-list"></i><p>Nenhuma solicitação de orçamento pendente.</p></div></td></tr>`;
+    tb.innerHTML = `<tr><td colspan="9"><div class="empty"><i class="fa-solid fa-clipboard-list"></i><p>Nenhuma solicitação encontrada.</p></div></td></tr>`;
     return;
   }
   tb.innerHTML = lista.map(sol => {
     const d = dadosSolicitacaoCliente(sol);
-    const atrasado = sol.prazo < today();
-    const hoje = sol.prazo === today();
+    const atrasado = !sol._concluida && sol.prazo < hojeISO;
+    const hoje = !sol._concluida && sol.prazo === hojeISO;
     return `<tr>
       <td><div style="display:flex;align-items:center;gap:10px">
         <div class="avatar ${d.avatar}" style="width:30px;height:30px;font-size:11px">${d.iniciais}</div>
         <div>
           <div class="client-name">${d.nome}</div>
-          <div class="client-email">${sol.clienteId?'Cliente cadastrado':'Sem cadastro vinculado'}</div>
+          <div class="client-email">${sol._concluida ? 'Concluída' : sol.clienteId?'Cliente cadastrado':'Sem cadastro vinculado'}${d.solicitante ? ' • ' + d.solicitante : ''}</div>
         </div>
       </div></td>
       <td style="color:var(--text2)">${d.empresa || '—'}</td>
       <td>${fmtDate(sol.dataSolicitacao)}</td>
-      <td>${fmtDate(sol.prazo)} ${atrasado?'<span class="badge badge-danger" style="margin-left:4px">Atrasada</span>':hoje?'<span class="badge badge-warning" style="margin-left:4px">Hoje</span>':''}</td>
+      <td>${fmtDate(sol.prazo)} ${sol._concluida?`<span class="badge badge-success" style="margin-left:4px">Feita em ${fmtDate(sol.concluidoEm)}</span>`:atrasado?'<span class="badge badge-danger" style="margin-left:4px">Atrasada</span>':hoje?'<span class="badge badge-warning" style="margin-left:4px">Hoje</span>':''}</td>
       <td><span class="badge badge-gray">${canalLabel[sol.canal]||sol.canal||'—'}</span></td>
       <td><span class="badge ${priorBadge[sol.prioridade]||'badge-gray'}">${sol.prioridade||'normal'}</span></td>
-      <td style="color:var(--text2);max-width:260px">${sol.descricao.length>90?sol.descricao.slice(0,90)+'…':sol.descricao}</td>
+      <td style="color:var(--text2);max-width:180px">${d.produto || '—'}</td>
+      <td style="color:var(--text2);max-width:260px">${(sol.descricao||'').length>90?sol.descricao.slice(0,90)+'…':(sol.descricao||'—')}</td>
       <td><div class="action-row">
-        <button class="btn btn-warning btn-sm" title="Editar" onclick="editarSolicitacaoOrcamento(${sol.id})"><i class="fa-solid fa-pen"></i></button>
-        <button class="btn btn-success btn-sm" title="Marcar como feito" onclick="marcarSolicitacaoFeita(${sol.id})"><i class="fa-solid fa-check"></i></button>
-        <button class="btn btn-danger btn-sm" title="Excluir" onclick="excluirSolicitacaoOrcamento(${sol.id})"><i class="fa-solid fa-trash"></i></button>
+        ${sol._concluida ? '<span class="badge badge-success"><i class="fa-solid fa-check" style="margin-right:3px"></i>Concluída</span>' : `${!sol.clienteId?`<button class="btn btn-ghost btn-sm" title="Criar cliente" onclick="criarClienteFromSolicitacao(${sol.id})"><i class="fa-solid fa-user-plus"></i></button>`:''}<button class="btn btn-warning btn-sm" title="Editar" onclick="editarSolicitacaoOrcamento(${sol.id})"><i class="fa-solid fa-pen"></i></button><button class="btn btn-success btn-sm" title="Marcar como feito" onclick="marcarSolicitacaoFeita(${sol.id})"><i class="fa-solid fa-check"></i></button><button class="btn btn-danger btn-sm" title="Excluir" onclick="excluirSolicitacaoOrcamento(${sol.id})"><i class="fa-solid fa-trash"></i></button>`}
       </div></td>
     </tr>`;
   }).join('');
+}
+
+
+function criarClienteFromSolicitacao(id) {
+  const sol = solicitacoesOrcamento.find(x => x.id === id);
+  if (!sol) return;
+  editClienteId = null;
+  document.getElementById('modalCliente').dataset.fromSolicitacaoId = id;
+  document.getElementById('c-nome').value = sol.nome || sol.empresa || '';
+  document.getElementById('c-empresa').value = sol.empresa || '';
+  document.getElementById('c-funcao').value = sol.solicitante || '';
+  document.getElementById('c-setor').value = '';
+  document.getElementById('c-cnpj').value = '';
+  document.getElementById('c-email').value = '';
+  document.getElementById('c-tel').value = '';
+  document.getElementById('c-segmento').value = '';
+  document.getElementById('c-cidade').value = '';
+  document.getElementById('c-estado').value = '';
+  document.getElementById('c-status').value = 'prospecto';
+  document.getElementById('c-equipamentos').value = sol.produto || '';
+  document.getElementById('c-obs-importante').value = '';
+  document.getElementById('c-obs').value = `Criado a partir de solicitação de orçamento.\nSolicitante: ${sol.solicitante||'—'}\nSolicitação: ${sol.descricao||'—'}`;
+  pdfsTempCliente = [];
+  renderPdfList();
+  document.getElementById('modal-cliente-title').textContent = 'Novo Cliente a partir da Solicitação';
+  document.getElementById('modalCliente').classList.add('open');
 }
 
 // ===== ORÇAMENTOS =====
@@ -2958,6 +3156,14 @@ function editarOrcamento(id) {
 const DAYS = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 const MONTHS = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
+function agendaFiltroAtivo(id) {
+  const el = document.getElementById(id);
+  return !el || el.checked;
+}
+function passaFiltroPrioridadeAgenda(item) {
+  if (agendaFiltroAtivo('cal-filter-alta')) return true;
+  return !['alta','urgente'].includes(item.prioridade || 'normal');
+}
 function renderAgenda() { renderCalendar(); renderAgendaLista(); renderOrcamentosLista(); }
 
 function renderCalendar() {
@@ -2966,13 +3172,20 @@ function renderCalendar() {
   const y=calDate.getFullYear(), m=calDate.getMonth();
   const first=new Date(y,m,1).getDay(), days=new Date(y,m+1,0).getDate(), prevDays=new Date(y,m,0).getDate();
   const todayISO=today();
-  const eventDays=new Set(agendamentos.map(a=>a.data));
-  const orcDays=new Set(orcamentos.map(o=>o.data));
+  const showRetornos = agendaFiltroAtivo('cal-filter-retornos');
+  const showSolicitacoes = agendaFiltroAtivo('cal-filter-solicitacoes');
+  const showOrcamentos = agendaFiltroAtivo('cal-filter-orcamentos');
+  const showAtrasados = agendaFiltroAtivo('cal-filter-atrasados');
+  const showConcluidos = agendaFiltroAtivo('cal-filter-concluidos');
+  const eventDays=new Set(agendamentos.filter(a => showRetornos && (showAtrasados || a.data >= todayISO) && passaFiltroPrioridadeAgenda(a)).map(a=>a.data));
+  const solDays=new Set(solicitacoesOrcamento.filter(sol => showSolicitacoes && (showAtrasados || sol.prazo >= todayISO) && passaFiltroPrioridadeAgenda(sol)).map(sol=>sol.prazo));
+  const orcDays=new Set(orcamentos.filter(o => showOrcamentos && (showAtrasados || o.data >= todayISO)).map(o=>o.data));
+  const conclDays=new Set(concluidos.filter(cc => showConcluidos).map(cc=>cc.concluidoEm || cc.dataOriginal).filter(Boolean));
   let html='';
   for(let i=0;i<first;i++) html+=`<div class="cal-day other-month">${prevDays-first+i+1}</div>`;
   for(let d=1;d<=days;d++) {
     const iso=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    html+=`<div class="cal-day ${iso===todayISO?'today':''} ${eventDays.has(iso)?'has-event':''} ${orcDays.has(iso)?'has-orcamento':''}" onclick="filtrarDia('${iso}')">${d}</div>`;
+    html+=`<div class="cal-day ${iso===todayISO?'today':''} ${eventDays.has(iso)?'has-event':''} ${solDays.has(iso)?'has-solicitacao':''} ${orcDays.has(iso)?'has-orcamento':''} ${conclDays.has(iso)?'has-concluido':''}" onclick="filtrarDia('${iso}')">${d}${conclDays.has(iso)?'<span class="cal-concluido-dot"></span>':''}</div>`;
   }
   const rem=(7-(first+days)%7)%7;
   for(let i=1;i<=rem;i++) html+=`<div class="cal-day other-month">${i}</div>`;
@@ -2980,13 +3193,16 @@ function renderCalendar() {
 }
 
 function filtrarDia(iso) {
-  const ags=agendamentos.filter(a=>a.data===iso);
-  const ors=orcamentos.filter(o=>o.data===iso);
-  if(!ags.length && !ors.length){notify('Nenhum agendamento neste dia');return;}
+  const todayISO = today();
+  const ags=agendamentos.filter(a=>a.data===iso && agendaFiltroAtivo('cal-filter-retornos') && (agendaFiltroAtivo('cal-filter-atrasados') || a.data >= todayISO) && passaFiltroPrioridadeAgenda(a));
+  const sols=solicitacoesOrcamento.filter(sol=>sol.prazo===iso && agendaFiltroAtivo('cal-filter-solicitacoes') && (agendaFiltroAtivo('cal-filter-atrasados') || sol.prazo >= todayISO) && passaFiltroPrioridadeAgenda(sol));
+  const ors=orcamentos.filter(o=>o.data===iso && agendaFiltroAtivo('cal-filter-orcamentos') && (agendaFiltroAtivo('cal-filter-atrasados') || o.data >= todayISO));
+  const concl=concluidos.filter(cc => agendaFiltroAtivo('cal-filter-concluidos') && (cc.concluidoEm === iso || cc.dataOriginal === iso));
+  if(!ags.length && !sols.length && !ors.length && !concl.length){notify('Nenhum item neste dia com os filtros atuais');return;}
   const elR=document.getElementById('agenda-lista');
   const elO=document.getElementById('orcamentos-agenda-lista');
-  elR.innerHTML=ags.length?`<div style="padding:10px 16px;font-size:11.5px;color:var(--text3);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.5px">Retornos de ${fmtDate(iso)}</div><div class="kanban-col" style="padding-top:12px">${renderKanbanItems(ags)}</div>`:`<div class="empty"><i class="fa-regular fa-calendar"></i><p>Nenhum retorno neste dia</p></div>`;
-  elO.innerHTML=ors.length?`<div style="padding:10px 16px;font-size:11.5px;color:var(--text3);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.5px">Orçamentos de ${fmtDate(iso)}</div><div class="kanban-col" style="padding-top:12px">${renderOrcamentoCards(ors)}</div>`:`<div class="empty"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento neste dia</p></div>`;
+  elR.innerHTML=(ags.length||sols.length||concl.length)?`<div style="padding:10px 16px;font-size:11.5px;color:var(--text3);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.5px">Itens de ${fmtDate(iso)}</div>${ags.length?renderKanbanItems(ags):''}${sols.length?renderSolicitacaoCards(sols):''}${concl.length?renderConcluidoCards(concl):''}`:`<div class="empty"><i class="fa-regular fa-calendar"></i><p>Nenhum retorno, solicitação ou concluído neste dia</p></div>`;
+  elO.innerHTML=ors.length?`<div style="padding:10px 16px;font-size:11.5px;color:var(--text3);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.5px">Orçamentos de ${fmtDate(iso)}</div>${renderOrcamentoCards(ors)}`:`<div class="empty"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento mensal neste dia</p></div>`;
 }
 
 function prevMonth(){calDate.setMonth(calDate.getMonth()-1);renderCalendar();}
@@ -2994,22 +3210,32 @@ function nextMonth(){calDate.setMonth(calDate.getMonth()+1);renderCalendar();}
 
 function renderAgendaLista() {
   const todayISO=today();
-  const upcoming=agendamentos.filter(a=>a.data>=todayISO).sort((a,b)=>a.data.localeCompare(b.data));
-  const atrasados=agendamentos.filter(a=>a.data<todayISO).sort((a,b)=>b.data.localeCompare(a.data));
+  let retornoList = agendaFiltroAtivo('cal-filter-retornos') ? agendamentos.filter(a => (agendaFiltroAtivo('cal-filter-atrasados') || a.data >= todayISO) && passaFiltroPrioridadeAgenda(a)) : [];
+  let solList = agendaFiltroAtivo('cal-filter-solicitacoes') ? solicitacoesOrcamento.filter(s => (agendaFiltroAtivo('cal-filter-atrasados') || s.prazo >= todayISO) && passaFiltroPrioridadeAgenda(s)).map(s=>({...s, data:s.prazo})) : [];
+  const upcoming=retornoList.filter(a=>a.data>=todayISO).sort((a,b)=>a.data.localeCompare(b.data));
+  const atrasados=retornoList.filter(a=>a.data<todayISO).sort((a,b)=>b.data.localeCompare(a.data));
+  const solUpcoming=solList.filter(s=>s.prazo>=todayISO).sort((a,b)=>a.prazo.localeCompare(b.prazo));
+  const solAtrasadas=solList.filter(s=>s.prazo<todayISO).sort((a,b)=>b.prazo.localeCompare(a.prazo));
+  const concl = agendaFiltroAtivo('cal-filter-concluidos') ? concluidos.slice().sort((a,b)=>(b.concluidoEm||'').localeCompare(a.concluidoEm||'')).slice(0,8) : [];
   const el=document.getElementById('agenda-lista');
-  if(!upcoming.length && !atrasados.length){el.innerHTML=`<div class="empty"><i class="fa-regular fa-calendar"></i><p>Nenhum retorno agendado</p></div>`;return;}
-  el.innerHTML=renderKanbanItems([...atrasados.map(a=>({...a,_atrasado:true})),...upcoming]);
+  if(!upcoming.length && !atrasados.length && !solUpcoming.length && !solAtrasadas.length && !concl.length){el.innerHTML=`<div class="empty"><i class="fa-regular fa-calendar"></i><p>Nenhum item com os filtros atuais</p></div>`;return;}
+  el.innerHTML=[
+    renderKanbanItems([...atrasados.map(a=>({...a,_atrasado:true})),...upcoming]),
+    renderSolicitacaoCards([...solAtrasadas.map(s=>({...s,_atrasado:true})),...solUpcoming]),
+    renderConcluidoCards(concl)
+  ].filter(Boolean).join('');
 }
 
 function renderOrcamentosLista() {
   const todayISO=today();
   const mesAtual = todayISO.slice(0,7);
-  const doMes = orcamentos.filter(o=>o.data.startsWith(mesAtual));
+  let doMes = agendaFiltroAtivo('cal-filter-orcamentos') ? orcamentos.filter(o=>o.data.startsWith(mesAtual)) : [];
+  if (!agendaFiltroAtivo('cal-filter-atrasados')) doMes = doMes.filter(o => o.data >= todayISO);
   const upcoming=doMes.filter(o=>o.data>=todayISO).sort((a,b)=>a.data.localeCompare(b.data));
   const atrasados=doMes.filter(o=>o.data<todayISO).sort((a,b)=>b.data.localeCompare(a.data));
   const el=document.getElementById('orcamentos-agenda-lista');
   if(!el) return;
-  if(!upcoming.length && !atrasados.length){el.innerHTML=`<div class="empty"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento este mês</p></div>`;return;}
+  if(!upcoming.length && !atrasados.length){el.innerHTML=`<div class="empty"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento mensal com os filtros atuais</p></div>`;return;}
   el.innerHTML=renderOrcamentoCards([...atrasados.map(o=>({...o,_atrasado:true})),...upcoming]);
 }
 
@@ -3099,6 +3325,22 @@ function renderOrcamentoCards(list) {
   }).join('');
 }
 
+function renderConcluidoCards(list) {
+  if (!list || !list.length) return '';
+  return list.map(cc => {
+    const c = clientes.find(x=>x.id===cc.clienteId);
+    const isSol = cc.tipo === 'solicitacao_orcamento';
+    const isOrc = cc.tipo === 'orcamento';
+    const nome = c ? c.nome : (cc.nomeAvulso || '—');
+    return `<div class="kanban-card ${isSol?'solicitacao':isOrc?'orcamento':'normal'}">
+      <div class="kanban-date"><i class="fa-solid fa-check"></i> Concluído em ${fmtDate(cc.concluidoEm || cc.dataOriginal)}</div>
+      <div class="kanban-client">${nome}</div>
+      <div class="kanban-note">${cc.motivo || cc.obsConclusao || 'Item concluído.'}</div>
+      <span class="badge badge-success">Concluído</span>
+    </div>`;
+  }).join('');
+}
+
 // ===== DASHBOARD =====
 function renderDashboard() {
   const todayISO=today(), mesAtual=todayISO.slice(0,7);
@@ -3106,6 +3348,8 @@ function renderDashboard() {
   document.getElementById('stat-contatos').textContent=contatos.filter(c=>c.data.startsWith(mesAtual)).length;
   document.getElementById('stat-retornos').textContent=agendamentos.filter(a=>a.data>=todayISO).length;
   document.getElementById('stat-hoje').textContent=agendamentos.filter(a=>a.data===todayISO).length + orcamentos.filter(o=>o.data===todayISO).length + solicitacoesOrcamento.filter(s=>s.prazo===todayISO).length;
+  if (document.getElementById('stat-solicitacoes')) document.getElementById('stat-solicitacoes').textContent = solicitacoesOrcamento.length;
+  if (document.getElementById('stat-solicitacoes-atrasadas')) document.getElementById('stat-solicitacoes-atrasadas').textContent = solicitacoesOrcamento.filter(s=>s.prazo<todayISO).length;
 
   // ===== META SEMANAL DE CONTATOS (30/semana, seg-dom) =====
   const META_SEMANAL = 30;
@@ -3147,15 +3391,16 @@ function renderDashboard() {
           <span style="font-weight:700;font-size:13.5px">${c?c.nome:'—'}</span>
           <span style="font-size:12px;color:var(--text3)">${fmtDate(ct.data)}</span>
         </div>
-        <div style="margin-bottom:4px"><span class="badge badge-gray"><i class="fa-solid ${canalIcon[ct.canal]||'fa-phone'}" style="margin-right:4px"></i>${ct.canal}</span></div>
+        <div style="margin-bottom:4px"><span class="badge badge-gray"><i class="fa-solid ${canalIcon[ct.canal]||'fa-phone'}" style="margin-right:4px"></i>${ct.canal}</span>${ct.semResposta?'<span class="badge badge-danger" style="margin-left:5px">Sem resposta</span>':''}</div>
         <div style="font-size:13px;color:var(--text2);line-height:1.45">${ct.descricao.length>120?ct.descricao.slice(0,120)+'…':ct.descricao}</div>
       </div>
     </div>`;
   }).join(''):`<div class="empty"><i class="fa-solid fa-inbox"></i><p>Nenhum contato registrado ainda</p></div>`;
 
-  // Histórico de retornos concluídos (separado de orçamentos concluídos)
+  // Histórico de concluídos separado por tipo
   const concluidosRetorno = [...concluidos].filter(cc=>cc.tipo==='retorno').sort((a,b)=>b.concluidoEm.localeCompare(a.concluidoEm));
-  const concluidosOrcamento = [...concluidos].filter(cc=>cc.tipo==='orcamento' || cc.tipo==='solicitacao_orcamento').sort((a,b)=>b.concluidoEm.localeCompare(a.concluidoEm));
+  const concluidosSolicitacao = [...concluidos].filter(cc=>cc.tipo==='solicitacao_orcamento').sort((a,b)=>b.concluidoEm.localeCompare(a.concluidoEm));
+  const concluidosOrcamento = [...concluidos].filter(cc=>cc.tipo==='orcamento').sort((a,b)=>b.concluidoEm.localeCompare(a.concluidoEm));
 
   function renderConcluidoItem(cc) {
     const c=clientes.find(x=>x.id===cc.clienteId);
@@ -3183,10 +3428,19 @@ function renderDashboard() {
     ? concluidosRetorno.slice(0,8).map(renderConcluidoItem).join('')
     : `<div class="empty"><i class="fa-solid fa-clock-rotate-left"></i><p>Nenhum retorno concluído ainda</p></div>`;
 
+  const solCountEl = document.getElementById('concluidos-solicitacao-count');
+  const solListEl = document.getElementById('dash-concluidos-solicitacao');
+  if (solCountEl && solListEl) {
+    solCountEl.textContent = concluidosSolicitacao.length;
+    solListEl.innerHTML = concluidosSolicitacao.length
+      ? concluidosSolicitacao.slice(0,8).map(renderConcluidoItem).join('')
+      : `<div class="empty"><i class="fa-solid fa-clipboard-check"></i><p>Nenhuma solicitação concluída ainda</p></div>`;
+  }
+
   document.getElementById('concluidos-orcamento-count').textContent = concluidosOrcamento.length;
   document.getElementById('dash-concluidos-orcamento').innerHTML = concluidosOrcamento.length
     ? concluidosOrcamento.slice(0,8).map(renderConcluidoItem).join('')
-    : `<div class="empty"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento ou solicitação concluído ainda</p></div>`;
+    : `<div class="empty"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento mensal concluído ainda</p></div>`;
 
   // ===== PARA HOJE (retornos + solicitações + orçamentos do dia) =====
   const retornosHoje = agendamentos.filter(a=>a.data===todayISO).map(a=>({...a,_tipoHoje:'retorno'}));
@@ -3470,67 +3724,145 @@ function downloadCSV(filename, rows) {
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+function downloadBlobFile(filename, content, mimeType) {
+  const blob = content instanceof Blob ? content : new Blob([content], {type:mimeType || 'application/octet-stream'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+function clientesParaRows() {
+  const header = ['ID','Nome','Empresa','Nome Fantasia','Setor','CNPJ','Telefone','E-mail','Segmento','Cidade','Estado','Cliente Final','Inscrição Estadual','Pedido de Compra','Status','Observação Importante','Equipamentos','Observações','Tentativas sem resposta','Último Contato','Criado em'];
+  return [header, ...clientes.map(c => {
+    const uc = ultimoContato(c.id);
+    const tent = contatos.filter(ct=>ct.clienteId===c.id && ct.semResposta).length;
+    return [c.id,c.nome,c.empresa,c.funcao,c.setor,c.cnpj,c.telefone,c.email,c.segmento,c.cidade,c.estado,c.clienteFinal,c.inscricaoEstadual,c.pedidoCompra,c.status,c.obsImportante,c.equipamentos,c.obs,tent,uc?fmtDate(uc.data):'',c.criadoEm||''];
+  })];
+}
+function contatosParaRows(lista = contatos) {
+  return [['ID','Data','Cliente','Empresa','Canal','Sem resposta','Descrição','Editado'], ...lista.map(ct => { const c=clientes.find(x=>x.id===ct.clienteId); return [ct.id,fmtDate(ct.data),c?c.nome:'—',c?c.empresa||'':'',ct.canal,ct.semResposta?'Sim':'Não',ct.descricao,ct.editado?'Sim':'Não']; })];
+}
+function retornosParaRows(lista = agendamentos) {
+  return [['ID','Data','Horário','Cliente','Empresa','Prioridade','Motivo'], ...lista.map(a => { const c=clientes.find(x=>x.id===a.clienteId); return [a.id,fmtDate(a.data),a.horario||'09:00',c?c.nome:'—',c?c.empresa||'':'',a.prioridade||'normal',a.motivo||'']; })];
+}
+function solicitacoesParaRows(lista = solicitacoesOrcamento) {
+  return [['ID','Prazo','Data da Solicitação','Cliente/Solicitante','Solicitante','Empresa','Produto/Serviço','Canal','Prioridade','Descrição','Observações','Vinculado a Cliente'], ...lista.map(sol => { const d=dadosSolicitacaoCliente(sol); return [sol.id,fmtDate(sol.prazo),fmtDate(sol.dataSolicitacao),d.nome,d.solicitante||'',d.empresa||'',d.produto||'',sol.canal||'',sol.prioridade||'normal',sol.descricao||'',sol.obs||'',sol.clienteId?'Sim':'Não']; })];
+}
+function orcamentosParaRows(lista = orcamentos) {
+  return [['ID','Data','Horário','Cliente','Empresa','Mensal','Observação'], ...lista.map(o => { const c=clientes.find(x=>x.id===o.clienteId); return [o.id,fmtDate(o.data),o.horario||'09:00',c?c.nome:'—',c?c.empresa||'':'',o.repetir?'Sim':'Não',o.obs||'']; })];
+}
+function concluidosParaRows(lista = concluidos) {
+  return [['ID','Tipo','Cliente','Empresa','Data Original','Concluído em','Motivo','Observação de conclusão'], ...lista.map(cc => { const c=clientes.find(x=>x.id===cc.clienteId); return [cc.id,cc.tipo,c?c.nome:(cc.nomeAvulso||'—'),c?c.empresa||'':(cc.empresaAvulsa||''),fmtDate(cc.dataOriginal),fmtDate(cc.concluidoEm),cc.motivo||'',cc.obsConclusao||'']; })];
+}
+function alteracoesParaRows(lista = historicoClientes) {
+  return [['ID','Cliente','Campo','Valor anterior','Valor novo','Alterado em','Horário'], ...lista.map(h => [h.id,h.nomeCliente,h.campo,h.valorAnterior,h.valorNovo,fmtDate(h.alteradoEm),h.alteradoAs])];
+}
+function backupPayload() {
+  return {
+    exportadoEm: new Date().toISOString(),
+    versao: 'agenda-dinamica-supabase',
+    clientes,
+    contatos,
+    agendamentos,
+    solicitacoesOrcamento,
+    orcamentos,
+    concluidos,
+    historicoClientes,
+    alarmedIds,
+    appTheme
+  };
+}
+function backupSheets() {
+  return {
+    Clientes: clientesParaRows(),
+    Contatos: contatosParaRows(),
+    Retornos: retornosParaRows(),
+    Solicitacoes: solicitacoesParaRows(),
+    Orcamentos: orcamentosParaRows(),
+    Concluidos: concluidosParaRows(),
+    Alteracoes: alteracoesParaRows()
+  };
+}
+function baixarBackupJson() {
+  downloadBlobFile(`backup_agenda_dinamica_${today()}.json`, JSON.stringify(backupPayload(), null, 2), 'application/json;charset=utf-8');
+  notify('✓ Backup JSON baixado!','#0d3d2a');
+}
+function baixarBackupCsv() {
+  const payload = backupSheets();
+  const rows = [];
+  Object.entries(payload).forEach(([nome, data]) => {
+    rows.push([`===== ${nome} =====`]);
+    rows.push(...data);
+    rows.push([]);
+  });
+  downloadCSV(`backup_agenda_dinamica_${today()}.csv`, rows);
+  notify('✓ Backup CSV baixado!','#0d3d2a');
+}
+function baixarBackupXlsx() {
+  const sheets = backupSheets();
+  if (!window.XLSX) { baixarBackupCsv(); notify('Biblioteca XLSX indisponível. Baixei CSV.','#6a4a00'); return; }
+  const wb = XLSX.utils.book_new();
+  Object.entries(sheets).forEach(([name, rows]) => {
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), name.slice(0,31));
+  });
+  XLSX.writeFile(wb, `backup_agenda_dinamica_${today()}.xlsx`);
+  notify('✓ Backup XLSX baixado!','#0d3d2a');
+}
+function rangeRelatorioMensal(range) {
+  if (range) return range;
+  const mes = today().slice(0,7);
+  return [mes + '-01', mes + '-31'];
+}
+function filtrarPorRange(lista, campo, range) {
+  if (!range) return lista;
+  return lista.filter(item => (item[campo] || '') >= range[0] && (item[campo] || '') <= range[1]);
+}
+
 // ===== EXPORTAR EXCEL (CSV com BOM para Excel) =====
 function exportarExcel() {
   const tipo = document.getElementById('pdf-tipo').value;
   const range = pdfPeriodoRange();
   if (range === undefined) return;
 
-  if (tipo === 'clientes') {
-    exportarClientesCSV(); closeModal('modalExportarPdf'); return;
-  }
+  if (tipo === 'clientes') { exportarClientesCSV(); closeModal('modalExportarPdf'); return; }
+
   if (tipo === 'contatos') {
-    let lista = [...contatos];
-    if (range) lista = lista.filter(c => c.data >= range[0] && c.data <= range[1]);
+    let lista = filtrarPorRange([...contatos], 'data', range).sort((a,b)=>b.data.localeCompare(a.data));
     if (!lista.length) { notify('Nenhum contato no período selecionado','#7a1a1a'); return; }
-    lista.sort((a,b)=>b.data.localeCompare(a.data));
-    const header = ['Data','Cliente','Empresa','Canal','Descrição'];
-    const rows = [header, ...lista.map(ct => {
-      const c = clientes.find(x=>x.id===ct.clienteId);
-      return [fmtDate(ct.data), c?c.nome:'—', c?c.empresa||'':'' , ct.canal, ct.descricao];
-    })];
-    downloadCSV(`historico_contatos_${today()}.csv`, rows);
-    closeModal('modalExportarPdf');
-    notify('✓ Exportado!','#0d3d2a'); return;
+    downloadCSV(`historico_contatos_${today()}.csv`, contatosParaRows(lista)); closeModal('modalExportarPdf'); notify('✓ Exportado!','#0d3d2a'); return;
   }
   if (tipo === 'retornos') {
-    let lista = [...agendamentos];
-    if (range) lista = lista.filter(a => a.data >= range[0] && a.data <= range[1]);
-    lista.sort((a,b)=>a.data.localeCompare(b.data));
-    const header = ['Data','Horário','Cliente','Empresa','Prioridade','Motivo'];
-    const rows = [header, ...lista.map(a => {
-      const c = clientes.find(x=>x.id===a.clienteId);
-      return [fmtDate(a.data), a.horario||'08:00', c?c.nome:'—', c?c.empresa||'':'', a.prioridade||'normal', a.motivo||''];
-    })];
-    downloadCSV(`atividades_programadas_${today()}.csv`, rows);
-    closeModal('modalExportarPdf');
-    notify('✓ Exportado!','#0d3d2a'); return;
+    let lista = filtrarPorRange([...agendamentos], 'data', range).sort((a,b)=>a.data.localeCompare(b.data));
+    downloadCSV(`atividades_programadas_${today()}.csv`, retornosParaRows(lista)); closeModal('modalExportarPdf'); notify('✓ Exportado!','#0d3d2a'); return;
   }
   if (tipo === 'solicitacoes') {
-    let lista = [...solicitacoesOrcamento];
-    if (range) lista = lista.filter(sol => sol.prazo >= range[0] && sol.prazo <= range[1]);
-    lista.sort((a,b)=>a.prazo.localeCompare(b.prazo));
-    const header = ['Prazo','Data da Solicitação','Cliente/Solicitante','Empresa','Canal','Prioridade','Descrição','Observações','Vinculado a Cliente'];
-    const rows = [header, ...lista.map(sol => {
-      const d = dadosSolicitacaoCliente(sol);
-      return [fmtDate(sol.prazo), fmtDate(sol.dataSolicitacao), d.nome, d.empresa||'', sol.canal||'', sol.prioridade||'normal', sol.descricao||'', sol.obs||'', sol.clienteId?'Sim':'Não'];
-    })];
-    downloadCSV(`solicitacoes_orcamento_${today()}.csv`, rows);
-    closeModal('modalExportarPdf');
-    notify('✓ Exportado!','#0d3d2a'); return;
+    let lista = filtrarPorRange([...solicitacoesOrcamento], 'prazo', range).sort((a,b)=>a.prazo.localeCompare(b.prazo));
+    downloadCSV(`solicitacoes_orcamento_${today()}.csv`, solicitacoesParaRows(lista)); closeModal('modalExportarPdf'); notify('✓ Exportado!','#0d3d2a'); return;
   }
   if (tipo === 'orcamentos') {
-    let lista = [...orcamentos];
-    if (range) lista = lista.filter(o => o.data >= range[0] && o.data <= range[1]);
-    lista.sort((a,b)=>a.data.localeCompare(b.data));
-    const header = ['Data','Horário','Cliente','Empresa','Mensal','Observação'];
-    const rows = [header, ...lista.map(o => {
-      const c = clientes.find(x=>x.id===o.clienteId);
-      return [fmtDate(o.data), o.horario||'08:00', c?c.nome:'—', c?c.empresa||'':'', o.repetir?'Sim':'Não', o.obs||''];
-    })];
-    downloadCSV(`orcamentos_${today()}.csv`, rows);
-    closeModal('modalExportarPdf');
-    notify('✓ Exportado!','#0d3d2a'); return;
+    let lista = filtrarPorRange([...orcamentos], 'data', range).sort((a,b)=>a.data.localeCompare(b.data));
+    downloadCSV(`orcamentos_mensais_${today()}.csv`, orcamentosParaRows(lista)); closeModal('modalExportarPdf'); notify('✓ Exportado!','#0d3d2a'); return;
+  }
+  if (tipo === 'relatorio_mensal') {
+    const r = rangeRelatorioMensal(range);
+    const sheets = {
+      Resumo: resumoMensalRows(r),
+      Contatos: contatosParaRows(filtrarPorRange([...contatos], 'data', r)),
+      Retornos: retornosParaRows(filtrarPorRange([...agendamentos], 'data', r)),
+      Solicitacoes: solicitacoesParaRows(filtrarPorRange([...solicitacoesOrcamento], 'prazo', r)),
+      Orcamentos: orcamentosParaRows(filtrarPorRange([...orcamentos], 'data', r)),
+      Concluidos: concluidosParaRows(filtrarPorRange([...concluidos], 'concluidoEm', r))
+    };
+    if (window.XLSX) {
+      const wb = XLSX.utils.book_new();
+      Object.entries(sheets).forEach(([name, rows]) => XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), name.slice(0,31)));
+      XLSX.writeFile(wb, `relatorio_mensal_${today()}.xlsx`);
+    } else {
+      const rows=[]; Object.entries(sheets).forEach(([name,data])=>{rows.push([`===== ${name} =====`]); rows.push(...data); rows.push([]);});
+      downloadCSV(`relatorio_mensal_${today()}.csv`, rows);
+    }
+    closeModal('modalExportarPdf'); notify('✓ Relatório mensal exportado!','#0d3d2a'); return;
   }
 }
 
@@ -3569,6 +3901,7 @@ function registrarAlteracoesCliente(anterior, novo) {
     {k:'pedidoCompra', label:'Pedido de Compra'},
     {k:'status', label:'Status'},
     {k:'equipamentos', label:'Equipamentos'},
+    {k:'obsImportante', label:'Observação importante fixa'},
     {k:'obs', label:'Observações'}
   ];
   campos.forEach(({k, label}) => {
@@ -3582,6 +3915,7 @@ function registrarAlteracoesCliente(anterior, novo) {
 function renderResumoHistoricoCliente(clienteId) {
   const todayISO = today();
   const contatosCliente = contatos.filter(ct => ct.clienteId === clienteId);
+  const tentativasSemResposta = contatosCliente.filter(ct => ct.semResposta).length;
   const retornosPendentes = agendamentos.filter(a => a.clienteId === clienteId && a.data >= todayISO).length;
   const retornosAtrasados = agendamentos.filter(a => a.clienteId === clienteId && a.data < todayISO).length;
   const orcamentosPendentes = orcamentos.filter(o => o.clienteId === clienteId).length;
@@ -3592,6 +3926,7 @@ function renderResumoHistoricoCliente(clienteId) {
   return `<div class="client-history-summary">
     <div class="client-history-stat"><div class="client-history-stat-label">Contatos</div><div class="client-history-stat-value">${contatosCliente.length}</div></div>
     <div class="client-history-stat"><div class="client-history-stat-label">Último contato</div><div class="client-history-stat-value" style="font-size:15px">${ultimo ? fmtDate(ultimo.data) : '—'}</div></div>
+    <div class="client-history-stat"><div class="client-history-stat-label">Sem resposta</div><div class="client-history-stat-value">${tentativasSemResposta}</div></div>
     <div class="client-history-stat"><div class="client-history-stat-label">Retornos pendentes</div><div class="client-history-stat-value">${retornosPendentes}${retornosAtrasados ? ` <span style="font-size:11px;color:var(--danger)">+${retornosAtrasados} atras.</span>` : ''}</div></div>
     <div class="client-history-stat"><div class="client-history-stat-label">Solicitações</div><div class="client-history-stat-value">${solicitacoesPendentes}</div></div>
     <div class="client-history-stat"><div class="client-history-stat-label">Orçamentos mensais</div><div class="client-history-stat-value">${orcamentosPendentes}</div></div>
@@ -3645,6 +3980,7 @@ function renderHistoricoCompletoCliente(clienteId) {
       hora: '',
       badges: [
         { text: ct.canal || 'contato', className: 'badge-gray' },
+        ...(ct.semResposta ? [{ text: 'Sem resposta', className: 'badge-danger', icon: 'fa-phone-slash' }] : []),
         ...(ct.editado ? [{ text: 'Editado', className: 'badge-warning', icon: 'fa-pen' }] : [])
       ],
       desc: ct.descricao || 'Sem descrição informada.',
@@ -3808,22 +4144,12 @@ function enviarPushNotificacao(titulo, corpo, icone) {
 
 function exportarClientesCSV() {
   if (!clientes.length) { notify('Nenhum cliente para exportar','#7a1a1a'); return; }
-  const header = ['Nome','Empresa','Nome Fantasia','Setor','CNPJ','Telefone','E-mail','Segmento','Cidade','Estado','Cliente Final','Inscrição Estadual','Pedido de Compra','Status','Equipamentos','Observações','Último Contato'];
-  const rows = [header, ...clientes.map(c => {
-    const uc = ultimoContato(c.id);
-    return [c.nome,c.empresa,c.funcao,c.setor,c.cnpj,c.telefone,c.email,c.segmento,c.cidade,c.estado,c.clienteFinal,c.inscricaoEstadual,c.pedidoCompra,c.status,c.equipamentos,c.obs,uc?fmtDate(uc.data):''];
-  })];
-  downloadCSV(`clientes_agenda_dinamica_${today()}.csv`, rows);
+  downloadCSV(`clientes_agenda_dinamica_${today()}.csv`, clientesParaRows());
   notify('✓ Clientes exportados!','#0d3d2a');
 }
 function exportarHistoricoCSV() {
   if (!contatos.length) { notify('Nenhum contato para exportar','#7a1a1a'); return; }
-  const header = ['Cliente','Empresa','Data','Canal','Descrição','Editado'];
-  const rows = [header, ...[...contatos].sort((a,b)=>b.data.localeCompare(a.data)).map(ct => {
-    const c = clientes.find(x=>x.id===ct.clienteId);
-    return [c?c.nome:'—', c?c.empresa:'', fmtDate(ct.data), ct.canal, ct.descricao, ct.editado?'Sim':'Não'];
-  })];
-  downloadCSV(`historico_contatos_${today()}.csv`, rows);
+  downloadCSV(`historico_contatos_${today()}.csv`, contatosParaRows([...contatos].sort((a,b)=>b.data.localeCompare(a.data))));
   notify('✓ Histórico exportado!','#0d3d2a');
 }
 
@@ -3874,10 +4200,66 @@ function pdfFooter(doc) {
   }
 }
 
+function resumoMensalRows(range) {
+  const [ini, fim] = range;
+  const contatosMes = filtrarPorRange([...contatos], 'data', range);
+  const semRespostaMes = contatosMes.filter(c => c.semResposta).length;
+  const retornosMes = filtrarPorRange([...agendamentos], 'data', range);
+  const solicitacoesMes = filtrarPorRange([...solicitacoesOrcamento], 'prazo', range);
+  const orcamentosMes = filtrarPorRange([...orcamentos], 'data', range);
+  const concluidosMes = filtrarPorRange([...concluidos], 'concluidoEm', range);
+  return [
+    ['Indicador','Valor'],
+    ['Período', `${fmtDate(ini)} a ${fmtDate(fim)}`],
+    ['Clientes cadastrados total', clientes.length],
+    ['Contatos no período', contatosMes.length],
+    ['Tentativas sem resposta', semRespostaMes],
+    ['Retornos programados no período', retornosMes.length],
+    ['Solicitações pendentes no período', solicitacoesMes.length],
+    ['Orçamentos mensais no período', orcamentosMes.length],
+    ['Itens concluídos no período', concluidosMes.length]
+  ];
+}
+
+function exportarFichaClientePDF(clienteId) {
+  const c = clientes.find(x=>x.id===clienteId);
+  if (!c) { notify('Cliente não encontrado','#7a1a1a'); return; }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({orientation:'portrait', unit:'mm', format:'a4'});
+  pdfHeader(doc, `Ficha do Cliente — ${c.nome}`);
+  let y = 30;
+  doc.setFontSize(13); doc.setFont(undefined,'bold'); doc.text(c.nome || 'Cliente', 14, y); y += 7;
+  doc.setFontSize(9.5); doc.setFont(undefined,'normal');
+  const linhas = [
+    ['Empresa', c.empresa], ['Nome fantasia', c.funcao], ['Setor', c.setor], ['CNPJ', c.cnpj], ['Telefone', c.telefone], ['E-mail', c.email], ['Cidade/UF', [c.cidade,c.estado].filter(Boolean).join(' / ')], ['Segmento', c.segmento], ['Status', c.status], ['Cliente final', c.clienteFinal], ['Inscrição Estadual', c.inscricaoEstadual], ['Pedido de Compra', c.pedidoCompra]
+  ];
+  linhas.forEach(([k,v]) => { if (v) { doc.setFont(undefined,'bold'); doc.text(`${k}:`, 14, y); doc.setFont(undefined,'normal'); doc.text(String(v), 48, y); y += 5.5; } });
+  if (c.obsImportante) { y += 2; doc.setFont(undefined,'bold'); doc.text('Observação importante:', 14, y); y += 5; doc.setFont(undefined,'normal'); const txt=doc.splitTextToSize(c.obsImportante, 180); doc.text(txt, 14, y); y += txt.length*5 + 2; }
+  if (c.obs) { doc.setFont(undefined,'bold'); doc.text('Observações:', 14, y); y += 5; doc.setFont(undefined,'normal'); const txt=doc.splitTextToSize(c.obs, 180); doc.text(txt, 14, y); y += txt.length*5 + 2; }
+  if (c.equipamentos) { doc.setFont(undefined,'bold'); doc.text('Equipamentos:', 14, y); y += 5; doc.setFont(undefined,'normal'); const txt=doc.splitTextToSize(c.equipamentos, 180); doc.text(txt, 14, y); y += txt.length*5 + 2; }
+
+  const contatosCliente = contatos.filter(ct=>ct.clienteId===clienteId).sort((a,b)=>b.data.localeCompare(a.data));
+  const retornosCliente = agendamentos.filter(a=>a.clienteId===clienteId).sort((a,b)=>a.data.localeCompare(b.data));
+  const solicitacoesCliente = solicitacoesOrcamento.filter(sol=>sol.clienteId===clienteId).sort((a,b)=>a.prazo.localeCompare(b.prazo));
+  const orcamentosCliente = orcamentos.filter(o=>o.clienteId===clienteId).sort((a,b)=>a.data.localeCompare(b.data));
+  const concluidosCliente = concluidos.filter(cc=>cc.clienteId===clienteId).sort((a,b)=>(b.concluidoEm||'').localeCompare(a.concluidoEm||''));
+
+  doc.autoTable({ head:[['Resumo','Valor']], body:[['Contatos', contatosCliente.length], ['Tentativas sem resposta', contatosCliente.filter(ct=>ct.semResposta).length], ['Retornos pendentes', retornosCliente.length], ['Solicitações pendentes', solicitacoesCliente.length], ['Orçamentos mensais', orcamentosCliente.length], ['Concluídos', concluidosCliente.length]], startY: Math.max(y, 82), theme:'grid', styles:{fontSize:8.5}, headStyles:{fillColor:[37,99,199]} });
+  let sy = doc.lastAutoTable.finalY + 8;
+  if (contatosCliente.length) doc.autoTable({ head:[['Data','Canal','Sem resposta','Descrição']], body:contatosCliente.slice(0,25).map(ct=>[fmtDate(ct.data),ct.canal,ct.semResposta?'Sim':'Não',ct.descricao]), startY:sy, theme:'striped', styles:{fontSize:8}, headStyles:{fillColor:[37,99,199]}, columnStyles:{3:{cellWidth:90}} });
+  sy = (doc.lastAutoTable?.finalY || sy) + 8;
+  if (solicitacoesCliente.length) doc.autoTable({ head:[['Prazo','Produto/Serviço','Prioridade','Solicitação']], body:solicitacoesCliente.map(sol=>[fmtDate(sol.prazo),sol.produto||'—',sol.prioridade||'normal',sol.descricao||'—']), startY:sy, theme:'striped', styles:{fontSize:8}, headStyles:{fillColor:[245,166,35]}, columnStyles:{3:{cellWidth:90}} });
+  sy = (doc.lastAutoTable?.finalY || sy) + 8;
+  if (concluidosCliente.length) doc.autoTable({ head:[['Concluído em','Tipo','Motivo','Observação']], body:concluidosCliente.slice(0,20).map(cc=>[fmtDate(cc.concluidoEm),cc.tipo,cc.motivo||'—',cc.obsConclusao||'—']), startY:sy, theme:'striped', styles:{fontSize:8}, headStyles:{fillColor:[34,140,92]} });
+  pdfFooter(doc);
+  doc.save(`ficha_cliente_${(c.nome||'cliente').replace(/\W+/g,'_')}_${today()}.pdf`);
+  notify('✓ Ficha individual gerada!','#0d3d2a');
+}
+
 function exportarPdf() {
   const tipo = document.getElementById('pdf-tipo').value;
   const range = pdfPeriodoRange();
-  if (range === undefined) return; // erro de validação já notificado
+  if (range === undefined) return;
 
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({orientation:'landscape', unit:'mm', format:'a4'});
@@ -3887,101 +4269,63 @@ function exportarPdf() {
     pdfHeader(doc, 'Relatório de Clientes');
     const body = clientes.map(c => {
       const uc = ultimoContato(c.id);
-      return [c.nome, c.empresa||'—', c.cnpj||'—', c.segmento||'—', c.setor||'—', [c.cidade,c.estado].filter(Boolean).join('/')||'—', uc?fmtDate(uc.data):'—', c.status];
+      const tent = contatos.filter(ct=>ct.clienteId===c.id && ct.semResposta).length;
+      return [c.nome, c.empresa||'—', c.cnpj||'—', c.segmento||'—', c.setor||'—', [c.cidade,c.estado].filter(Boolean).join('/')||'—', uc?fmtDate(uc.data):'—', tent, c.status];
     });
-    doc.autoTable({
-      head: [['Nome','Empresa','CNPJ','Segmento','Setor','Cidade/UF','Último Contato','Status']],
-      body, startY: 28, theme:'striped', headStyles:{fillColor:[37,99,199]}, styles:{fontSize:8.5}
-    });
-    pdfFooter(doc);
-    doc.save(`relatorio_clientes_${today()}.pdf`);
+    doc.autoTable({ head: [['Nome','Empresa','CNPJ','Segmento','Setor','Cidade/UF','Último Contato','Sem Resp.','Status']], body, startY: 28, theme:'striped', headStyles:{fillColor:[37,99,199]}, styles:{fontSize:8.5} });
+    pdfFooter(doc); doc.save(`relatorio_clientes_${today()}.pdf`);
   }
 
   if (tipo === 'contatos') {
-    let lista = [...contatos];
-    if (range) lista = lista.filter(c => c.data >= range[0] && c.data <= range[1]);
+    let lista = filtrarPorRange([...contatos], 'data', range);
     if (!lista.length) { notify('Nenhum contato no período selecionado','#7a1a1a'); return; }
     lista.sort((a,b)=>b.data.localeCompare(a.data));
     pdfHeader(doc, 'Relatório de Contatos' + (range?` (${fmtDate(range[0])} a ${fmtDate(range[1])})`:''));
-    const body = lista.map(ct => {
-      const c = clientes.find(x=>x.id===ct.clienteId);
-      return [fmtDate(ct.data), c?c.nome:'—', c?c.empresa||'—':'—', ct.canal, ct.descricao];
-    });
-    doc.autoTable({
-      head: [['Data','Cliente','Empresa','Canal','Descrição']],
-      body, startY: 28, theme:'striped', headStyles:{fillColor:[37,99,199]}, styles:{fontSize:8.5},
-      columnStyles:{4:{cellWidth:120}}
-    });
-    pdfFooter(doc);
-    doc.save(`relatorio_contatos_${today()}.pdf`);
+    const body = lista.map(ct => { const c = clientes.find(x=>x.id===ct.clienteId); return [fmtDate(ct.data), c?c.nome:'—', c?c.empresa||'—':'—', ct.canal, ct.semResposta?'Sim':'Não', ct.descricao]; });
+    doc.autoTable({ head: [['Data','Cliente','Empresa','Canal','Sem Resp.','Descrição']], body, startY: 28, theme:'striped', headStyles:{fillColor:[37,99,199]}, styles:{fontSize:8.5}, columnStyles:{5:{cellWidth:105}} });
+    pdfFooter(doc); doc.save(`relatorio_contatos_${today()}.pdf`);
   }
 
   if (tipo === 'retornos') {
-    let lista = [...agendamentos];
-    if (range) lista = lista.filter(a => a.data >= range[0] && a.data <= range[1]);
+    let lista = filtrarPorRange([...agendamentos], 'data', range);
     if (!lista.length) { notify('Nenhum retorno no período selecionado','#7a1a1a'); return; }
     lista.sort((a,b)=>a.data.localeCompare(b.data));
     pdfHeader(doc, 'Relatório de Retornos Agendados' + (range?` (${fmtDate(range[0])} a ${fmtDate(range[1])})`:''));
-    const body = lista.map(a => {
-      const c = clientes.find(x=>x.id===a.clienteId);
-      return [fmtDate(a.data), a.horario||'09:00', c?c.nome:'—', c?c.empresa||'—':'—', a.prioridade||'normal', a.motivo||'—'];
-    });
-    doc.autoTable({
-      head: [['Data','Horário','Cliente','Empresa','Prioridade','Motivo']],
-      body, startY: 28, theme:'striped', headStyles:{fillColor:[37,99,199]}, styles:{fontSize:8.5}
-    });
-    pdfFooter(doc);
-    doc.save(`relatorio_retornos_${today()}.pdf`);
+    const body = lista.map(a => { const c = clientes.find(x=>x.id===a.clienteId); return [fmtDate(a.data), a.horario||'09:00', c?c.nome:'—', c?c.empresa||'—':'—', a.prioridade||'normal', a.motivo||'—']; });
+    doc.autoTable({ head: [['Data','Horário','Cliente','Empresa','Prioridade','Motivo']], body, startY: 28, theme:'striped', headStyles:{fillColor:[37,99,199]}, styles:{fontSize:8.5} });
+    pdfFooter(doc); doc.save(`relatorio_retornos_${today()}.pdf`);
   }
 
   if (tipo === 'solicitacoes') {
-    let lista = [...solicitacoesOrcamento];
-    if (range) lista = lista.filter(sol => sol.prazo >= range[0] && sol.prazo <= range[1]);
-    lista.sort((a,b)=>a.prazo.localeCompare(b.prazo));
-    const header = ['Prazo','Data da Solicitação','Cliente/Solicitante','Empresa','Canal','Prioridade','Descrição','Observações','Vinculado a Cliente'];
-    const rows = [header, ...lista.map(sol => {
-      const d = dadosSolicitacaoCliente(sol);
-      return [fmtDate(sol.prazo), fmtDate(sol.dataSolicitacao), d.nome, d.empresa||'', sol.canal||'', sol.prioridade||'normal', sol.descricao||'', sol.obs||'', sol.clienteId?'Sim':'Não'];
-    })];
-    downloadCSV(`solicitacoes_orcamento_${today()}.csv`, rows);
-    closeModal('modalExportarPdf');
-    notify('✓ Exportado!','#0d3d2a'); return;
-  }
-  if (tipo === 'solicitacoes') {
-    let lista = [...solicitacoesOrcamento];
-    if (range) lista = lista.filter(sol => sol.prazo >= range[0] && sol.prazo <= range[1]);
+    let lista = filtrarPorRange([...solicitacoesOrcamento], 'prazo', range);
     if (!lista.length) { notify('Nenhuma solicitação no período selecionado','#7a1a1a'); return; }
     lista.sort((a,b)=>a.prazo.localeCompare(b.prazo));
     pdfHeader(doc, 'Relatório de Solicitações de Orçamento' + (range?` (${fmtDate(range[0])} a ${fmtDate(range[1])})`:''));
-    const body = lista.map(sol => {
-      const d = dadosSolicitacaoCliente(sol);
-      return [fmtDate(sol.prazo), fmtDate(sol.dataSolicitacao), d.nome, d.empresa||'—', sol.canal||'—', sol.prioridade||'normal', sol.descricao||'—'];
-    });
-    doc.autoTable({
-      head: [['Prazo','Solicitado em','Cliente/Solicitante','Empresa','Canal','Prioridade','Descrição']],
-      body, startY: 28, theme:'striped', headStyles:{fillColor:[245,166,35]}, styles:{fontSize:8.5},
-      columnStyles:{6:{cellWidth:90}}
-    });
-    pdfFooter(doc);
-    doc.save(`relatorio_solicitacoes_orcamento_${today()}.pdf`);
+    const body = lista.map(sol => { const d = dadosSolicitacaoCliente(sol); return [fmtDate(sol.prazo), fmtDate(sol.dataSolicitacao), d.nome, d.solicitante||'—', d.empresa||'—', d.produto||'—', sol.prioridade||'normal', sol.descricao||'—']; });
+    doc.autoTable({ head: [['Prazo','Solicitado em','Cliente','Solicitante','Empresa','Produto/Serviço','Prioridade','Descrição']], body, startY: 28, theme:'striped', headStyles:{fillColor:[245,166,35]}, styles:{fontSize:8}, columnStyles:{7:{cellWidth:75}} });
+    pdfFooter(doc); doc.save(`relatorio_solicitacoes_orcamento_${today()}.pdf`);
   }
 
   if (tipo === 'orcamentos') {
-    let lista = [...orcamentos];
-    if (range) lista = lista.filter(o => o.data >= range[0] && o.data <= range[1]);
+    let lista = filtrarPorRange([...orcamentos], 'data', range);
     if (!lista.length) { notify('Nenhum orçamento no período selecionado','#7a1a1a'); return; }
     lista.sort((a,b)=>a.data.localeCompare(b.data));
     pdfHeader(doc, 'Relatório de Orçamentos Mensais' + (range?` (${fmtDate(range[0])} a ${fmtDate(range[1])})`:''));
-    const body = lista.map(o => {
-      const c = clientes.find(x=>x.id===o.clienteId);
-      return [fmtDate(o.data), o.horario||'09:00', c?c.nome:'—', c?c.empresa||'—':'—', o.repetir?'Sim':'Não', o.obs||'—'];
-    });
-    doc.autoTable({
-      head: [['Data','Horário','Cliente','Empresa','Mensal','Observação']],
-      body, startY: 28, theme:'striped', headStyles:{fillColor:[108,80,201]}, styles:{fontSize:8.5}
-    });
-    pdfFooter(doc);
-    doc.save(`relatorio_orcamentos_${today()}.pdf`);
+    const body = lista.map(o => { const c = clientes.find(x=>x.id===o.clienteId); return [fmtDate(o.data), o.horario||'09:00', c?c.nome:'—', c?c.empresa||'—':'—', o.repetir?'Sim':'Não', o.obs||'—']; });
+    doc.autoTable({ head: [['Data','Horário','Cliente','Empresa','Mensal','Observação']], body, startY: 28, theme:'striped', headStyles:{fillColor:[108,80,201]}, styles:{fontSize:8.5} });
+    pdfFooter(doc); doc.save(`relatorio_orcamentos_${today()}.pdf`);
+  }
+
+  if (tipo === 'relatorio_mensal') {
+    const r = rangeRelatorioMensal(range);
+    pdfHeader(doc, `Relatório Mensal Completo (${fmtDate(r[0])} a ${fmtDate(r[1])})`);
+    doc.autoTable({ head:[['Indicador','Valor']], body: resumoMensalRows(r).slice(1), startY:28, theme:'grid', headStyles:{fillColor:[37,99,199]}, styles:{fontSize:9} });
+    let y = doc.lastAutoTable.finalY + 8;
+    const contatosMes = filtrarPorRange([...contatos], 'data', r).slice(0, 40);
+    if (contatosMes.length) { doc.autoTable({ head:[['Data','Cliente','Canal','Sem Resp.','Descrição']], body:contatosMes.map(ct=>{const c=clientes.find(x=>x.id===ct.clienteId); return [fmtDate(ct.data),c?c.nome:'—',ct.canal,ct.semResposta?'Sim':'Não',ct.descricao];}), startY:y, theme:'striped', headStyles:{fillColor:[37,99,199]}, styles:{fontSize:7.5}, columnStyles:{4:{cellWidth:110}} }); y = doc.lastAutoTable.finalY + 8; }
+    const solMes = filtrarPorRange([...solicitacoesOrcamento], 'prazo', r).slice(0, 40);
+    if (solMes.length) { doc.autoTable({ head:[['Prazo','Cliente','Produto/Serviço','Prioridade','Solicitação']], body:solMes.map(sol=>{const d=dadosSolicitacaoCliente(sol); return [fmtDate(sol.prazo),d.nome,d.produto||'—',sol.prioridade||'normal',sol.descricao||'—'];}), startY:y, theme:'striped', headStyles:{fillColor:[245,166,35]}, styles:{fontSize:7.5}, columnStyles:{4:{cellWidth:110}} }); }
+    pdfFooter(doc); doc.save(`relatorio_mensal_completo_${today()}.pdf`);
   }
 
   closeModal('modalExportarPdf');
