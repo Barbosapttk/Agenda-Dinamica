@@ -953,6 +953,12 @@ body.auth-locked .auth-screen { display: flex; }
 /* ===== NOVAS FUNÇÕES COMERCIAIS ===== */
 .fixed-note-card { background: var(--warning-bg); border: 1px solid rgba(245,166,35,0.28); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 16px; color: var(--warning); font-size: 12.8px; line-height: 1.45; }
 .fixed-note-card .fixed-note-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .7px; margin-bottom: 6px; color: var(--warning); display:flex; align-items:center; gap:6px; }
+
+.concluir-summary-card { background: linear-gradient(135deg, var(--success-bg), var(--surface2)); border: 1px solid rgba(34,199,138,0.26); border-radius: var(--radius); padding: 14px; margin-bottom: 14px; display:flex; gap:12px; align-items:flex-start; }
+.concluir-summary-icon { width: 34px; height: 34px; border-radius: 10px; background: var(--success-bg); color: var(--success); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.concluir-summary-title { font-size: 13.5px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+.concluir-summary-text { font-size: 12.5px; color: var(--text2); line-height: 1.45; }
+.concluir-help { background: var(--accent-light); border: 1px solid rgba(59,125,232,0.22); border-radius: var(--radius-sm); padding: 10px 12px; font-size: 12.5px; color: var(--text2); line-height: 1.45; margin-top: 8px; }
 .quick-actions-client { display:flex; gap:7px; flex-wrap:wrap; margin-bottom:20px; }
 .client-history-summary { display:grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap:8px; margin: 12px 0 14px; }
 .client-history-stat { background: var(--surface2); border:1px solid var(--border); border-radius: var(--radius-sm); padding:9px 10px; }
@@ -2012,14 +2018,24 @@ body.auth-locked .auth-screen { display: flex; }
 <div class="modal-overlay" id="modalConcluir">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title"><i class="fa-solid fa-circle-check" style="color:var(--success);margin-right:8px"></i>Concluir Retorno</div>
+      <div class="modal-title" id="modal-concluir-title"><i class="fa-solid fa-circle-check" style="color:var(--success);margin-right:8px"></i>Concluir Retorno</div>
       <button class="modal-close" onclick="closeModal('modalConcluir')"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body">
       <input type="hidden" id="concluir-id">
       <input type="hidden" id="concluir-tipo">
+      <div id="concluir-resumo" class="concluir-summary-card" style="display:none"></div>
       <div class="form-grid">
-        <div class="form-group full"><label>Como foi o retorno?</label><textarea id="concluir-obs" placeholder="Descreva o resultado, o que foi acordado, próximos passos..."></textarea></div>
+        <div class="form-group" id="concluir-canal-wrap" style="display:none"><label>Canal do envio/contato</label>
+          <select id="concluir-canal">
+            <option value="whatsapp">WhatsApp</option>
+            <option value="email">E-mail</option>
+            <option value="telefone">Telefone</option>
+            <option value="presencial">Presencial</option>
+            <option value="videochamada">Videochamada</option>
+          </select>
+        </div>
+        <div class="form-group full"><label id="concluir-obs-label">Como foi o retorno?</label><textarea id="concluir-obs" placeholder="Descreva o resultado, o que foi acordado, próximos passos..."></textarea><div id="concluir-help" class="concluir-help" style="display:none"></div></div>
         <div class="form-group full" style="background:var(--accent-light);border:1px solid rgba(59,125,232,0.2);border-radius:var(--radius-sm);padding:12px">
           <label style="display:flex;align-items:center;gap:8px;text-transform:none;font-size:13.5px;color:var(--text);margin-bottom:8px">
             <input type="checkbox" id="concluir-agendar-novo" style="width:auto" onchange="toggleNovoRetorno()"> Já agendar próximo retorno com este cliente
@@ -2665,6 +2681,7 @@ function salvarCliente() {
     anexos: [...pdfsTempCliente]
   };
   let clienteSalvoId = editClienteId;
+  let fluxoSolicitacaoId = null;
   if (editClienteId !== null) {
     const idx = clientes.findIndex(c=>c.id===editClienteId);
     if (idx !== -1) {
@@ -2686,6 +2703,7 @@ function salvarCliente() {
         sol.nome = novoCliente.nome;
         sol.empresa = novoCliente.empresa || sol.empresa || '';
         sol.atualizadoEm = today();
+        fluxoSolicitacaoId = solId;
       }
     }
     notify('✓ Cliente cadastrado!', '#0d3d2a');
@@ -2700,9 +2718,15 @@ function salvarCliente() {
   document.querySelectorAll('input[name="c-ie"]')[1].checked = true;
   document.querySelectorAll('input[name="c-pedido"]')[1].checked = true;
   pdfsTempCliente = []; editClienteId = null;
+  delete document.getElementById('modalCliente').dataset.fromSolicitacaoId;
   document.getElementById('c-pdf-list').innerHTML = '';
-  renderDashboard(); renderClientes(); renderSolicitacoesTabela();
-  if (clienteSalvoId) abrirDetalhe(clienteSalvoId);
+  renderDashboard(); renderClientes(); renderSolicitacoesTabela(); renderAgenda();
+  if (fluxoSolicitacaoId) {
+    closePanel();
+    setTimeout(()=>abrirFluxoSolicitacao(fluxoSolicitacaoId), 180);
+  } else if (clienteSalvoId) {
+    abrirDetalhe(clienteSalvoId);
+  }
 }
 
 function editarCliente(id) {
@@ -3141,7 +3165,7 @@ function abrirFluxoSolicitacao(id) {
     <button class="fluxo-next-card ${bloqueado?'disabled':''}" type="button" onclick="registrarContatoFromSolicitacao(${sol.id})"><i class="fa-solid fa-phone"></i><span><strong>Registrar contato</strong><span>Transformar este pedido em registro no histórico do cliente.</span></span></button>
     <button class="fluxo-next-card ${bloqueado?'disabled':''}" type="button" onclick="agendarRetornoFromSolicitacao(${sol.id})"><i class="fa-regular fa-calendar-plus"></i><span><strong>Agendar retorno</strong><span>Criar próximo passo para acompanhar este orçamento.</span></span></button>
     <button class="fluxo-next-card ${bloqueado?'disabled':''}" type="button" onclick="criarOrcamentoRecorrenteFromSolicitacao(${sol.id})"><i class="fa-solid fa-repeat"></i><span><strong>Orçamento recorrente</strong><span>Criar acompanhamento periódico para este cliente.</span></span></button>
-    <button class="fluxo-next-card" type="button" onclick="marcarSolicitacaoFeita(${sol.id}); closeModal('modalFluxoSolicitacao')"><i class="fa-solid fa-check"></i><span><strong>Marcar como feito</strong><span>Enviar para o histórico de solicitações concluídas.</span></span></button>
+    <button class="fluxo-next-card" type="button" onclick="abrirConcluirSolicitacao(${sol.id})"><i class="fa-solid fa-check"></i><span><strong>Marcar como feito</strong><span>Enviar para o histórico de solicitações concluídas.</span></span></button>
   `;
   openModal('modalFluxoSolicitacao');
 }
@@ -3276,10 +3300,31 @@ function excluirSolicitacaoOrcamento(id) {
   notify('Solicitação excluída.','#7a1a1a');
 }
 
-function marcarSolicitacaoFeita(id) {
+function registrarContatoOrcamentoEnviado(clienteId, origem, texto, canal='whatsapp') {
+  if (!clienteId) return false;
+  contatos.push({
+    id: Date.now() + Math.floor(Math.random()*1000),
+    clienteId,
+    data: today(),
+    canal,
+    descricao: texto,
+    semResposta: false,
+    editado: false,
+    edicoes: [],
+    origemOrcamento: origem
+  });
+  return true;
+}
+
+function abrirConcluirSolicitacao(id) {
   const sol = solicitacoesOrcamento.find(x => x.id === id);
   if (!sol) return;
-  const obsFinal = prompt('Observação sobre o orçamento feito/enviado (opcional):', '') || '';
+  abrirConcluir(id, 'solicitacao_orcamento');
+}
+
+function marcarSolicitacaoFeita(id, obsFinal='', canalContato='whatsapp') {
+  const sol = solicitacoesOrcamento.find(x => x.id === id);
+  if (!sol) return;
   const dados = dadosSolicitacaoCliente(sol);
   concluidos.push({
     id: Date.now(),
@@ -3294,13 +3339,21 @@ function marcarSolicitacaoFeita(id) {
     prioridade: sol.prioridade || 'normal',
     canal: sol.canal || '',
     motivo: sol.descricao,
-    obsConclusao: obsFinal.trim() || sol.obs || '',
+    obsConclusao: (obsFinal || '').trim() || sol.obs || '',
     concluidoEm: today()
   });
+
+  const contatoRegistrado = registrarContatoOrcamentoEnviado(
+    sol.clienteId,
+    'solicitacao_orcamento',
+    `Orçamento feito/enviado a partir de uma solicitação registrada.\nProduto/serviço: ${sol.produto || 'Não informado'}\nSolicitação original: ${sol.descricao || '—'}${obsFinal ? `\nObservação do envio: ${obsFinal}` : ''}`,
+    canalContato || sol.canal || 'whatsapp'
+  );
+
   solicitacoesOrcamento = solicitacoesOrcamento.filter(s => s.id !== id);
   save();
-  renderSolicitacoesTabela(); renderDashboard(); renderHistorico(); renderAgenda();
-  notify('✓ Solicitação marcada como feita!','#0d3d2a');
+  renderSolicitacoesTabela(); renderDashboard(); renderHistorico(); renderAgenda(); renderClientes();
+  notify(contatoRegistrado ? '✓ Orçamento feito e contato registrado no histórico!' : '✓ Solicitação marcada como feita!', '#0d3d2a');
 }
 
 function renderSolicitacaoCards(list) {
@@ -3334,7 +3387,7 @@ function renderSolicitacaoCards(list) {
       <div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-top:8px;flex-wrap:wrap">
         ${!sol.clienteId?`<button class="btn btn-ghost btn-sm" title="Criar cliente" onclick="criarClienteFromSolicitacao(${sol.id})"><i class="fa-solid fa-user-plus"></i></button>`:''}
         <button class="btn btn-warning btn-sm" title="Editar" onclick="editarSolicitacaoOrcamento(${sol.id})"><i class="fa-solid fa-pen"></i></button>
-        <button class="btn btn-success btn-sm" onclick="marcarSolicitacaoFeita(${sol.id})"><i class="fa-solid fa-check"></i> Feito</button>
+        <button class="btn btn-success btn-sm" onclick="abrirConcluirSolicitacao(${sol.id})"><i class="fa-solid fa-check"></i> Feito</button>
       </div>
     </div>`;
   }).join('');
@@ -3417,7 +3470,7 @@ function renderSolicitacoesTabela() {
       <td style="color:var(--text2);max-width:180px">${d.produto || '—'}</td>
       <td style="color:var(--text2);max-width:260px">${(sol.descricao||'').length>90?sol.descricao.slice(0,90)+'…':(sol.descricao||'—')}</td>
       <td><div class="action-row">
-        ${sol._concluida ? '<span class="badge badge-success"><i class="fa-solid fa-check" style="margin-right:3px"></i>Concluída</span>' : `${!sol.clienteId?`<button class="btn btn-ghost btn-sm" title="Criar cliente" onclick="criarClienteFromSolicitacao(${sol.id})"><i class="fa-solid fa-user-plus"></i></button>`:''}<button class="btn btn-warning btn-sm" title="Editar" onclick="editarSolicitacaoOrcamento(${sol.id})"><i class="fa-solid fa-pen"></i></button><button class="btn btn-success btn-sm" title="Marcar como feito" onclick="marcarSolicitacaoFeita(${sol.id})"><i class="fa-solid fa-check"></i></button><button class="btn btn-danger btn-sm" title="Excluir" onclick="excluirSolicitacaoOrcamento(${sol.id})"><i class="fa-solid fa-trash"></i></button>`}
+        ${sol._concluida ? '<span class="badge badge-success"><i class="fa-solid fa-check" style="margin-right:3px"></i>Concluída</span>' : `${!sol.clienteId?`<button class="btn btn-ghost btn-sm" title="Criar cliente" onclick="criarClienteFromSolicitacao(${sol.id})"><i class="fa-solid fa-user-plus"></i></button>`:''}<button class="btn btn-warning btn-sm" title="Editar" onclick="editarSolicitacaoOrcamento(${sol.id})"><i class="fa-solid fa-pen"></i></button><button class="btn btn-success btn-sm" title="Marcar como feito" onclick="abrirConcluirSolicitacao(${sol.id})"><i class="fa-solid fa-check"></i></button><button class="btn btn-danger btn-sm" title="Excluir" onclick="excluirSolicitacaoOrcamento(${sol.id})"><i class="fa-solid fa-trash"></i></button>`}
       </div></td>
     </tr>`;
   }).join('');
@@ -3488,12 +3541,58 @@ function toggleNovoRetorno() {
   document.getElementById('concluir-novo-retorno-fields').style.display = checked ? 'block' : 'none';
 }
 
-function abrirConcluir(id, tipo) {
-  if (tipo === 'orcamento') {
-    // Orçamento conclui direto, sem perguntar observação
-    concluirOrcamentoDireto(id);
-    return;
+function configurarModalConclusao(tipo, item) {
+  const title = document.getElementById('modal-concluir-title');
+  const resumo = document.getElementById('concluir-resumo');
+  const label = document.getElementById('concluir-obs-label');
+  const obs = document.getElementById('concluir-obs');
+  const canalWrap = document.getElementById('concluir-canal-wrap');
+  const canal = document.getElementById('concluir-canal');
+  const help = document.getElementById('concluir-help');
+
+  const cliente = item?.clienteId ? clientes.find(c=>c.id===item.clienteId) : null;
+  const nomeCliente = cliente ? cliente.nome : (item?.nome || item?.nomeAvulso || 'Cliente não vinculado');
+  const isOrcamento = tipo === 'orcamento' || tipo === 'solicitacao_orcamento';
+  const icon = isOrcamento ? 'fa-file-invoice-dollar' : 'fa-circle-check';
+
+  if (tipo === 'solicitacao_orcamento') {
+    title.innerHTML = '<i class="fa-solid fa-file-invoice-dollar" style="color:var(--success);margin-right:8px"></i>Marcar orçamento como feito';
+    label.textContent = 'Observação sobre o orçamento feito/enviado (opcional)';
+    obs.placeholder = 'Ex: orçamento enviado por WhatsApp, cliente pediu retorno amanhã, faltou algum item...';
+    canalWrap.style.display = 'flex';
+    canal.value = item?.canal || 'whatsapp';
+    help.style.display = 'block';
+    help.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:6px"></i>Ao confirmar, esta solicitação sairá dos pendentes e será registrado automaticamente um contato no histórico do cliente, se houver cliente vinculado.';
+    resumo.style.display = 'flex';
+    resumo.innerHTML = `<div class="concluir-summary-icon"><i class="fa-solid ${icon}"></i></div><div><div class="concluir-summary-title">${nomeCliente}</div><div class="concluir-summary-text">Produto/serviço: ${item?.produto || 'Não informado'}<br>Prazo original: ${fmtDate(item?.prazo)}</div></div>`;
+  } else if (tipo === 'orcamento') {
+    title.innerHTML = '<i class="fa-solid fa-repeat" style="color:var(--purple);margin-right:8px"></i>Concluir orçamento recorrente';
+    label.textContent = 'Observação sobre o orçamento recorrente feito/enviado (opcional)';
+    obs.placeholder = 'Ex: orçamento recorrente enviado, combinar novo retorno, cliente pediu ajuste...';
+    canalWrap.style.display = 'flex';
+    canal.value = 'whatsapp';
+    help.style.display = 'block';
+    help.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:6px"></i>Ao confirmar, o sistema também registrará um contato no histórico do cliente. Se este orçamento for recorrente, o próximo será criado automaticamente para daqui 30 dias.';
+    resumo.style.display = 'flex';
+    resumo.innerHTML = `<div class="concluir-summary-icon"><i class="fa-solid ${icon}"></i></div><div><div class="concluir-summary-title">${nomeCliente}</div><div class="concluir-summary-text">Data do orçamento recorrente: ${fmtDate(item?.data)}<br>Observação: ${item?.obs || '—'}</div></div>`;
+  } else {
+    title.innerHTML = '<i class="fa-solid fa-circle-check" style="color:var(--success);margin-right:8px"></i>Concluir Retorno';
+    label.textContent = 'Como foi o retorno?';
+    obs.placeholder = 'Descreva o resultado, o que foi acordado, próximos passos...';
+    canalWrap.style.display = 'none';
+    help.style.display = 'none';
+    resumo.style.display = 'none';
+    resumo.innerHTML = '';
   }
+}
+
+function abrirConcluir(id, tipo) {
+  let item = null;
+  if (tipo === 'orcamento') item = orcamentos.find(o=>o.id===id);
+  else if (tipo === 'solicitacao_orcamento') item = solicitacoesOrcamento.find(s=>s.id===id);
+  else item = agendamentos.find(a=>a.id===id);
+  if (!item) return;
+
   document.getElementById('concluir-id').value = id;
   document.getElementById('concluir-tipo').value = tipo;
   document.getElementById('concluir-obs').value = '';
@@ -3502,51 +3601,64 @@ function abrirConcluir(id, tipo) {
   document.getElementById('concluir-novo-data').value = '';
   document.getElementById('concluir-novo-horario').value = '09:00';
   document.getElementById('concluir-novo-motivo').value = '';
+  configurarModalConclusao(tipo, item);
   openModal('modalConcluir');
 }
 
 function concluirOrcamentoDireto(id) {
-  const item = orcamentos.find(o=>o.id===id);
-  if (!item) return;
-  concluidos.push({ id: Date.now(), tipo:'orcamento', clienteId:item.clienteId, dataOriginal:item.data, motivo:item.obs, obsConclusao:'', concluidoEm: today() });
-  if (item.repetir) {
-    orcamentos.push({ ...item, id: Date.now()+1, data: addDays(item.data, 30) });
-  }
-  orcamentos = orcamentos.filter(o=>o.id!==id);
-  save();
-  renderAgenda(); renderDashboard(); renderOrcamentosTabela();
-  notify('✓ Orçamento concluído!','#0d3d2a');
+  abrirConcluir(id, 'orcamento');
 }
 
 function confirmarConclusao() {
   const id = +document.getElementById('concluir-id').value;
   const tipo = document.getElementById('concluir-tipo').value;
   const obsConclusao = document.getElementById('concluir-obs').value.trim();
-  const item = agendamentos.find(a=>a.id===id);
-  if (item) {
-    concluidos.push({ id: Date.now(), tipo:'retorno', clienteId:item.clienteId, dataOriginal:item.data, motivo:item.motivo, obsConclusao, concluidoEm: today() });
-    agendamentos = agendamentos.filter(a=>a.id!==id);
-    // Agendar próximo retorno se marcado
-    if (document.getElementById('concluir-agendar-novo').checked) {
-      const novaData = document.getElementById('concluir-novo-data').value;
-      if (novaData) {
-        agendamentos.push({
-          id: Date.now()+1,
-          clienteId: item.clienteId,
-          data: novaData,
-          horario: document.getElementById('concluir-novo-horario').value || '09:00',
-          motivo: document.getElementById('concluir-novo-motivo').value.trim() || 'Retorno agendado',
-          prioridade: 'normal',
-          criadoEm: today()
-        });
-      } else {
-        notify('Conclusão salva, mas o próximo retorno não foi agendado (data vazia)','#854f0b');
+  const canalContato = document.getElementById('concluir-canal')?.value || 'whatsapp';
+
+  if (tipo === 'solicitacao_orcamento') {
+    marcarSolicitacaoFeita(id, obsConclusao, canalContato);
+  } else if (tipo === 'orcamento') {
+    const item = orcamentos.find(o=>o.id===id);
+    if (!item) return;
+    concluidos.push({ id: Date.now(), tipo:'orcamento', clienteId:item.clienteId, dataOriginal:item.data, motivo:item.obs, obsConclusao, concluidoEm: today() });
+    registrarContatoOrcamentoEnviado(
+      item.clienteId,
+      'orcamento_recorrente',
+      `Orçamento recorrente feito/enviado.\nData do acompanhamento: ${fmtDate(item.data)}\nObservação original: ${item.obs || '—'}${obsConclusao ? `\nObservação do envio: ${obsConclusao}` : ''}`,
+      canalContato
+    );
+    if (item.repetir) {
+      orcamentos.push({ ...item, id: Date.now()+1, data: addDays(item.data, 30) });
+    }
+    orcamentos = orcamentos.filter(o=>o.id!==id);
+  } else {
+    const item = agendamentos.find(a=>a.id===id);
+    if (item) {
+      concluidos.push({ id: Date.now(), tipo:'retorno', clienteId:item.clienteId, dataOriginal:item.data, motivo:item.motivo, obsConclusao, concluidoEm: today() });
+      agendamentos = agendamentos.filter(a=>a.id!==id);
+      // Agendar próximo retorno se marcado
+      if (document.getElementById('concluir-agendar-novo').checked) {
+        const novaData = document.getElementById('concluir-novo-data').value;
+        if (novaData) {
+          agendamentos.push({
+            id: Date.now()+1,
+            clienteId: item.clienteId,
+            data: novaData,
+            horario: document.getElementById('concluir-novo-horario').value || '09:00',
+            motivo: document.getElementById('concluir-novo-motivo').value.trim() || 'Retorno agendado',
+            prioridade: 'normal',
+            criadoEm: today()
+          });
+        } else {
+          notify('Conclusão salva, mas o próximo retorno não foi agendado (data vazia)','#854f0b');
+        }
       }
     }
   }
+
   save(); closeModal('modalConcluir');
-  renderAgenda(); renderDashboard(); renderOrcamentosTabela();
-  notify('✓ Concluído e registrado no histórico!','#0d3d2a');
+  renderAgenda(); renderDashboard(); renderOrcamentosTabela(); renderSolicitacoesTabela(); renderHistorico(); renderClientes();
+  if (tipo !== 'solicitacao_orcamento') notify('✓ Concluído e registrado no histórico!','#0d3d2a');
 }
 
 function marcarFeito(id) { abrirConcluir(id, 'retorno'); }
@@ -3805,7 +3917,7 @@ function criarAcoesDoDia() {
         detalhe: s.descricao || 'Fazer orçamento solicitado.',
         classe: s.prazo < hoje ? 'atrasado' : s.prazo === hoje ? 'hoje' : 'urgente',
         score: (s.prazo < hoje ? 0 : s.prioridade === 'urgente' ? 1 : 2),
-        htmlAcoes: `<button class="btn btn-success btn-sm" onclick="marcarSolicitacaoFeita(${s.id})"><i class="fa-solid fa-check"></i> Feito</button><button class="btn btn-warning btn-sm" onclick="editarSolicitacaoOrcamento(${s.id})"><i class="fa-solid fa-pen"></i> Editar</button>`
+        htmlAcoes: `<button class="btn btn-success btn-sm" onclick="abrirConcluirSolicitacao(${s.id})"><i class="fa-solid fa-check"></i> Feito</button><button class="btn btn-warning btn-sm" onclick="editarSolicitacaoOrcamento(${s.id})"><i class="fa-solid fa-pen"></i> Editar</button>`
       });
     }
   });
@@ -4625,7 +4737,7 @@ function renderHistoricoCompletoCliente(clienteId) {
       ],
       meta: sol.dataSolicitacao ? `Solicitado em ${fmtDate(sol.dataSolicitacao)}${sol.canal ? ' • ' + sol.canal : ''}` : '',
       desc: [sol.descricao || 'Solicitação registrada.', sol.obs ? `Obs.: ${sol.obs}` : ''].filter(Boolean).join('\\n'),
-      actions: `<button class="btn btn-success btn-sm" onclick="marcarSolicitacaoFeita(${sol.id})"><i class="fa-solid fa-check"></i> Feito</button><button class="btn btn-warning btn-sm" onclick="editarSolicitacaoOrcamento(${sol.id})"><i class="fa-solid fa-pen"></i> Editar</button><button class="btn btn-danger btn-sm" onclick="excluirSolicitacaoOrcamento(${sol.id})"><i class="fa-solid fa-trash"></i> Excluir</button>`
+      actions: `<button class="btn btn-success btn-sm" onclick="abrirConcluirSolicitacao(${sol.id})"><i class="fa-solid fa-check"></i> Feito</button><button class="btn btn-warning btn-sm" onclick="editarSolicitacaoOrcamento(${sol.id})"><i class="fa-solid fa-pen"></i> Editar</button><button class="btn btn-danger btn-sm" onclick="excluirSolicitacaoOrcamento(${sol.id})"><i class="fa-solid fa-trash"></i> Excluir</button>`
     });
   });
 
