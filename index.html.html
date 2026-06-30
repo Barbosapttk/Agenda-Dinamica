@@ -672,6 +672,7 @@ img, svg, video { max-width: 100%; }
 
   #dash-hoje,
   #dash-proximos,
+  #dash-solicitacoes-pendentes,
   #dash-orcamentos-semana {
     grid-template-columns: 1fr !important;
     padding: 12px !important;
@@ -949,6 +950,142 @@ body.auth-locked .auth-screen { display: flex; }
 .backup-actions { display:grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap:8px; margin-top:10px; }
 @media (max-width: 760px) { .backup-actions { grid-template-columns:1fr; } .client-history-summary { grid-template-columns:1fr 1fr; } .quick-actions-client .btn { flex:1 1 100%; justify-content:center; } }
 
+
+
+/* ===== LAYOUT OPERACIONAL / AÇÕES DO DIA ===== */
+.daily-hero, .settings-hero {
+  background: linear-gradient(135deg, var(--surface), var(--surface2));
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+  box-shadow: var(--shadow);
+}
+.daily-eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: .9px; color: var(--text3); font-weight: 800; margin-bottom: 5px; }
+.daily-hero h2, .settings-hero h2 { font-size: 24px; margin: 0 0 4px; letter-spacing: -0.6px; }
+.daily-hero p, .settings-hero p { color: var(--text2); font-size: 13.5px; line-height: 1.5; }
+.daily-date, .settings-pill { color: var(--text2); background: var(--surface3); border: 1px solid var(--border); border-radius: 999px; padding: 8px 12px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.daily-priority-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 18px; }
+.daily-priority-card, .sol-summary-card {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 15px 16px;
+  text-align: left;
+  min-height: 86px;
+  box-shadow: var(--shadow);
+}
+.sol-summary-card { cursor: pointer; min-height: 74px; transition: transform .12s ease, border-color .12s ease; }
+.sol-summary-card:hover { transform: translateY(-1px); border-color: var(--border2); }
+.daily-priority-card.danger, .sol-summary-card.danger { border-top: 3px solid var(--danger); }
+.daily-priority-card.warning, .sol-summary-card.warning { border-top: 3px solid var(--warning); }
+.daily-priority-card.danger-soft, .sol-summary-card.danger-soft { border-top: 3px solid var(--danger); background: var(--danger-bg); }
+.daily-priority-card.purple, .sol-summary-card.purple { border-top: 3px solid var(--purple); }
+.sol-summary-card.success { border-top: 3px solid var(--success); }
+.daily-priority-label { font-size: 11px; color: var(--text3); font-weight: 800; text-transform: uppercase; letter-spacing: .65px; display: flex; gap: 7px; align-items: center; }
+.daily-priority-value { font-size: 30px; font-weight: 850; margin-top: 8px; color: var(--text); }
+.daily-actions-list { padding: 14px 16px; display: grid; gap: 10px; }
+.daily-action-item { display: grid; grid-template-columns: 36px 1fr auto; gap: 12px; align-items: center; background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+.daily-action-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: var(--surface3); }
+.daily-action-item.atrasado { border-left: 4px solid var(--danger); }
+.daily-action-item.hoje { border-left: 4px solid var(--warning); }
+.daily-action-item.urgente { border-left: 4px solid var(--danger); }
+.daily-action-item.normal { border-left: 4px solid var(--accent); }
+.daily-action-title { font-weight: 800; font-size: 13.5px; margin-bottom: 3px; }
+.daily-action-meta { font-size: 12px; color: var(--text3); line-height: 1.45; }
+.dashboard-grid-2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.dash-card-grid { padding: 16px; display: grid; grid-template-columns: repeat(auto-fill,minmax(220px,1fr)); gap: 12px; }
+.productivity-summary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 16px 20px; }
+.productivity-summary div { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; }
+.productivity-summary span { display:block; font-size: 10.5px; color: var(--text3); font-weight: 800; text-transform: uppercase; letter-spacing: .5px; }
+.productivity-summary strong { display:block; font-size: 20px; margin-top: 3px; }
+
+/* SOLICITAÇÕES - VISUAL DE TRIAGEM */
+.solicitacoes-overview { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; padding: 14px 20px; border-bottom: 1px solid var(--border); background: var(--surface2); }
+.sol-summary-card span { display: block; font-size: 10.5px; color: var(--text3); font-weight: 800; text-transform: uppercase; letter-spacing: .55px; }
+.sol-summary-card strong { display: block; font-size: 24px; margin-top: 6px; color: var(--text); }
+
+/* CONFIGURAÇÕES */
+.settings-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.settings-card-body { padding: 18px 20px; }
+.settings-card-body p { color: var(--text2); font-size: 13px; line-height: 1.5; margin-bottom: 14px; }
+.settings-actions { display:flex; gap: 9px; flex-wrap: wrap; }
+.danger-zone { border-color: rgba(240,82,82,0.3); }
+.settings-stats { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; padding: 16px 20px; }
+.settings-stats div { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+.settings-stats span { display:block; color: var(--text3); font-size: 10px; text-transform: uppercase; font-weight: 800; letter-spacing: .6px; }
+.settings-stats strong { display:block; font-size: 22px; margin-top: 5px; }
+
+@media (max-width: 900px) {
+  .daily-hero, .settings-hero { flex-direction: column; align-items: flex-start; padding: 16px; }
+  .daily-priority-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dashboard-grid-2, .settings-grid { grid-template-columns: 1fr; }
+  .solicitacoes-overview { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 12px; }
+  .settings-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 12px; }
+  .daily-action-item { grid-template-columns: 32px 1fr; }
+  .daily-action-item .action-row { grid-column: 1 / -1; }
+}
+
+@media (max-width: 700px) {
+  #view-clientes table,
+  #view-solicitacoes table,
+  #view-orcamentos table { min-width: 0 !important; display: block; }
+  #view-clientes thead,
+  #view-solicitacoes thead,
+  #view-orcamentos thead { display: none; }
+  #view-clientes tbody,
+  #view-solicitacoes tbody,
+  #view-orcamentos tbody { display: block; padding: 12px; }
+  #view-clientes tr,
+  #view-solicitacoes tr,
+  #view-orcamentos tr { display: block; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 12px; overflow: hidden; }
+  #view-clientes td,
+  #view-solicitacoes td,
+  #view-orcamentos td { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; white-space: normal !important; border-bottom: 1px solid var(--border); padding: 10px 12px; max-width: none !important; }
+  #view-clientes td:last-child,
+  #view-solicitacoes td:last-child,
+  #view-orcamentos td:last-child { border-bottom: none; justify-content: flex-start; }
+  #view-clientes td::before,
+  #view-solicitacoes td::before,
+  #view-orcamentos td::before { flex: 0 0 105px; color: var(--text3); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .55px; }
+  #view-clientes td:nth-child(1)::before { content:'Cliente'; }
+  #view-clientes td:nth-child(2)::before { content:'CNPJ'; }
+  #view-clientes td:nth-child(3)::before { content:'Empresa'; }
+  #view-clientes td:nth-child(4)::before { content:'Segmento'; }
+  #view-clientes td:nth-child(5)::before { content:'Setor'; }
+  #view-clientes td:nth-child(6)::before { content:'Cidade'; }
+  #view-clientes td:nth-child(7)::before { content:'Estado'; }
+  #view-clientes td:nth-child(8)::before { content:'Último contato'; }
+  #view-clientes td:nth-child(9)::before { content:'Status'; }
+  #view-clientes td:nth-child(10)::before { content:'Ações'; }
+  #view-solicitacoes td:nth-child(1)::before { content:'Cliente'; }
+  #view-solicitacoes td:nth-child(2)::before { content:'Empresa'; }
+  #view-solicitacoes td:nth-child(3)::before { content:'Solicitado'; }
+  #view-solicitacoes td:nth-child(4)::before { content:'Prazo'; }
+  #view-solicitacoes td:nth-child(5)::before { content:'Canal'; }
+  #view-solicitacoes td:nth-child(6)::before { content:'Prioridade'; }
+  #view-solicitacoes td:nth-child(7)::before { content:'Produto'; }
+  #view-solicitacoes td:nth-child(8)::before { content:'Descrição'; }
+  #view-solicitacoes td:nth-child(9)::before { content:'Ações'; }
+  #view-orcamentos td:nth-child(1)::before { content:'Cliente'; }
+  #view-orcamentos td:nth-child(2)::before { content:'Empresa'; }
+  #view-orcamentos td:nth-child(3)::before { content:'Próximo envio'; }
+  #view-orcamentos td:nth-child(4)::before { content:'Alarme'; }
+  #view-orcamentos td:nth-child(5)::before { content:'Observação'; }
+  #view-orcamentos td:nth-child(6)::before { content:'Ações'; }
+  .topheader .auth-user-pill { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+}
+
+@media (max-width: 560px) {
+  .daily-priority-grid, .solicitacoes-overview, .productivity-summary, .settings-stats { grid-template-columns: 1fr; }
+  .daily-hero h2, .settings-hero h2 { font-size: 20px; }
+  .daily-priority-card, .sol-summary-card { min-height: auto; }
+}
+
 </style>
 </head>
 <body class="auth-locked">
@@ -1008,18 +1145,12 @@ body.auth-locked .auth-screen { display: flex; }
     <div class="topnav-item" data-view="historico" onclick="showView('historico')">
       <i class="fa-solid fa-clock-rotate-left"></i> Histórico
     </div>
+    <div class="topnav-item" data-view="configuracoes" onclick="showView('configuracoes')">
+      <i class="fa-solid fa-gear"></i> Configurações
+    </div>
   </nav>
   <button class="btn btn-ghost btn-sm" onclick="openGlobalSearch()" style="flex-shrink:0" title="Busca rápida (Ctrl+K)">
     <i class="fa-solid fa-magnifying-glass"></i> Buscar <span class="gsearch-hint">Ctrl K</span>
-  </button>
-  <button class="btn btn-ghost btn-sm" onclick="openModal('modalExportarPdf')" style="flex-shrink:0" title="Exportar dados">
-    <i class="fa-solid fa-file-export"></i> Exportar
-  </button>
-  <button class="btn btn-ghost btn-sm" onclick="baixarBackupJson()" style="flex-shrink:0" title="Backup completo em JSON">
-    <i class="fa-solid fa-database"></i> Backup
-  </button>
-  <button class="btn btn-ghost btn-sm" onclick="openModal('modalAtalhos')" title="Atalhos de teclado" style="flex-shrink:0">
-    <i class="fa-regular fa-keyboard"></i>
   </button>
   <div class="auth-user-pill" title="Usuário logado"><i class="fa-solid fa-user-shield"></i> <span id="auth-user-email">Logado</span></div>
   <button class="btn btn-ghost btn-sm btn-logout" onclick="sairDoSistema()" style="flex-shrink:0" title="Sair do sistema">
@@ -1062,12 +1193,48 @@ body.auth-locked .auth-screen { display: flex; }
 <!-- MAIN -->
 <main class="main">
 
-  <!-- DASHBOARD -->
+  <!-- DASHBOARD / AÇÕES DO DIA -->
   <div id="view-dashboard" class="view active">
-    <div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:18px;min-height:32px">
-      <div id="dash-date" style="font-size:12.5px;color:var(--text3)"></div>
+    <div class="daily-hero">
+      <div>
+        <div class="daily-eyebrow">Central de trabalho</div>
+        <h2 id="daily-title">Ações do Dia</h2>
+        <p id="daily-subtitle">Carregando suas prioridades de hoje...</p>
+      </div>
+      <div class="daily-date" id="dash-date"></div>
     </div>
-    <div class="stats">
+
+    <div class="daily-priority-grid">
+      <div class="daily-priority-card danger">
+        <div class="daily-priority-label"><i class="fa-solid fa-triangle-exclamation"></i> Atrasados</div>
+        <div class="daily-priority-value" id="daily-atrasados">0</div>
+      </div>
+      <div class="daily-priority-card warning">
+        <div class="daily-priority-label"><i class="fa-solid fa-bell"></i> Para Hoje</div>
+        <div class="daily-priority-value" id="daily-hoje">0</div>
+      </div>
+      <div class="daily-priority-card danger-soft">
+        <div class="daily-priority-label"><i class="fa-solid fa-fire"></i> Urgentes</div>
+        <div class="daily-priority-value" id="daily-urgentes">0</div>
+      </div>
+      <div class="daily-priority-card purple">
+        <div class="daily-priority-label"><i class="fa-solid fa-user-slash"></i> Sem Cliente</div>
+        <div class="daily-priority-value" id="daily-sem-cliente">0</div>
+      </div>
+    </div>
+
+    <div class="card daily-actions-card" id="card-acoes-prioritarias" style="margin-bottom:20px">
+      <div class="card-header">
+        <div class="card-title"><i class="fa-solid fa-list-check" style="color:var(--danger)"></i> Ações Prioritárias</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-ghost btn-sm" onclick="showView('solicitacoes')"><i class="fa-solid fa-clipboard-list"></i> Solicitações</button>
+          <button class="btn btn-ghost btn-sm" onclick="showView('agenda')"><i class="fa-solid fa-calendar-days"></i> Agenda</button>
+        </div>
+      </div>
+      <div id="dash-acoes-prioritarias" class="daily-actions-list"></div>
+    </div>
+
+    <div class="stats dash-core-stats">
       <div class="stat-card" style="--stat-color:var(--accent)">
         <div class="stat-label">Clientes</div>
         <i class="fa-solid fa-users stat-icon" style="color:var(--accent)"></i>
@@ -1099,55 +1266,74 @@ body.auth-locked .auth-screen { display: flex; }
         <div class="stat-value" id="stat-solicitacoes-atrasadas">0</div>
       </div>
     </div>
-    <div class="card" style="margin-bottom:20px">
-      <div class="card-header">
-        <div class="card-title"><i class="fa-solid fa-bullseye" style="color:var(--accent)"></i> Meta Semanal de Contatos</div>
-        <span id="meta-semana-texto" style="font-size:12.5px;color:var(--text2);font-weight:600">0 / 30</span>
+
+    <div class="dashboard-grid-2">
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-header">
+          <div class="card-title"><i class="fa-solid fa-bullseye" style="color:var(--accent)"></i> Meta Semanal de Contatos</div>
+          <span id="meta-semana-texto" style="font-size:12.5px;color:var(--text2);font-weight:600">0 / 30</span>
+        </div>
+        <div style="padding:16px 20px">
+          <div class="meta-bar-track"><div class="meta-bar-fill" id="meta-semana-bar" style="width:0%"></div></div>
+          <div id="meta-semana-msg" style="font-size:12px;color:var(--text3);margin-top:8px"></div>
+        </div>
       </div>
-      <div style="padding:16px 20px">
-        <div class="meta-bar-track"><div class="meta-bar-fill" id="meta-semana-bar" style="width:0%"></div></div>
-        <div id="meta-semana-msg" style="font-size:12px;color:var(--text3);margin-top:8px"></div>
+
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-header">
+          <div class="card-title"><i class="fa-solid fa-chart-simple" style="color:var(--success)"></i> Resumo de Produtividade</div>
+        </div>
+        <div id="dash-resumo-produtividade" class="productivity-summary"></div>
       </div>
     </div>
+
     <div class="card" id="card-para-hoje" style="margin-bottom:20px;display:none;border-color:rgba(240,82,82,0.3)">
       <div class="card-header" style="background:rgba(240,82,82,0.06)">
         <div class="card-title"><i class="fa-solid fa-bell" style="color:var(--danger)"></i> Para Hoje <span id="hoje-count" class="badge badge-danger" style="margin-left:4px">0</span></div>
       </div>
       <div id="dash-hoje" style="padding:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px"></div>
     </div>
-    <div class="card" style="margin-bottom:20px">
-      <div class="card-header">
-        <div class="card-title"><i class="fa-solid fa-calendar-check" style="color:var(--accent)"></i> Atividades Programadas</div>
-        <button class="btn btn-ghost btn-sm" onclick="showView('agenda')">Ver Agenda</button>
+
+    <div class="dashboard-grid-2">
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-header">
+          <div class="card-title"><i class="fa-solid fa-clipboard-list" style="color:var(--warning)"></i> Solicitações de Orçamento Pendentes</div>
+          <button class="btn btn-ghost btn-sm" onclick="showView('solicitacoes')">Ver Tudo</button>
+        </div>
+        <div id="dash-solicitacoes-pendentes" class="dash-card-grid">
+          <div class="empty" style="grid-column:1/-1"><i class="fa-solid fa-clipboard-list"></i><p>Nenhuma solicitação pendente</p></div>
+        </div>
       </div>
-      <div id="dash-proximos" style="padding:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">
-        <div class="empty" style="grid-column:1/-1"><i class="fa-regular fa-calendar"></i><p>Nenhum retorno agendado</p></div>
-      </div>
-    </div>
-    <div class="card" style="margin-bottom:20px">
-      <div class="card-header">
-        <div class="card-title"><i class="fa-solid fa-clipboard-list" style="color:var(--warning)"></i> Solicitações de Orçamento Pendentes</div>
-        <button class="btn btn-ghost btn-sm" onclick="showView('solicitacoes')">Ver Tudo</button>
-      </div>
-      <div id="dash-solicitacoes-pendentes" style="padding:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">
-        <div class="empty" style="grid-column:1/-1"><i class="fa-solid fa-clipboard-list"></i><p>Nenhuma solicitação pendente</p></div>
-      </div>
-    </div>
-    <div class="card" style="margin-bottom:20px">
-      <div class="card-header">
-        <div class="card-title"><i class="fa-solid fa-file-invoice-dollar" style="color:var(--purple)"></i> Próximos Orçamentos Mensais <span style="font-weight:400;color:var(--text3);font-size:11.5px;margin-left:4px">(esta semana)</span></div>
-        <button class="btn btn-ghost btn-sm" onclick="showView('orcamentos')">Ver Tudo</button>
-      </div>
-      <div id="dash-orcamentos-semana" style="padding:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">
-        <div class="empty" style="grid-column:1/-1"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento mensal esta semana</p></div>
+
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-header">
+          <div class="card-title"><i class="fa-solid fa-calendar-check" style="color:var(--accent)"></i> Atividades Programadas</div>
+          <button class="btn btn-ghost btn-sm" onclick="showView('agenda')">Ver Agenda</button>
+        </div>
+        <div id="dash-proximos" class="dash-card-grid">
+          <div class="empty" style="grid-column:1/-1"><i class="fa-regular fa-calendar"></i><p>Nenhum retorno agendado</p></div>
+        </div>
       </div>
     </div>
-    <div class="card" style="margin-bottom:20px">
-      <div class="card-header">
-        <div class="card-title"><i class="fa-solid fa-clock-rotate-left" style="color:var(--accent)"></i> Últimos Contatos</div>
-        <button class="btn btn-ghost btn-sm" onclick="showView('historico')">Ver Tudo</button>
+
+    <div class="dashboard-grid-2">
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-header">
+          <div class="card-title"><i class="fa-solid fa-file-invoice-dollar" style="color:var(--purple)"></i> Próximos Orçamentos Mensais <span style="font-weight:400;color:var(--text3);font-size:11.5px;margin-left:4px">(esta semana)</span></div>
+          <button class="btn btn-ghost btn-sm" onclick="showView('orcamentos')">Ver Tudo</button>
+        </div>
+        <div id="dash-orcamentos-semana" class="dash-card-grid">
+          <div class="empty" style="grid-column:1/-1"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento mensal esta semana</p></div>
+        </div>
       </div>
-      <div id="dash-historico"></div>
+
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-header">
+          <div class="card-title"><i class="fa-solid fa-clock-rotate-left" style="color:var(--accent)"></i> Últimos Contatos</div>
+          <button class="btn btn-ghost btn-sm" onclick="showView('historico')">Ver Tudo</button>
+        </div>
+        <div id="dash-historico"></div>
+      </div>
     </div>
   </div>
 
@@ -1271,6 +1457,23 @@ body.auth-locked .auth-screen { display: flex; }
           <button class="btn btn-primary btn-sm" onclick="openModal('modalSolicitacao')"><i class="fa-solid fa-plus"></i> Nova Solicitação</button>
         </div>
       </div>
+      <div class="solicitacoes-overview">
+        <button class="sol-summary-card danger" onclick="setFiltroSolicitacoes('atrasadas')">
+          <span>Atrasadas</span><strong id="sol-resumo-atrasadas">0</strong>
+        </button>
+        <button class="sol-summary-card warning" onclick="setFiltroSolicitacoes('hoje')">
+          <span>Para hoje</span><strong id="sol-resumo-hoje">0</strong>
+        </button>
+        <button class="sol-summary-card danger-soft" onclick="setFiltroSolicitacoes('urgentes')">
+          <span>Urgentes</span><strong id="sol-resumo-urgentes">0</strong>
+        </button>
+        <button class="sol-summary-card purple" onclick="setFiltroSolicitacoes('sem_cliente')">
+          <span>Sem cliente</span><strong id="sol-resumo-sem-cliente">0</strong>
+        </button>
+        <button class="sol-summary-card success" onclick="setFiltroSolicitacoes('concluidas')">
+          <span>Concluídas</span><strong id="sol-resumo-concluidas">0</strong>
+        </button>
+      </div>
       <table>
         <thead>
           <tr>
@@ -1364,6 +1567,88 @@ body.auth-locked .auth-screen { display: flex; }
         <span id="concluidos-orcamento-count" class="badge badge-gray">0</span>
       </div>
       <div id="dash-concluidos-orcamento"></div>
+    </div>
+  </div>
+
+
+  <!-- CONFIGURAÇÕES / BACKUP / EXPORTAÇÕES -->
+  <div id="view-configuracoes" class="view">
+    <div class="settings-hero">
+      <div>
+        <div class="daily-eyebrow">Administração do sistema</div>
+        <h2>Configurações, Backup e Exportações</h2>
+        <p>Centralize aqui as ações que não fazem parte da rotina comercial diária.</p>
+      </div>
+      <div class="settings-pill"><i class="fa-solid fa-shield-halved"></i> Acesso protegido por login</div>
+    </div>
+
+    <div class="settings-grid">
+      <div class="card settings-card">
+        <div class="card-header">
+          <div class="card-title"><i class="fa-solid fa-file-export" style="color:var(--accent)"></i> Exportações</div>
+        </div>
+        <div class="settings-card-body">
+          <p>Gere relatórios em PDF ou CSV/Excel por tipo de dado e período.</p>
+          <div class="settings-actions">
+            <button class="btn btn-primary" onclick="openModal('modalExportarPdf')"><i class="fa-solid fa-file-export"></i> Abrir exportações</button>
+            <button class="btn btn-ghost" onclick="abrirExportRelatorioMensal()"><i class="fa-solid fa-calendar-days"></i> Relatório mensal</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card settings-card">
+        <div class="card-header">
+          <div class="card-title"><i class="fa-solid fa-database" style="color:var(--success)"></i> Backup completo</div>
+        </div>
+        <div class="settings-card-body">
+          <p>Baixe uma cópia de segurança de todos os dados salvos no Supabase.</p>
+          <div class="settings-actions">
+            <button class="btn btn-success" onclick="baixarBackupJson()"><i class="fa-solid fa-file-code"></i> JSON</button>
+            <button class="btn btn-ghost" onclick="baixarBackupCsv()"><i class="fa-solid fa-file-csv"></i> CSV</button>
+            <button class="btn btn-ghost" onclick="baixarBackupXlsx()"><i class="fa-solid fa-file-excel"></i> XLSX</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card settings-card">
+        <div class="card-header">
+          <div class="card-title"><i class="fa-solid fa-sliders" style="color:var(--warning)"></i> Preferências rápidas</div>
+        </div>
+        <div class="settings-card-body">
+          <p>Acesse atalhos, tema e notificações sem poluir o cabeçalho principal.</p>
+          <div class="settings-actions">
+            <button class="btn btn-ghost" onclick="toggleTheme()"><i class="fa-solid fa-circle-half-stroke"></i> Alternar tema</button>
+            <button class="btn btn-ghost" onclick="openModal('modalAtalhos')"><i class="fa-regular fa-keyboard"></i> Atalhos</button>
+            <button class="btn btn-ghost" onclick="solicitarPermissaoPush()"><i class="fa-solid fa-bell"></i> Notificações</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card settings-card danger-zone">
+        <div class="card-header">
+          <div class="card-title"><i class="fa-solid fa-triangle-exclamation" style="color:var(--danger)"></i> Zona de cuidado</div>
+        </div>
+        <div class="settings-card-body">
+          <p>Use apenas quando tiver backup recente. Esta ação remove todos os registros salvos.</p>
+          <div class="settings-actions">
+            <button class="btn btn-danger" onclick="resetarTodosDados()"><i class="fa-solid fa-trash-can"></i> Apagar todos os dados</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:20px">
+      <div class="card-header">
+        <div class="card-title"><i class="fa-solid fa-chart-pie" style="color:var(--accent)"></i> Resumo do banco atual</div>
+      </div>
+      <div class="settings-stats">
+        <div><span>Clientes</span><strong id="config-total-clientes">0</strong></div>
+        <div><span>Contatos</span><strong id="config-total-contatos">0</strong></div>
+        <div><span>Retornos pendentes</span><strong id="config-total-retornos">0</strong></div>
+        <div><span>Solicitações pendentes</span><strong id="config-total-solicitacoes">0</strong></div>
+        <div><span>Orçamentos mensais</span><strong id="config-total-orcamentos">0</strong></div>
+        <div><span>Concluídos</span><strong id="config-total-concluidos">0</strong></div>
+      </div>
     </div>
   </div>
 
@@ -2192,7 +2477,9 @@ function showView(v) {
   if (v==='historico') { renderHistorico(); renderDashboard(); }
   if (v==='solicitacoes') renderSolicitacoesTabela();
   if (v==='orcamentos') renderOrcamentosTabela();
+  if (v==='configuracoes') renderConfiguracoes();
 }
+
 
 // ===== MODALS =====
 function openModal(id) {
@@ -2915,6 +3202,7 @@ function renderSolicitacaoCards(list) {
 function renderSolicitacoesTabela() {
   const tb = document.getElementById('tabela-solicitacoes');
   if (!tb) return;
+  renderSolicitacoesResumo();
   const q = (document.getElementById('search-solicitacoes')?.value || '').trim().toLowerCase();
   const prioridade = document.getElementById('filtro-prioridade-solicitacoes')?.value || '';
   const situacao = document.getElementById('filtro-situacao-solicitacoes')?.value || 'pendentes';
@@ -3341,6 +3629,141 @@ function renderConcluidoCards(list) {
   }).join('');
 }
 
+// ===== AÇÕES DO DIA / CONFIGURAÇÕES =====
+function diasEntreDatas(inicio, fim) {
+  if (!inicio || !fim) return 0;
+  const a = new Date(inicio+'T00:00:00');
+  const b = new Date(fim+'T00:00:00');
+  return Math.round((b - a) / 86400000);
+}
+
+function criarAcoesDoDia() {
+  const hoje = today();
+  const acoes = [];
+  agendamentos.forEach(a => {
+    if (a.data <= hoje || a.prioridade === 'urgente') {
+      const c = clientes.find(x => x.id === a.clienteId);
+      acoes.push({
+        tipo: 'retorno', data: a.data, prioridade: a.prioridade || 'normal', nome: c ? c.nome : 'Cliente',
+        titulo: a.data < hoje ? 'Retorno atrasado' : a.data === hoje ? 'Retorno para hoje' : 'Retorno urgente',
+        meta: `${c ? c.empresa || '' : ''}${a.horario ? ' • ' + a.horario : ''}`,
+        detalhe: a.motivo || a.lembrete || 'Retornar contato do cliente.',
+        classe: a.data < hoje ? 'atrasado' : a.data === hoje ? 'hoje' : 'urgente',
+        score: (a.data < hoje ? 0 : a.prioridade === 'urgente' ? 1 : 2),
+        htmlAcoes: `<button class="btn btn-success btn-sm" onclick="abrirConcluir(${a.id},'retorno')"><i class="fa-solid fa-check"></i> Concluir</button><button class="btn btn-ghost btn-sm" onclick="openContatoFor(${a.clienteId})"><i class="fa-solid fa-phone"></i> Contato</button>`
+      });
+    }
+  });
+  solicitacoesOrcamento.forEach(s => {
+    if (s.prazo <= hoje || s.prioridade === 'urgente') {
+      const d = dadosSolicitacaoCliente(s);
+      acoes.push({
+        tipo: 'solicitacao', data: s.prazo, prioridade: s.prioridade || 'normal', nome: d.nome,
+        titulo: s.prazo < hoje ? 'Solicitação atrasada' : s.prazo === hoje ? 'Solicitação para hoje' : 'Solicitação urgente',
+        meta: `${d.empresa || 'Sem empresa'}${s.produto ? ' • ' + s.produto : ''}`,
+        detalhe: s.descricao || 'Fazer orçamento solicitado.',
+        classe: s.prazo < hoje ? 'atrasado' : s.prazo === hoje ? 'hoje' : 'urgente',
+        score: (s.prazo < hoje ? 0 : s.prioridade === 'urgente' ? 1 : 2),
+        htmlAcoes: `<button class="btn btn-success btn-sm" onclick="marcarSolicitacaoFeita(${s.id})"><i class="fa-solid fa-check"></i> Feito</button><button class="btn btn-warning btn-sm" onclick="editarSolicitacaoOrcamento(${s.id})"><i class="fa-solid fa-pen"></i> Editar</button>`
+      });
+    }
+  });
+  orcamentos.forEach(o => {
+    if (o.data <= hoje) {
+      const c = clientes.find(x => x.id === o.clienteId);
+      acoes.push({
+        tipo: 'orcamento', data: o.data, prioridade: o.data < hoje ? 'urgente' : 'normal', nome: c ? c.nome : 'Cliente',
+        titulo: o.data < hoje ? 'Orçamento mensal atrasado' : 'Orçamento mensal para hoje',
+        meta: `${c ? c.empresa || '' : ''}${o.horario ? ' • ' + o.horario : ''}`,
+        detalhe: o.obs || 'Enviar orçamento mensal.',
+        classe: o.data < hoje ? 'atrasado' : 'hoje',
+        score: (o.data < hoje ? 0 : 2),
+        htmlAcoes: `<button class="btn btn-success btn-sm" onclick="concluirOrcamentoDireto(${o.id})"><i class="fa-solid fa-check"></i> Concluir</button><button class="btn btn-ghost btn-sm" onclick="showView('orcamentos')"><i class="fa-solid fa-eye"></i> Ver</button>`
+      });
+    }
+  });
+  return acoes.sort((a,b) => (a.score - b.score) || (a.data||'').localeCompare(b.data||'')).slice(0, 10);
+}
+
+function renderAcoesDoDia() {
+  const hoje = today();
+  const atrasados = agendamentos.filter(a=>a.data<hoje).length + solicitacoesOrcamento.filter(s=>s.prazo<hoje).length + orcamentos.filter(o=>o.data<hoje).length;
+  const paraHoje = agendamentos.filter(a=>a.data===hoje).length + solicitacoesOrcamento.filter(s=>s.prazo===hoje).length + orcamentos.filter(o=>o.data===hoje).length;
+  const urgentes = agendamentos.filter(a=>a.prioridade==='urgente').length + solicitacoesOrcamento.filter(s=>s.prioridade==='urgente').length;
+  const semCliente = solicitacoesOrcamento.filter(s=>!s.clienteId).length;
+  const totalImportante = atrasados + paraHoje;
+
+  const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  setTxt('daily-atrasados', atrasados);
+  setTxt('daily-hoje', paraHoje);
+  setTxt('daily-urgentes', urgentes);
+  setTxt('daily-sem-cliente', semCliente);
+  setTxt('daily-title', 'Ações do Dia');
+  setTxt('daily-subtitle', totalImportante ? `Você tem ${totalImportante} ação${totalImportante!==1?'es':''} para resolver hoje ou em atraso.` : 'Nenhuma urgência para hoje. Aproveite para revisar clientes esquecidos e solicitações futuras.');
+
+  const lista = criarAcoesDoDia();
+  const wrap = document.getElementById('dash-acoes-prioritarias');
+  if (wrap) {
+    wrap.innerHTML = lista.length ? lista.map(a => `
+      <div class="daily-action-item ${a.classe}">
+        <div class="daily-action-icon"><i class="fa-solid ${a.tipo==='solicitacao'?'fa-clipboard-list':a.tipo==='orcamento'?'fa-file-invoice-dollar':'fa-phone'}" style="color:${a.classe==='atrasado'?'var(--danger)':a.classe==='hoje'?'var(--warning)':'var(--accent)'}"></i></div>
+        <div>
+          <div class="daily-action-title">${a.titulo} — ${a.nome}</div>
+          <div class="daily-action-meta">Prazo: ${fmtDate(a.data)}${a.meta ? ' • ' + a.meta : ''}</div>
+          <div class="daily-action-meta">${(a.detalhe||'').length>140 ? a.detalhe.slice(0,140)+'…' : a.detalhe}</div>
+        </div>
+        <div class="action-row">${a.htmlAcoes}</div>
+      </div>`).join('') : `<div class="empty"><i class="fa-solid fa-circle-check"></i><p>Nenhuma ação prioritária para hoje.</p></div>`;
+  }
+
+  const prod = document.getElementById('dash-resumo-produtividade');
+  if (prod) {
+    const contatosHoje = contatos.filter(c=>c.data===hoje).length;
+    const solConcHoje = concluidos.filter(c=>c.tipo==='solicitacao_orcamento' && c.concluidoEm===hoje).length;
+    const retConcHoje = concluidos.filter(c=>c.tipo==='retorno' && c.concluidoEm===hoje).length;
+    const clientesEsquecidos = clientes.filter(c=>isClienteEsquecido(c.id)).length;
+    prod.innerHTML = `
+      <div><span>Contatos hoje</span><strong>${contatosHoje}</strong></div>
+      <div><span>Solicitações feitas</span><strong>${solConcHoje}</strong></div>
+      <div><span>Retornos concluídos</span><strong>${retConcHoje}</strong></div>
+      <div><span>Clientes esquecidos</span><strong>${clientesEsquecidos}</strong></div>`;
+  }
+}
+
+function renderSolicitacoesResumo() {
+  const hoje = today();
+  const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  setTxt('sol-resumo-atrasadas', solicitacoesOrcamento.filter(s=>s.prazo<hoje).length);
+  setTxt('sol-resumo-hoje', solicitacoesOrcamento.filter(s=>s.prazo===hoje).length);
+  setTxt('sol-resumo-urgentes', solicitacoesOrcamento.filter(s=>s.prioridade==='urgente').length);
+  setTxt('sol-resumo-sem-cliente', solicitacoesOrcamento.filter(s=>!s.clienteId).length);
+  setTxt('sol-resumo-concluidas', concluidos.filter(c=>c.tipo==='solicitacao_orcamento').length);
+}
+
+function setFiltroSolicitacoes(valor) {
+  const filtro = document.getElementById('filtro-situacao-solicitacoes');
+  if (filtro) filtro.value = valor;
+  const chk = document.getElementById('filtro-atrasadas-solicitacoes');
+  if (chk) chk.checked = false;
+  renderSolicitacoesTabela();
+}
+
+function abrirExportRelatorioMensal() {
+  openModal('modalExportarPdf');
+  const tipo = document.getElementById('pdf-tipo');
+  if (tipo) { tipo.value = 'relatorio_mensal'; togglePdfPeriodo(); }
+}
+
+function renderConfiguracoes() {
+  const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  setTxt('config-total-clientes', clientes.length);
+  setTxt('config-total-contatos', contatos.length);
+  setTxt('config-total-retornos', agendamentos.length);
+  setTxt('config-total-solicitacoes', solicitacoesOrcamento.length);
+  setTxt('config-total-orcamentos', orcamentos.length);
+  setTxt('config-total-concluidos', concluidos.length);
+}
+
 // ===== DASHBOARD =====
 function renderDashboard() {
   const todayISO=today(), mesAtual=todayISO.slice(0,7);
@@ -3350,6 +3773,7 @@ function renderDashboard() {
   document.getElementById('stat-hoje').textContent=agendamentos.filter(a=>a.data===todayISO).length + orcamentos.filter(o=>o.data===todayISO).length + solicitacoesOrcamento.filter(s=>s.prazo===todayISO).length;
   if (document.getElementById('stat-solicitacoes')) document.getElementById('stat-solicitacoes').textContent = solicitacoesOrcamento.length;
   if (document.getElementById('stat-solicitacoes-atrasadas')) document.getElementById('stat-solicitacoes-atrasadas').textContent = solicitacoesOrcamento.filter(s=>s.prazo<todayISO).length;
+  renderAcoesDoDia();
 
   // ===== META SEMANAL DE CONTATOS (30/semana, seg-dom) =====
   const META_SEMANAL = 30;
@@ -3762,6 +4186,7 @@ function backupPayload() {
   return {
     exportadoEm: new Date().toISOString(),
     versao: 'agenda-dinamica-supabase',
+    utilizadorPlanilha: usuarioAtivo,
     clientes,
     contatos,
     agendamentos,
@@ -3773,8 +4198,31 @@ function backupPayload() {
     appTheme
   };
 }
+function planilhaInfoRows(tipoArquivo = 'Exportação') {
+  return [
+    ['Campo', 'Valor'],
+    ['Sistema', 'Agenda Dinâmica'],
+    ['Tipo de arquivo', tipoArquivo],
+    ['Utilizador da Planilha', usuarioAtivo],
+    ['Gerado em', new Date().toLocaleString('pt-BR')],
+    ['Projeto Supabase', SUPABASE_URL]
+  ];
+}
+function aplicarMetadadosPlanilha(wb, tipoArquivo = 'Exportação') {
+  wb.Props = {
+    Title: `Agenda Dinâmica - ${tipoArquivo}`,
+    Subject: 'Exportação da Agenda Dinâmica',
+    Author: usuarioAtivo,
+    Manager: usuarioAtivo,
+    Company: 'Agenda Dinâmica',
+    Category: tipoArquivo,
+    Keywords: 'agenda, clientes, orçamentos, supabase',
+    CreatedDate: new Date()
+  };
+}
 function backupSheets() {
   return {
+    Info: planilhaInfoRows('Backup completo'),
     Clientes: clientesParaRows(),
     Contatos: contatosParaRows(),
     Retornos: retornosParaRows(),
@@ -3803,6 +4251,7 @@ function baixarBackupXlsx() {
   const sheets = backupSheets();
   if (!window.XLSX) { baixarBackupCsv(); notify('Biblioteca XLSX indisponível. Baixei CSV.','#6a4a00'); return; }
   const wb = XLSX.utils.book_new();
+  aplicarMetadadosPlanilha(wb, 'Backup completo');
   Object.entries(sheets).forEach(([name, rows]) => {
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), name.slice(0,31));
   });
@@ -3847,6 +4296,7 @@ function exportarExcel() {
   if (tipo === 'relatorio_mensal') {
     const r = rangeRelatorioMensal(range);
     const sheets = {
+      Info: planilhaInfoRows('Relatório mensal'),
       Resumo: resumoMensalRows(r),
       Contatos: contatosParaRows(filtrarPorRange([...contatos], 'data', r)),
       Retornos: retornosParaRows(filtrarPorRange([...agendamentos], 'data', r)),
@@ -3856,6 +4306,7 @@ function exportarExcel() {
     };
     if (window.XLSX) {
       const wb = XLSX.utils.book_new();
+      aplicarMetadadosPlanilha(wb, 'Relatório mensal');
       Object.entries(sheets).forEach(([name, rows]) => XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), name.slice(0,31)));
       XLSX.writeFile(wb, `relatorio_mensal_${today()}.xlsx`);
     } else {
