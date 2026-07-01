@@ -40,12 +40,12 @@
 
 /* TEMA CLARO */
 body.theme-light {
-  --bg: #eef0f4;
-  --surface: #ffffff;
-  --surface2: #f3f5f8;
-  --surface3: #e4e7ee;
-  --border: #c7cbd6;
-  --border2: #aab0bf;
+  --bg: #e5e9f1;
+  --surface: #f7f8fb;
+  --surface2: #edf1f7;
+  --surface3: #dbe3ee;
+  --border: #bcc5d3;
+  --border2: #9faabc;
   --text: #14161f;
   --text2: #4a5066;
   --text3: #767d91;
@@ -93,6 +93,62 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .topnav-item:hover { background: var(--surface); color: var(--text); }
 .topnav-item.active { background: var(--surface); color: var(--accent); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
 .topnav-item i { font-size: 13.5px; }
+
+
+/* CORES DO CABEÇALHO POR ÁREA */
+.topnav-item[data-view="dashboard"] { --nav-color: var(--accent); --nav-bg: var(--accent-light); }
+.topnav-item[data-view="solicitacoes"] { --nav-color: var(--warning); --nav-bg: var(--warning-bg); }
+.topnav-item[data-view="clientes"] { --nav-color: var(--success); --nav-bg: var(--success-bg); }
+.topnav-item[data-view="agenda"] { --nav-color: #5aa7ff; --nav-bg: rgba(90,167,255,0.12); }
+.topnav-item[data-view="orcamentos"] { --nav-color: var(--purple); --nav-bg: var(--purple-bg); }
+.topnav-item[data-view="historico"] { --nav-color: #6ba3f0; --nav-bg: rgba(59,125,232,0.10); }
+.topnav-item[data-view="configuracoes"] { --nav-color: var(--text2); --nav-bg: var(--surface3); }
+.topnav-item i { color: var(--nav-color, var(--text2)); }
+.topnav-item:hover { background: var(--nav-bg, var(--surface)); color: var(--text); }
+.topnav-item.active { background: var(--nav-bg, var(--surface)); color: var(--nav-color, var(--accent)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--nav-color, var(--accent)) 25%, transparent); }
+.topnav-item.active i { color: var(--nav-color, var(--accent)); }
+body.theme-light .card,
+body.theme-light .stat-card,
+body.theme-light .modal,
+body.theme-light .detail-panel,
+body.theme-light .sidebar,
+body.theme-light .topheader { background: var(--surface); }
+body.theme-light .daily-priority-card,
+body.theme-light .sol-summary-card,
+body.theme-light .client-history-stat,
+body.theme-light .settings-stats div { background: linear-gradient(180deg, var(--surface), var(--surface2)); }
+body.theme-light .card-header { background: rgba(237,241,247,0.65); }
+
+/* FILA / KANBAN DE ORÇAMENTOS */
+.orcamento-kanban-wrap { padding: 16px; background: var(--surface2); border-top: 1px solid var(--border); }
+.orcamento-kanban-board { display: grid; grid-template-columns: repeat(4, minmax(240px, 1fr)); gap: 14px; align-items: start; }
+.orcamento-kanban-col { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; min-height: 260px; overflow: hidden; }
+.orcamento-kanban-head { display:flex; align-items:center; justify-content:space-between; gap:8px; padding: 12px 14px; border-bottom: 1px solid var(--border); background: var(--surface2); }
+.orcamento-kanban-title { display:flex; align-items:center; gap:8px; font-weight:800; font-size:13px; color:var(--text); }
+.orcamento-kanban-body { display:flex; flex-direction:column; gap:10px; padding: 12px; max-height: 620px; overflow-y:auto; }
+.orcamento-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; border-left: 4px solid var(--warning); }
+.orcamento-card.info { border-left-color: var(--accent); }
+.orcamento-card.pecas { border-left-color: var(--purple); }
+.orcamento-card.concluido { border-left-color: var(--success); background: var(--success-bg); }
+.orcamento-card.atrasado { border-left-color: var(--danger); background: var(--danger-bg); }
+.orcamento-card-title { font-weight:800; font-size:13px; color:var(--text); margin-bottom: 3px; }
+.orcamento-card-meta { font-size:11.5px; color:var(--text3); line-height:1.4; }
+.orcamento-card-desc { margin-top:8px; font-size:12.5px; color:var(--text2); line-height:1.45; }
+.orcamento-card-actions { display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; margin-top:10px; }
+.duplicate-alert { display:none; background: var(--warning-bg); border:1px solid rgba(245,166,35,.28); color: var(--text); border-radius: 10px; padding: 12px; margin-top: 6px; }
+.duplicate-alert.open { display:block; }
+.duplicate-alert-title { font-size:12px; font-weight:800; color:var(--warning); text-transform:uppercase; letter-spacing:.6px; margin-bottom:8px; }
+.duplicate-item { display:flex; align-items:center; justify-content:space-between; gap:8px; border-top:1px solid var(--border); padding-top:8px; margin-top:8px; }
+.duplicate-item:first-of-type { border-top:0; padding-top:0; margin-top:0; }
+.jornada-cliente { display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:8px; margin: 12px 0 14px; }
+.jornada-step { border:1px solid var(--border); background:var(--surface2); border-radius:10px; padding:10px; min-height:72px; }
+.jornada-step.done { background:var(--success-bg); border-color:rgba(34,199,138,.28); }
+.jornada-step.pending { background:var(--warning-bg); border-color:rgba(245,166,35,.24); }
+.jornada-step-title { display:flex; align-items:center; gap:6px; font-size:11px; text-transform:uppercase; letter-spacing:.5px; font-weight:900; color:var(--text2); margin-bottom:4px; }
+.jornada-step-value { font-size:18px; font-weight:900; color:var(--text); }
+.jornada-step small { color:var(--text3); font-size:11px; display:block; margin-top:3px; }
+@media (max-width: 1180px) { .orcamento-kanban-board { grid-template-columns: repeat(2, minmax(240px, 1fr)); } }
+@media (max-width: 760px) { .orcamento-kanban-wrap { padding:10px; } .orcamento-kanban-board { grid-template-columns: 1fr; } .orcamento-kanban-body { max-height:none; } .jornada-cliente { grid-template-columns:1fr 1fr; } }
 
 /* THEME TOGGLE */
 .theme-toggle-wrap { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
@@ -1286,7 +1342,7 @@ body.auth-locked .auth-screen { display: flex; }
 
     <div class="card daily-actions-card" id="card-acoes-prioritarias" style="margin-bottom:20px">
       <div class="card-header">
-        <div class="card-title"><i class="fa-solid fa-list-check" style="color:var(--danger)"></i> Ações Prioritárias</div>
+        <div class="card-title"><i class="fa-solid fa-list-check" style="color:var(--danger)"></i> O que preciso fazer agora?</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn btn-ghost btn-sm" onclick="showView('solicitacoes')"><i class="fa-solid fa-clipboard-list"></i> Solicitações</button>
           <button class="btn btn-ghost btn-sm" onclick="showView('agenda')"><i class="fa-solid fa-calendar-days"></i> Agenda</button>
@@ -1356,7 +1412,7 @@ body.auth-locked .auth-screen { display: flex; }
     </div>
 
     <div class="dashboard-grid-2">
-      <div class="card" style="margin-bottom:20px">
+      <div class="card" id="card-solicitacoes-pendentes-dashboard" style="margin-bottom:20px;display:none">
         <div class="card-header">
           <div class="card-title"><i class="fa-solid fa-clipboard-list" style="color:var(--warning)"></i> Solicitações de Orçamento Pendentes</div>
           <button class="btn btn-ghost btn-sm" onclick="showView('solicitacoes')">Ver Tudo</button>
@@ -1535,20 +1591,17 @@ body.auth-locked .auth-screen { display: flex; }
           <span>Concluídas</span><strong id="sol-resumo-concluidas">0</strong>
         </button>
       </div>
-      <table>
-        <thead>
-          <tr>
-            <th>Cliente/Solicitante</th>
-            <th>Razão Social</th>
-            <th>Solicitado em</th>
-            <th>Prazo</th>
-            <th>Canal</th>
-            <th>Prioridade</th>
-            <th>Produto/Serviço</th>
-            <th>Solicitação</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
+      <div class="orcamento-kanban-wrap">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+          <div>
+            <div style="font-size:12px;color:var(--text3);font-weight:900;text-transform:uppercase;letter-spacing:.7px">Fila de Orçamentos</div>
+            <div style="font-size:13px;color:var(--text2);margin-top:3px">Organize cada solicitação conforme o estágio operacional antes de marcar como feita.</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="renderSolicitacoesTabela()"><i class="fa-solid fa-rotate-right"></i> Atualizar fila</button>
+        </div>
+        <div class="orcamento-kanban-board" id="solicitacoes-kanban"></div>
+      </div>
+      <table style="display:none">
         <tbody id="tabela-solicitacoes"></tbody>
       </table>
     </div>
@@ -1945,13 +1998,14 @@ body.auth-locked .auth-screen { display: flex; }
     <div class="modal-body">
       <div class="form-grid">
         <div class="form-group full"><label>Cliente cadastrado (opcional)</label>
-          <select id="sol-cliente" onchange="preencherDadosSolicitacaoCliente()"><option value="">Não atrelar a cliente cadastrado</option></select>
+          <select id="sol-cliente" onchange="preencherDadosSolicitacaoCliente(); renderDuplicidadeSolicitacao()"><option value="">Não atrelar a cliente cadastrado</option></select>
+          <div id="sol-duplicidade-alerta" class="duplicate-alert"></div>
         </div>
-        <div class="form-group"><label>Cliente / Apelido *</label><input type="text" id="sol-nome" placeholder="Ex: HOSPITAL SÃO LUCAS / CLÍNICA ALFA"></div>
-        <div class="form-group"><label>Solicitante</label><input type="text" id="sol-solicitante" placeholder="Ex: JOÃO DO FINANCEIRO"></div>
-        <div class="form-group"><label>Empresa / Razão Social</label><input type="text" id="sol-empresa" placeholder="Ex: RAZÃO SOCIAL DA EMPRESA"></div>
-        <div class="form-group"><label>Telefone</label><input type="text" id="sol-telefone" placeholder="99-99999-9999" maxlength="13" oninput="maskTelefone(this)"></div>
-        <div class="form-group"><label>E-mail</label><input type="email" id="sol-email" placeholder="email@empresa.com"></div>
+        <div class="form-group"><label>Cliente / Apelido *</label><input type="text" id="sol-nome" oninput="renderDuplicidadeSolicitacao()" placeholder="Ex: HOSPITAL SÃO LUCAS / CLÍNICA ALFA"></div>
+        <div class="form-group"><label>Solicitante</label><input type="text" id="sol-solicitante" oninput="renderDuplicidadeSolicitacao()" placeholder="Ex: JOÃO DO FINANCEIRO"></div>
+        <div class="form-group"><label>Empresa / Razão Social</label><input type="text" id="sol-empresa" oninput="renderDuplicidadeSolicitacao()" placeholder="Ex: RAZÃO SOCIAL DA EMPRESA"></div>
+        <div class="form-group"><label>Telefone</label><input type="text" id="sol-telefone" placeholder="99-99999-9999" maxlength="13" oninput="maskTelefone(this); renderDuplicidadeSolicitacao()"></div>
+        <div class="form-group"><label>E-mail</label><input type="email" id="sol-email" oninput="renderDuplicidadeSolicitacao()" placeholder="email@empresa.com"></div>
         <div class="form-group"><label>Produto/Serviço Solicitado</label><input type="text" id="sol-produto" placeholder="Ex: CALIBRAÇÃO, MANUTENÇÃO, PEÇA X..."></div>
         <div class="form-group"><label>Data da solicitação *</label><input type="date" id="sol-data"></div>
         <div class="form-group"><label>Prazo para fazer *</label><input type="date" id="sol-prazo"></div>
@@ -1970,6 +2024,13 @@ body.auth-locked .auth-screen { display: flex; }
             <option value="normal">Normal</option>
             <option value="alta">Alta</option>
             <option value="urgente">Urgente</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Etapa da fila</label>
+          <select id="sol-etapa">
+            <option value="nova">Nova solicitação</option>
+            <option value="aguardando_info">Aguardando informações</option>
+            <option value="aguardando_cotacao">Aguardando cotação de peças</option>
           </select>
         </div>
         <div class="form-group full"><label>Descrição do que foi solicitado *</label><textarea id="sol-descricao" placeholder="Ex: Cliente pediu orçamento de calibração/manutenção do equipamento X..."></textarea></div>
@@ -2619,10 +2680,12 @@ function openModal(id) {
     document.getElementById('sol-prazo').value = today();
     document.getElementById('sol-canal').value = 'whatsapp';
     document.getElementById('sol-prioridade').value = 'normal';
+    if (document.getElementById('sol-etapa')) document.getElementById('sol-etapa').value = 'nova';
     document.getElementById('sol-descricao').value = '';
     document.getElementById('sol-obs').value = '';
     arquivosTempSolicitacao = [];
     renderSolicitacaoArquivoList();
+    setTimeout(renderDuplicidadeSolicitacao, 50);
   }
   if (id==='modalOrcamento' && !document.getElementById('modalOrcamento').dataset.editId) {
     document.getElementById('or-data').value = today();
@@ -3198,12 +3261,68 @@ function dadosSolicitacaoCliente(sol) {
   };
 }
 
+function normalizarBuscaBR(v) {
+  return String(v||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
+}
+function onlyDigits(v) { return String(v||'').replace(/\D/g,''); }
+function camposSolicitacaoAtual() {
+  return {
+    clienteId: +document.getElementById('sol-cliente')?.value || null,
+    nome: document.getElementById('sol-nome')?.value || '',
+    empresa: document.getElementById('sol-empresa')?.value || '',
+    telefone: document.getElementById('sol-telefone')?.value || '',
+    email: document.getElementById('sol-email')?.value || ''
+  };
+}
+function buscarClientesParecidosSolicitacao() {
+  const f = camposSolicitacaoAtual();
+  const tel = onlyDigits(f.telefone);
+  const email = String(f.email||'').trim().toLowerCase();
+  const nome = normalizarBuscaBR(f.nome);
+  const empresa = normalizarBuscaBR(f.empresa);
+  return clientes.map(c => {
+    let pontos = 0;
+    const motivos = [];
+    const cTel = onlyDigits(c.telefone);
+    const cEmail = String(c.email||'').trim().toLowerCase();
+    const cNome = normalizarBuscaBR(c.nome);
+    const cEmpresa = normalizarBuscaBR(c.empresa);
+    if (tel && cTel && tel === cTel) { pontos += 5; motivos.push('telefone igual'); }
+    if (email && cEmail && email === cEmail) { pontos += 5; motivos.push('e-mail igual'); }
+    if (nome && cNome && (nome === cNome || (nome.length > 4 && cNome.includes(nome)) || (cNome.length > 4 && nome.includes(cNome)))) { pontos += 3; motivos.push('cliente/nome fantasia parecido'); }
+    if (empresa && cEmpresa && (empresa === cEmpresa || (empresa.length > 4 && cEmpresa.includes(empresa)) || (cEmpresa.length > 4 && empresa.includes(cEmpresa)))) { pontos += 3; motivos.push('razão social parecida'); }
+    return {c, pontos, motivos};
+  }).filter(x => x.pontos > 0 && x.c.id !== f.clienteId).sort((a,b)=>b.pontos-a.pontos).slice(0,3);
+}
+function usarClienteExistenteSolicitacao(id) {
+  const sel = document.getElementById('sol-cliente');
+  if (sel) sel.value = String(id);
+  preencherDadosSolicitacaoCliente();
+  renderDuplicidadeSolicitacao();
+  notify('Cliente existente vinculado à solicitação.', '#0d3d2a');
+}
+function renderDuplicidadeSolicitacao() {
+  const box = document.getElementById('sol-duplicidade-alerta');
+  if (!box) return;
+  const lista = buscarClientesParecidosSolicitacao();
+  if (!lista.length) { box.classList.remove('open'); box.innerHTML = ''; return; }
+  box.classList.add('open');
+  box.innerHTML = `<div class="duplicate-alert-title"><i class="fa-solid fa-triangle-exclamation" style="margin-right:5px"></i>Possível cliente já cadastrado</div>
+    ${lista.map(({c,motivos}) => `<div class="duplicate-item">
+      <div><strong>${c.nome || 'Cliente'}</strong><div style="font-size:11.5px;color:var(--text3)">${[c.empresa, c.telefone, c.email].filter(Boolean).join(' • ')}</div><div style="font-size:11px;color:var(--warning)">${motivos.join(', ')}</div></div>
+      <button class="btn btn-warning btn-sm" type="button" onclick="usarClienteExistenteSolicitacao(${c.id})"><i class="fa-solid fa-link"></i> Usar</button>
+    </div>`).join('')}`;
+}
+
 function preencherDadosSolicitacaoCliente() {
   const clienteId = +document.getElementById('sol-cliente').value;
   const c = clientes.find(x => x.id === clienteId);
   if (!c) return;
   if (!document.getElementById('sol-nome').value.trim()) document.getElementById('sol-nome').value = c.nome || '';
   if (!document.getElementById('sol-empresa').value.trim()) document.getElementById('sol-empresa').value = c.empresa || '';
+  if (!document.getElementById('sol-telefone').value.trim()) document.getElementById('sol-telefone').value = c.telefone || '';
+  if (!document.getElementById('sol-email').value.trim()) document.getElementById('sol-email').value = c.email || '';
+  renderDuplicidadeSolicitacao();
 }
 
 function limparModalSolicitacao() {
@@ -3218,6 +3337,7 @@ function limparModalSolicitacao() {
   document.getElementById('sol-prazo').value = today();
   document.getElementById('sol-canal').value = 'whatsapp';
   document.getElementById('sol-prioridade').value = 'normal';
+  if (document.getElementById('sol-etapa')) document.getElementById('sol-etapa').value = 'nova';
   document.getElementById('sol-descricao').value = '';
   document.getElementById('sol-obs').value = '';
   arquivosTempSolicitacao = [];
@@ -3335,6 +3455,7 @@ function salvarSolicitacaoOrcamento() {
     prazo,
     canal: document.getElementById('sol-canal').value,
     prioridade: document.getElementById('sol-prioridade').value,
+    etapa: document.getElementById('sol-etapa')?.value || 'nova',
     descricao,
     obs: toUpperBR(document.getElementById('sol-obs').value),
     anexos: [...arquivosTempSolicitacao],
@@ -3349,7 +3470,7 @@ function salvarSolicitacaoOrcamento() {
     notify('✓ Orçamento solicitado atualizado!','#6a4a00');
   } else {
     novoFluxoId = Date.now();
-    solicitacoesOrcamento.push({ id: novoFluxoId, ...dados, criadoEm: today() });
+    solicitacoesOrcamento.push({ id: novoFluxoId, ...dados, etapa: dados.etapa || 'nova', criadoEm: today() });
     notify('✓ Orçamento registrado!','#0d3d2a');
   }
 
@@ -3378,7 +3499,9 @@ function editarSolicitacaoOrcamento(id) {
   document.getElementById('sol-prazo').value = sol.prazo || today();
   document.getElementById('sol-canal').value = sol.canal || 'whatsapp';
   document.getElementById('sol-prioridade').value = sol.prioridade || 'normal';
+  if (document.getElementById('sol-etapa')) document.getElementById('sol-etapa').value = sol.etapa || 'nova';
   document.getElementById('sol-descricao').value = sol.descricao || '';
+  setTimeout(renderDuplicidadeSolicitacao, 80);
   document.getElementById('sol-obs').value = sol.obs || '';
   arquivosTempSolicitacao = [...(sol.anexos || [])];
   renderSolicitacaoArquivoList();
@@ -3487,50 +3610,23 @@ function renderSolicitacaoCards(list) {
       ${sol.descricao?`<div class="kanban-note">${sol.descricao.length>120?sol.descricao.slice(0,120)+'…':sol.descricao}</div>`:''}
       <div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-top:8px;flex-wrap:wrap">
         ${!sol.clienteId?`<button class="btn btn-ghost btn-sm" title="Criar cliente" onclick="criarClienteFromSolicitacao(${sol.id})"><i class="fa-solid fa-user-plus"></i></button>`:''}
-        <button class="btn btn-warning btn-sm" title="Editar" onclick="editarSolicitacaoOrcamento(${sol.id})"><i class="fa-solid fa-pen"></i></button>
+        <button class="btn btn-warning btn-sm" title="Editar" onclick="irParaSolicitacaoEditar(${sol.id})"><i class="fa-solid fa-pen"></i></button>
         <button class="btn btn-success btn-sm" onclick="abrirConcluirSolicitacao(${sol.id})"><i class="fa-solid fa-check"></i> Feito</button>
       </div>
     </div>`;
   }).join('');
 }
 
-function renderSolicitacoesTabela() {
-  const tb = document.getElementById('tabela-solicitacoes');
-  if (!tb) return;
-  renderSolicitacoesResumo();
+function getSolicitacoesFiltradasBase() {
   const q = (document.getElementById('search-solicitacoes')?.value || '').trim().toLowerCase();
   const prioridade = document.getElementById('filtro-prioridade-solicitacoes')?.value || '';
   const situacao = document.getElementById('filtro-situacao-solicitacoes')?.value || 'pendentes';
   const apenasAtrasadas = document.getElementById('filtro-atrasadas-solicitacoes')?.checked || false;
-  const priorBadge = {normal:'badge-info', alta:'badge-warning', urgente:'badge-danger'};
-  const canalLabel = {whatsapp:'WhatsApp', telefone:'Telefone', email:'E-mail', presencial:'Presencial', videochamada:'Videochamada', outro:'Outro'};
   const hojeISO = today();
-
-  let lista = [];
-  if (situacao === 'concluidas') {
-    lista = concluidos.filter(cc => cc.tipo === 'solicitacao_orcamento').map(cc => ({
-      _concluida: true,
-      id: cc.id,
-      clienteId: cc.clienteId || null,
-      nome: cc.nomeAvulso || (clientes.find(c=>c.id===cc.clienteId)?.nome) || 'Cliente não cadastrado',
-      empresa: cc.empresaAvulsa || (clientes.find(c=>c.id===cc.clienteId)?.empresa) || '',
-      solicitante: cc.solicitanteAvulso || '',
-      produto: cc.produto || '',
-      dataSolicitacao: cc.dataSolicitacao || cc.dataOriginal || cc.concluidoEm,
-      prazo: cc.dataOriginal || cc.concluidoEm,
-      canal: cc.canal || '',
-      prioridade: cc.prioridade || 'normal',
-      descricao: cc.motivo || '',
-      obs: cc.obsConclusao || '',
-      concluidoEm: cc.concluidoEm
-    }));
-  } else {
-    lista = [...solicitacoesOrcamento];
-  }
-
+  let lista = [...solicitacoesOrcamento].map(sol => ({...sol, etapa: sol.etapa || 'nova'}));
   lista = lista.filter(sol => {
     const d = dadosSolicitacaoCliente(sol);
-    const hay = [d.nome, d.empresa, d.solicitante, sol.telefone, sol.email, d.produto, sol.descricao, sol.obs, sol.canal, sol.prioridade].filter(Boolean).join(' ').toLowerCase();
+    const hay = [d.nome, d.empresa, d.solicitante, sol.telefone, sol.email, d.produto, sol.descricao, sol.obs, sol.canal, sol.prioridade, sol.etapa].filter(Boolean).join(' ').toLowerCase();
     if (q && !hay.includes(q)) return false;
     if (prioridade && sol.prioridade !== prioridade) return false;
     if (apenasAtrasadas && !(sol.prazo < hojeISO)) return false;
@@ -3538,6 +3634,7 @@ function renderSolicitacoesTabela() {
     if (situacao === 'atrasadas' && !(sol.prazo < hojeISO)) return false;
     if (situacao === 'urgentes' && sol.prioridade !== 'urgente') return false;
     if (situacao === 'sem_cliente' && sol.clienteId) return false;
+    if (situacao === 'concluidas') return false;
     return true;
   }).sort((a,b) => {
     const pr = {urgente:0, alta:1, normal:2};
@@ -3545,36 +3642,125 @@ function renderSolicitacoesTabela() {
     if ((a.prazo||'') !== (b.prazo||'')) return (a.prazo||'').localeCompare(b.prazo||'');
     return pa - pb;
   });
+  return lista;
+}
 
-  document.getElementById('solicitacao-count').textContent = lista.length;
-  if (!lista.length) {
-    tb.innerHTML = `<tr><td colspan="9"><div class="empty"><i class="fa-solid fa-clipboard-list"></i><p>Nenhuma solicitação encontrada.</p></div></td></tr>`;
-    return;
-  }
-  tb.innerHTML = lista.map(sol => {
+function renderSolicitacoesTabela() {
+  renderSolicitacoesResumo();
+  renderSolicitacoesKanban();
+}
+
+function etapaSolicitacaoLabel(etapa) {
+  return {
+    nova: 'Nova solicitação',
+    aguardando_info: 'Aguardando informações',
+    aguardando_cotacao: 'Aguardando cotação de peças',
+    concluida: 'Concluída'
+  }[etapa || 'nova'] || 'Nova solicitação';
+}
+
+function moverSolicitacaoEtapa(id, etapa) {
+  const sol = solicitacoesOrcamento.find(s => s.id === id);
+  if (!sol) return;
+  sol.etapa = etapa;
+  sol.atualizadoEm = today();
+  save();
+  renderSolicitacoesTabela();
+  renderDashboard();
+  notify(`✓ Movido para: ${etapaSolicitacaoLabel(etapa)}`, '#0d3d2a');
+}
+
+function irParaSolicitacaoEditar(id) {
+  showView('solicitacoes');
+  setTimeout(() => editarSolicitacaoOrcamento(id), 120);
+}
+
+function cardKanbanSolicitacao(sol, classeExtra='') {
+  const priorBadge = {normal:'badge-info', alta:'badge-warning', urgente:'badge-danger'};
+  const canalLabel = {whatsapp:'WhatsApp', telefone:'Telefone', email:'E-mail', presencial:'Presencial', videochamada:'Videochamada', outro:'Outro'};
+  const d = dadosSolicitacaoCliente(sol);
+  const atrasado = !sol._concluida && sol.prazo < today();
+  const hoje = !sol._concluida && sol.prazo === today();
+  const etapa = sol.etapa || 'nova';
+  const colCls = sol._concluida ? 'concluido' : atrasado ? 'atrasado' : classeExtra;
+  return `<div class="orcamento-card ${colCls}">
+    <div class="orcamento-card-title">${d.nome}</div>
+    <div class="orcamento-card-meta">
+      ${d.solicitante ? `<strong>Solicitante:</strong> ${d.solicitante}<br>` : ''}
+      ${d.empresa ? `<strong>Razão Social:</strong> ${d.empresa}<br>` : ''}
+      ${sol.telefone ? `<i class="fa-solid fa-phone"></i> ${sol.telefone}<br>` : ''}${sol.email ? `<i class="fa-solid fa-envelope"></i> ${sol.email}<br>` : ''}
+      <strong>${sol._concluida ? 'Concluído em' : 'Prazo'}:</strong> ${fmtDate(sol._concluida ? sol.concluidoEm : sol.prazo)} ${atrasado?'<span class="badge badge-danger" style="margin-left:4px">Atrasada</span>':hoje?'<span class="badge badge-warning" style="margin-left:4px">Hoje</span>':''}
+    </div>
+    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:8px">
+      <span class="badge ${priorBadge[sol.prioridade]||'badge-gray'}">${sol.prioridade||'normal'}</span>
+      ${sol._concluida ? '<span class="badge badge-success">Concluída</span>' : `<span class="badge badge-gray">${etapaSolicitacaoLabel(etapa)}</span>`}
+      ${sol.canal?`<span class="badge badge-gray">${canalLabel[sol.canal]||sol.canal}</span>`:''}
+      ${sol.produto?`<span class="badge badge-warning">${sol.produto}</span>`:''}
+      ${!sol.clienteId?'<span class="badge badge-danger">Sem cliente</span>':''}
+      ${(sol.anexos||[]).length?`<span class="badge badge-gray"><i class="fa-solid fa-paperclip" style="margin-right:3px"></i>${(sol.anexos||[]).length}</span>`:''}
+    </div>
+    ${sol.descricao?`<div class="orcamento-card-desc">${sol.descricao.length>150?sol.descricao.slice(0,150)+'…':sol.descricao}</div>`:''}
+    <div class="orcamento-card-actions">
+      ${sol._concluida ? `<button class="btn btn-ghost btn-sm" onclick="abrirDetalhe(${sol.clienteId||0})" ${!sol.clienteId?'disabled':''}><i class="fa-solid fa-user"></i> Cliente</button>` : `${!sol.clienteId?`<button class="btn btn-ghost btn-sm" title="Criar cliente" onclick="criarClienteFromSolicitacao(${sol.id})"><i class="fa-solid fa-user-plus"></i></button>`:''}
+        <button class="btn btn-warning btn-sm" title="Editar" onclick="irParaSolicitacaoEditar(${sol.id})"><i class="fa-solid fa-pen"></i></button>
+        ${etapa!=='aguardando_info'?`<button class="btn btn-ghost btn-sm" title="Aguardando informações" onclick="moverSolicitacaoEtapa(${sol.id},'aguardando_info')"><i class="fa-solid fa-circle-question"></i></button>`:''}
+        ${etapa!=='aguardando_cotacao'?`<button class="btn btn-ghost btn-sm" title="Aguardando cotação de peças" onclick="moverSolicitacaoEtapa(${sol.id},'aguardando_cotacao')"><i class="fa-solid fa-gears"></i></button>`:''}
+        <button class="btn btn-success btn-sm" onclick="abrirConcluirSolicitacao(${sol.id})"><i class="fa-solid fa-check"></i> Feito</button>`}
+    </div>
+  </div>`;
+}
+
+function renderSolicitacoesKanban() {
+  const board = document.getElementById('solicitacoes-kanban');
+  const countEl = document.getElementById('solicitacao-count');
+  if (!board) return;
+  const situacao = document.getElementById('filtro-situacao-solicitacoes')?.value || 'pendentes';
+  const lista = getSolicitacoesFiltradasBase();
+  const concluidas = concluidos.filter(cc => cc.tipo === 'solicitacao_orcamento').map(cc => ({
+    _concluida: true,
+    id: cc.id,
+    clienteId: cc.clienteId || null,
+    nome: cc.nomeAvulso || (clientes.find(c=>c.id===cc.clienteId)?.nome) || 'Cliente não cadastrado',
+    empresa: cc.empresaAvulsa || (clientes.find(c=>c.id===cc.clienteId)?.empresa) || '',
+    solicitante: cc.solicitanteAvulso || '',
+    produto: cc.produto || '',
+    dataSolicitacao: cc.dataSolicitacao || cc.dataOriginal || cc.concluidoEm,
+    prazo: cc.dataOriginal || cc.concluidoEm,
+    canal: cc.canal || '',
+    prioridade: cc.prioridade || 'normal',
+    descricao: cc.motivo || '',
+    obs: cc.obsConclusao || '',
+    anexos: cc.anexos || [],
+    concluidoEm: cc.concluidoEm,
+    etapa: 'concluida'
+  })).filter(sol => {
+    const q = (document.getElementById('search-solicitacoes')?.value || '').trim().toLowerCase();
+    const prioridade = document.getElementById('filtro-prioridade-solicitacoes')?.value || '';
     const d = dadosSolicitacaoCliente(sol);
-    const atrasado = !sol._concluida && sol.prazo < hojeISO;
-    const hoje = !sol._concluida && sol.prazo === hojeISO;
-    return `<tr>
-      <td><div style="display:flex;align-items:center;gap:10px">
-        <div class="avatar ${d.avatar}" style="width:30px;height:30px;font-size:11px">${d.iniciais}</div>
-        <div>
-          <div class="client-name">${d.nome}</div>
-          <div class="client-email">${sol._concluida ? 'Concluída' : sol.clienteId?'Cliente cadastrado':'Sem cadastro vinculado'}${d.solicitante ? ' • ' + d.solicitante : ''}${sol.telefone ? ' • ' + sol.telefone : ''}${sol.email ? ' • ' + sol.email : ''}</div>
-        </div>
-      </div></td>
-      <td style="color:var(--text2)">${d.empresa || '—'}</td>
-      <td>${fmtDate(sol.dataSolicitacao)}</td>
-      <td>${fmtDate(sol.prazo)} ${sol._concluida?`<span class="badge badge-success" style="margin-left:4px">Feita em ${fmtDate(sol.concluidoEm)}</span>`:atrasado?'<span class="badge badge-danger" style="margin-left:4px">Atrasada</span>':hoje?'<span class="badge badge-warning" style="margin-left:4px">Hoje</span>':''}</td>
-      <td><span class="badge badge-gray">${canalLabel[sol.canal]||sol.canal||'—'}</span></td>
-      <td><span class="badge ${priorBadge[sol.prioridade]||'badge-gray'}">${sol.prioridade||'normal'}</span></td>
-      <td style="color:var(--text2);max-width:180px">${d.produto || '—'} ${(sol.anexos||[]).length?`<br><span class="badge badge-gray" style="margin-top:4px"><i class="fa-solid fa-paperclip" style="margin-right:3px"></i>${(sol.anexos||[]).length} anexo(s)</span>`:''}</td>
-      <td style="color:var(--text2);max-width:260px">${(sol.descricao||'').length>90?sol.descricao.slice(0,90)+'…':(sol.descricao||'—')}</td>
-      <td><div class="action-row">
-        ${sol._concluida ? '<span class="badge badge-success"><i class="fa-solid fa-check" style="margin-right:3px"></i>Concluída</span>' : `${!sol.clienteId?`<button class="btn btn-ghost btn-sm" title="Criar cliente" onclick="criarClienteFromSolicitacao(${sol.id})"><i class="fa-solid fa-user-plus"></i></button>`:''}<button class="btn btn-warning btn-sm" title="Editar" onclick="editarSolicitacaoOrcamento(${sol.id})"><i class="fa-solid fa-pen"></i></button><button class="btn btn-success btn-sm" title="Marcar como feito" onclick="abrirConcluirSolicitacao(${sol.id})"><i class="fa-solid fa-check"></i></button><button class="btn btn-danger btn-sm" title="Excluir" onclick="excluirSolicitacaoOrcamento(${sol.id})"><i class="fa-solid fa-trash"></i></button>`}
-      </div></td>
-    </tr>`;
-  }).join('');
+    const hay = [d.nome, d.empresa, d.solicitante, sol.produto, sol.descricao, sol.obs].filter(Boolean).join(' ').toLowerCase();
+    if (q && !hay.includes(q)) return false;
+    if (prioridade && sol.prioridade !== prioridade) return false;
+    return situacao === 'concluidas' || situacao === 'pendentes' || situacao === 'todas';
+  }).sort((a,b)=>(b.concluidoEm||'').localeCompare(a.concluidoEm||'')).slice(0, 20);
+
+  const cols = [
+    {key:'nova', title:'Novas solicitações', icon:'fa-inbox', cls:'', list:lista.filter(s=>(s.etapa||'nova')==='nova')},
+    {key:'aguardando_info', title:'Aguardando informações', icon:'fa-circle-question', cls:'info', list:lista.filter(s=>s.etapa==='aguardando_info')},
+    {key:'aguardando_cotacao', title:'Aguardando cotação de peças', icon:'fa-gears', cls:'pecas', list:lista.filter(s=>s.etapa==='aguardando_cotacao')},
+    {key:'concluida', title:'Concluídos', icon:'fa-circle-check', cls:'concluido', list:concluidas}
+  ];
+  const totalExibido = cols.reduce((acc,c)=>acc+c.list.length,0);
+  if (countEl) countEl.textContent = totalExibido;
+  board.innerHTML = cols.map(col => `
+    <div class="orcamento-kanban-col">
+      <div class="orcamento-kanban-head">
+        <div class="orcamento-kanban-title"><i class="fa-solid ${col.icon}" style="color:${col.key==='nova'?'var(--warning)':col.key==='aguardando_info'?'var(--accent)':col.key==='aguardando_cotacao'?'var(--purple)':'var(--success)'}"></i> ${col.title}</div>
+        <span class="badge badge-gray">${col.list.length}</span>
+      </div>
+      <div class="orcamento-kanban-body">
+        ${col.list.length ? col.list.map(sol => cardKanbanSolicitacao(sol, col.cls)).join('') : `<div class="empty" style="padding:24px 10px"><i class="fa-solid ${col.icon}"></i><p>Nenhum item aqui.</p></div>`}
+      </div>
+    </div>`).join('');
 }
 
 
@@ -4041,7 +4227,7 @@ function criarAcoesDoDia() {
         detalhe: s.descricao || 'Fazer orçamento solicitado.',
         classe: s.prazo < hoje ? 'atrasado' : s.prazo === hoje ? 'hoje' : 'urgente',
         score: (s.prazo < hoje ? 0 : s.prioridade === 'urgente' ? 1 : 2),
-        htmlAcoes: `<button class="btn btn-success btn-sm" onclick="abrirConcluirSolicitacao(${s.id})"><i class="fa-solid fa-check"></i> Feito</button><button class="btn btn-warning btn-sm" onclick="editarSolicitacaoOrcamento(${s.id})"><i class="fa-solid fa-pen"></i> Editar</button>`
+        htmlAcoes: `<button class="btn btn-success btn-sm" onclick="abrirConcluirSolicitacao(${s.id})"><i class="fa-solid fa-check"></i> Feito</button><button class="btn btn-warning btn-sm" onclick="irParaSolicitacaoEditar(${s.id})"><i class="fa-solid fa-pen"></i> Editar</button>`
       });
     }
   });
@@ -4251,15 +4437,8 @@ function renderDashboard() {
   const totalHoje = todosHoje.length;
   const cardHoje = document.getElementById('card-para-hoje');
   document.getElementById('hoje-count').textContent = totalHoje;
-  if (totalHoje > 0) {
-    cardHoje.style.display = 'block';
-    const dashHoje = document.getElementById('dash-hoje');
-    dashHoje.innerHTML = todosHoje.map(item =>
-      item._tipoHoje === 'orcamento' ? renderOrcamentoCards([item]) : item._tipoHoje === 'solicitacao' ? renderSolicitacaoCards([item]) : renderKanbanItems([item])
-    ).join('');
-  } else {
-    cardHoje.style.display = 'none';
-  }
+  // O bloco "Para Hoje" foi unificado em "O que preciso fazer agora?".
+  if (cardHoje) cardHoje.style.display = 'none';
 
   // ===== SOLICITAÇÕES DE ORÇAMENTO PENDENTES =====
   const solicitacoesAtrasadas = solicitacoesOrcamento.filter(s=>s.prazo<todayISO).sort((a,b)=>a.prazo.localeCompare(b.prazo));
@@ -4780,6 +4959,20 @@ function renderTimelineItem(ev) {
   </div>`;
 }
 
+function renderJornadaCliente(clienteId) {
+  const solicitacoesPendentes = solicitacoesOrcamento.filter(s=>s.clienteId===clienteId).length;
+  const solicitacoesFeitas = concluidos.filter(c=>c.clienteId===clienteId && c.tipo==='solicitacao_orcamento').length;
+  const contatosCliente = contatos.filter(c=>c.clienteId===clienteId).length;
+  const retornosPendentes = agendamentos.filter(a=>a.clienteId===clienteId).length;
+  const recorrentes = orcamentos.filter(o=>o.clienteId===clienteId).length;
+  return `<div class="jornada-cliente">
+    <div class="jornada-step ${solicitacoesPendentes||solicitacoesFeitas?'done':'pending'}"><div class="jornada-step-title"><i class="fa-solid fa-clipboard-list"></i> Solicitação</div><div class="jornada-step-value">${solicitacoesPendentes + solicitacoesFeitas}</div><small>${solicitacoesPendentes} pendente(s), ${solicitacoesFeitas} feita(s)</small></div>
+    <div class="jornada-step ${solicitacoesFeitas?'done':'pending'}"><div class="jornada-step-title"><i class="fa-solid fa-file-circle-check"></i> Orçamento enviado</div><div class="jornada-step-value">${solicitacoesFeitas}</div><small>Números e conclusões no histórico</small></div>
+    <div class="jornada-step ${contatosCliente||retornosPendentes?'done':'pending'}"><div class="jornada-step-title"><i class="fa-solid fa-phone"></i> Retorno/contato</div><div class="jornada-step-value">${contatosCliente}</div><small>${retornosPendentes} retorno(s) agendado(s)</small></div>
+    <div class="jornada-step ${recorrentes?'done':'pending'}"><div class="jornada-step-title"><i class="fa-solid fa-repeat"></i> Recorrência</div><div class="jornada-step-value">${recorrentes}</div><small>Acompanhamentos recorrentes ativos</small></div>
+  </div>`;
+}
+
 function renderHistoricoCompletoCliente(clienteId) {
   const c = clientes.find(x => x.id === clienteId);
   if (!c) return '';
@@ -4861,7 +5054,7 @@ function renderHistoricoCompletoCliente(clienteId) {
       ],
       meta: sol.dataSolicitacao ? `Solicitado em ${fmtDate(sol.dataSolicitacao)}${sol.canal ? ' • ' + sol.canal : ''}` : '',
       desc: [sol.descricao || 'Solicitação registrada.', sol.obs ? `Obs.: ${sol.obs}` : ''].filter(Boolean).join('\\n'),
-      actions: `<button class="btn btn-success btn-sm" onclick="abrirConcluirSolicitacao(${sol.id})"><i class="fa-solid fa-check"></i> Feito</button><button class="btn btn-warning btn-sm" onclick="editarSolicitacaoOrcamento(${sol.id})"><i class="fa-solid fa-pen"></i> Editar</button><button class="btn btn-danger btn-sm" onclick="excluirSolicitacaoOrcamento(${sol.id})"><i class="fa-solid fa-trash"></i> Excluir</button>`
+      actions: `<button class="btn btn-success btn-sm" onclick="abrirConcluirSolicitacao(${sol.id})"><i class="fa-solid fa-check"></i> Feito</button><button class="btn btn-warning btn-sm" onclick="irParaSolicitacaoEditar(${sol.id})"><i class="fa-solid fa-pen"></i> Editar</button><button class="btn btn-danger btn-sm" onclick="excluirSolicitacaoOrcamento(${sol.id})"><i class="fa-solid fa-trash"></i> Excluir</button>`
     });
   });
 
@@ -4924,6 +5117,7 @@ function renderHistoricoCompletoCliente(clienteId) {
       <span class="badge badge-gray">${total} registro${total === 1 ? '' : 's'}</span>
     </div>
     ${renderResumoHistoricoCliente(clienteId)}
+    ${renderJornadaCliente(clienteId)}
     ${total ? `<div class="client-timeline">${eventos.map(renderTimelineItem).join('')}</div>` : `<div style="color:var(--text3);font-size:13px">Nenhum evento registrado para este cliente ainda.</div>`}`;
 }
 
