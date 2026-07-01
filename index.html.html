@@ -40,15 +40,15 @@
 
 /* TEMA CLARO */
 body.theme-light {
-  --bg: #e5e9f1;
-  --surface: #f7f8fb;
-  --surface2: #edf1f7;
-  --surface3: #dbe3ee;
-  --border: #bcc5d3;
-  --border2: #9faabc;
-  --text: #14161f;
-  --text2: #4a5066;
-  --text3: #767d91;
+  --bg: #d8dee8;
+  --surface: #e7ebf2;
+  --surface2: #dfe5ee;
+  --surface3: #cdd6e3;
+  --border: #aeb8c8;
+  --border2: #8f9aad;
+  --text: #111827;
+  --text2: #3e4658;
+  --text3: #687287;
   --accent: #2563c7;
   --accent-light: rgba(37,99,199,0.16);
   --accent-dark: #1d4fa0;
@@ -117,7 +117,10 @@ body.theme-light .daily-priority-card,
 body.theme-light .sol-summary-card,
 body.theme-light .client-history-stat,
 body.theme-light .settings-stats div { background: linear-gradient(180deg, var(--surface), var(--surface2)); }
-body.theme-light .card-header { background: rgba(237,241,247,0.65); }
+body.theme-light .card-header { background: rgba(210,219,232,0.72); }
+body.theme-light .topnav { background: #d4dbe7; }
+body.theme-light input, body.theme-light select, body.theme-light textarea, body.theme-light .search-bar { background:#d9e0eb; }
+body.theme-light .modal-overlay { background: rgba(17,24,39,0.48); }
 
 /* FILA / KANBAN DE ORÇAMENTOS */
 .orcamento-kanban-wrap { padding: 16px; background: var(--surface2); border-top: 1px solid var(--border); }
@@ -138,6 +141,28 @@ body.theme-light .card-header { background: rgba(237,241,247,0.65); }
 .duplicate-alert { display:none; background: var(--warning-bg); border:1px solid rgba(245,166,35,.28); color: var(--text); border-radius: 10px; padding: 12px; margin-top: 6px; }
 .duplicate-alert.open { display:block; }
 .duplicate-alert-title { font-size:12px; font-weight:800; color:var(--warning); text-transform:uppercase; letter-spacing:.6px; margin-bottom:8px; }
+.orcamento-kanban-body.drag-over { outline: 2px dashed var(--accent); outline-offset: -8px; background: var(--accent-light); }
+.orcamento-card { position: relative; cursor: grab; }
+.orcamento-card[draggable="false"] { cursor: default; }
+.orcamento-card.dragging { opacity: .48; transform: rotate(1deg); }
+.orcamento-card.fixado { border-style: dashed; box-shadow: inset 0 0 0 1px rgba(245,166,35,.22); }
+.orcamento-card-top { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom: 4px; }
+.orcamento-card-mini-actions { display:flex; gap:5px; flex:0 0 auto; align-items:center; }
+.btn-icon-mini { width:28px; height:28px; padding:0; justify-content:center; border-radius:8px; }
+.orcamento-card-stage-actions { display:flex; gap:6px; flex-wrap:wrap; margin-top:10px; padding-top:10px; border-top:1px solid var(--border); }
+.dashboard-grid-1 { display:grid; grid-template-columns: minmax(0,1fr); gap:16px; align-items:start; }
+.quick-sidebar-note { margin: 8px 10px 12px; padding: 12px; border-radius: 12px; border:1px solid var(--border); background: linear-gradient(180deg,var(--surface2),var(--surface)); color:var(--text2); font-size:12px; line-height:1.45; }
+.quick-sidebar-note strong { display:block; color:var(--text); margin-bottom:5px; font-size:12.5px; }
+.quick-sidebar-note .mini-flow { display:flex; flex-direction:column; gap:5px; margin-top:8px; }
+.quick-sidebar-note .mini-flow span { display:flex; align-items:center; gap:7px; color:var(--text2); }
+.dashboard-focus-hero { border:1px solid var(--border); background: linear-gradient(135deg,var(--surface),var(--surface2)); box-shadow: var(--shadow); }
+.dashboard-focus-hero .btn { flex-shrink:0; }
+.solicitacoes-title-clean { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
+.solicitacoes-title-clean h3 { font-size:16px; margin:0; display:flex; align-items:center; gap:8px; }
+@media (max-width: 900px) {
+  .dashboard-grid-1 { grid-template-columns: 1fr; }
+}
+
 .duplicate-item { display:flex; align-items:center; justify-content:space-between; gap:8px; border-top:1px solid var(--border); padding-top:8px; margin-top:8px; }
 .duplicate-item:first-of-type { border-top:0; padding-top:0; margin-top:0; }
 .jornada-cliente { display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:8px; margin: 12px 0 14px; }
@@ -1304,6 +1329,15 @@ body.auth-locked .auth-screen { display: flex; }
       <span class="quick-action-icon"><i class="fa-solid fa-repeat"></i></span>
       <span><strong>Recorrente</strong><small>Orçamento periódico</small></span>
     </button>
+    <div class="quick-sidebar-note">
+      <strong>Fluxo recomendado</strong>
+      <div>Comece pelo orçamento solicitado e conecte o restante depois.</div>
+      <div class="mini-flow">
+        <span><i class="fa-solid fa-clipboard-list"></i> Solicitação</span>
+        <span><i class="fa-solid fa-user-plus"></i> Cliente</span>
+        <span><i class="fa-solid fa-calendar-check"></i> Retorno</span>
+      </div>
+    </div>
   </nav>
 </aside>
 
@@ -1312,16 +1346,19 @@ body.auth-locked .auth-screen { display: flex; }
 
   <!-- DASHBOARD / AÇÕES DO DIA -->
   <div id="view-dashboard" class="view active">
-    <div class="daily-hero">
+    <div class="daily-hero dashboard-focus-hero">
       <div>
         <div class="daily-eyebrow">Central de trabalho</div>
-        <h2 id="daily-title">Ações do Dia</h2>
-        <p id="daily-subtitle">Carregando suas prioridades de hoje...</p>
+        <h2 id="daily-title">O que preciso fazer agora?</h2>
+        <p id="daily-subtitle">Fila única de trabalho: atrasos, prazos de hoje, urgências e retornos.</p>
       </div>
-      <div class="daily-date" id="dash-date"></div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end">
+        <button class="btn btn-primary" onclick="openModal('modalSolicitacao')"><i class="fa-solid fa-plus"></i> Novo Orçamento</button>
+        <div class="daily-date" id="dash-date"></div>
+      </div>
     </div>
 
-    <div class="daily-priority-grid">
+    <div class="daily-priority-grid" style="display:none">
       <div class="daily-priority-card danger">
         <div class="daily-priority-label"><i class="fa-solid fa-triangle-exclamation"></i> Atrasados</div>
         <div class="daily-priority-value" id="daily-atrasados">0</div>
@@ -1335,7 +1372,7 @@ body.auth-locked .auth-screen { display: flex; }
         <div class="daily-priority-value" id="daily-urgentes">0</div>
       </div>
       <div class="daily-priority-card purple">
-        <div class="daily-priority-label"><i class="fa-solid fa-user-slash"></i> Sem Cliente</div>
+        <div class="daily-priority-label"><i class="fa-solid fa-user-slash"></i> Sem Cliente Cadastrado</div>
         <div class="daily-priority-value" id="daily-sem-cliente">0</div>
       </div>
     </div>
@@ -1411,7 +1448,7 @@ body.auth-locked .auth-screen { display: flex; }
       <div id="dash-hoje" style="padding:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px"></div>
     </div>
 
-    <div class="dashboard-grid-2">
+    <div class="dashboard-grid-1">
       <div class="card" id="card-solicitacoes-pendentes-dashboard" style="margin-bottom:20px;display:none">
         <div class="card-header">
           <div class="card-title"><i class="fa-solid fa-clipboard-list" style="color:var(--warning)"></i> Solicitações de Orçamento Pendentes</div>
@@ -1555,7 +1592,7 @@ body.auth-locked .auth-screen { display: flex; }
             <option value="hoje">Para hoje</option>
             <option value="atrasadas">Atrasadas</option>
             <option value="urgentes">Urgentes</option>
-            <option value="sem_cliente">Sem cliente vinculado</option>
+            <option value="sem_cliente">Sem cliente cadastrado</option>
             <option value="concluidas">Concluídas</option>
           </select>
           <select id="filtro-prioridade-solicitacoes" onchange="renderSolicitacoesTabela()" style="width:auto;min-width:140px;padding:6px 10px;font-size:12.5px">
@@ -1585,19 +1622,16 @@ body.auth-locked .auth-screen { display: flex; }
           <span>Urgentes</span><strong id="sol-resumo-urgentes">0</strong>
         </button>
         <button class="sol-summary-card purple" onclick="setFiltroSolicitacoes('sem_cliente')">
-          <span>Sem cliente</span><strong id="sol-resumo-sem-cliente">0</strong>
+          <span>Sem cliente cadastrado</span><strong id="sol-resumo-sem-cliente">0</strong>
         </button>
         <button class="sol-summary-card success" onclick="setFiltroSolicitacoes('concluidas')">
           <span>Concluídas</span><strong id="sol-resumo-concluidas">0</strong>
         </button>
       </div>
       <div class="orcamento-kanban-wrap">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px">
-          <div>
-            <div style="font-size:12px;color:var(--text3);font-weight:900;text-transform:uppercase;letter-spacing:.7px">Fila de Orçamentos</div>
-            <div style="font-size:13px;color:var(--text2);margin-top:3px">Organize cada solicitação conforme o estágio operacional antes de marcar como feita.</div>
-          </div>
-          <button class="btn btn-ghost btn-sm" onclick="renderSolicitacoesTabela()"><i class="fa-solid fa-rotate-right"></i> Atualizar fila</button>
+        <div class="solicitacoes-title-clean">
+          <h3><i class="fa-solid fa-table-columns" style="color:var(--warning)"></i> Fila de Orçamentos</h3>
+          <button class="btn btn-ghost btn-sm" onclick="renderSolicitacoesTabela()"><i class="fa-solid fa-rotate-right"></i> Atualizar</button>
         </div>
         <div class="orcamento-kanban-board" id="solicitacoes-kanban"></div>
       </div>
@@ -1998,7 +2032,7 @@ body.auth-locked .auth-screen { display: flex; }
     <div class="modal-body">
       <div class="form-grid">
         <div class="form-group full"><label>Cliente cadastrado (opcional)</label>
-          <select id="sol-cliente" onchange="preencherDadosSolicitacaoCliente(); renderDuplicidadeSolicitacao()"><option value="">Não atrelar a cliente cadastrado</option></select>
+          <select id="sol-cliente" onchange="preencherDadosSolicitacaoCliente(); renderDuplicidadeSolicitacao(); atualizarBotaoClienteEdicaoSolicitacao()"><option value="">Não atrelar a cliente cadastrado</option></select>
           <div id="sol-duplicidade-alerta" class="duplicate-alert"></div>
         </div>
         <div class="form-group"><label>Cliente / Apelido *</label><input type="text" id="sol-nome" oninput="renderDuplicidadeSolicitacao()" placeholder="Ex: HOSPITAL SÃO LUCAS / CLÍNICA ALFA"></div>
@@ -2048,6 +2082,7 @@ body.auth-locked .auth-screen { display: flex; }
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('modalSolicitacao')">Cancelar</button>
+      <button class="btn btn-ghost" id="btn-criar-cliente-edicao-sol" onclick="criarClienteFromSolicitacaoAtualEdicao()" style="display:none"><i class="fa-solid fa-user-plus"></i> Cadastrar cliente</button>
       <button class="btn btn-primary" onclick="salvarSolicitacaoOrcamento()" style="background:var(--warning)"><i class="fa-solid fa-floppy-disk"></i> Salvar Orçamento</button>
     </div>
   </div>
@@ -2670,6 +2705,7 @@ function openModal(id) {
   if (id==='modalSolicitacao' && !document.getElementById('modalSolicitacao').dataset.editId) {
     document.getElementById('modal-solicitacao-title').textContent = 'Novo Orçamento';
     document.getElementById('sol-cliente').value = '';
+    atualizarBotaoClienteEdicaoSolicitacao();
     document.getElementById('sol-nome').value = '';
     document.getElementById('sol-solicitante').value = '';
     document.getElementById('sol-empresa').value = '';
@@ -3489,6 +3525,7 @@ function editarSolicitacaoOrcamento(id) {
   document.getElementById('modalSolicitacao').dataset.editId = id;
   document.getElementById('modal-solicitacao-title').innerHTML = '<i class="fa-solid fa-pen" style="color:var(--warning);margin-right:8px"></i>Editar Orçamento Solicitado';
   document.getElementById('sol-cliente').value = sol.clienteId || '';
+  atualizarBotaoClienteEdicaoSolicitacao();
   document.getElementById('sol-nome').value = sol.nome || '';
   document.getElementById('sol-solicitante').value = sol.solicitante || '';
   document.getElementById('sol-empresa').value = sol.empresa || '';
@@ -3604,7 +3641,7 @@ function renderSolicitacaoCards(list) {
         <span class="badge ${priorBadge[sol.prioridade]||'badge-gray'}">${sol.prioridade||'normal'}</span>
         <span class="badge badge-gray">${canalLabel[sol.canal]||sol.canal||'Canal'}</span>
         ${sol.produto?`<span class="badge badge-warning">${sol.produto}</span>`:''}
-        ${!sol.clienteId?'<span class="badge badge-danger">Sem cliente</span>':''}
+        ${!sol.clienteId?'<span class="badge badge-danger">Sem cliente cadastrado</span>':''}
         ${(sol.anexos||[]).length?`<span class="badge badge-gray"><i class="fa-solid fa-paperclip" style="margin-right:3px"></i>${(sol.anexos||[]).length}</span>`:''}
       </div>
       ${sol.descricao?`<div class="kanban-note">${sol.descricao.length>120?sol.descricao.slice(0,120)+'…':sol.descricao}</div>`:''}
@@ -3682,9 +3719,22 @@ function cardKanbanSolicitacao(sol, classeExtra='') {
   const atrasado = !sol._concluida && sol.prazo < today();
   const hoje = !sol._concluida && sol.prazo === today();
   const etapa = sol.etapa || 'nova';
+  const fixado = !!sol.fixado;
   const colCls = sol._concluida ? 'concluido' : atrasado ? 'atrasado' : classeExtra;
-  return `<div class="orcamento-card ${colCls}">
-    <div class="orcamento-card-title">${d.nome}</div>
+  const canDrag = !sol._concluida && !fixado;
+  return `<div class="orcamento-card ${colCls} ${fixado?'fixado':''}" draggable="${canDrag?'true':'false'}" data-sol-id="${sol.id}" ondragstart="dragSolicitacaoKanban(event, ${sol.id})" ondragend="dragEndSolicitacaoKanban(event)">
+    <div class="orcamento-card-top">
+      <div style="min-width:0;flex:1">
+        <div class="orcamento-card-title">${d.nome}</div>
+        ${!sol.clienteId?'<div style="font-size:11px;color:var(--danger);font-weight:700;margin-top:2px">Sem cliente cadastrado</div>':''}
+      </div>
+      <div class="orcamento-card-mini-actions">
+        ${!sol._concluida ? `<button class="btn btn-ghost btn-sm btn-icon-mini" title="${fixado?'Desafixar da coluna':'Fixar nesta coluna'}" onclick="toggleFixarSolicitacao(${sol.id}); event.stopPropagation();"><i class="fa-solid fa-thumbtack"></i></button>` : ''}
+        ${!sol._concluida && !sol.clienteId ? `<button class="btn btn-ghost btn-sm btn-icon-mini" title="Cadastrar cliente" onclick="criarClienteFromSolicitacao(${sol.id}); event.stopPropagation();"><i class="fa-solid fa-user-plus"></i></button>` : ''}
+        ${!sol._concluida ? `<button class="btn btn-warning btn-sm btn-icon-mini" title="Editar" onclick="irParaSolicitacaoEditar(${sol.id}); event.stopPropagation();"><i class="fa-solid fa-pen"></i></button>` : ''}
+        ${!sol._concluida ? `<button class="btn btn-success btn-sm btn-icon-mini" title="Marcar como feito" onclick="abrirConcluirSolicitacao(${sol.id}); event.stopPropagation();"><i class="fa-solid fa-check"></i></button>` : ''}
+      </div>
+    </div>
     <div class="orcamento-card-meta">
       ${d.solicitante ? `<strong>Solicitante:</strong> ${d.solicitante}<br>` : ''}
       ${d.empresa ? `<strong>Razão Social:</strong> ${d.empresa}<br>` : ''}
@@ -3694,20 +3744,79 @@ function cardKanbanSolicitacao(sol, classeExtra='') {
     <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:8px">
       <span class="badge ${priorBadge[sol.prioridade]||'badge-gray'}">${sol.prioridade||'normal'}</span>
       ${sol._concluida ? '<span class="badge badge-success">Concluída</span>' : `<span class="badge badge-gray">${etapaSolicitacaoLabel(etapa)}</span>`}
+      ${fixado ? '<span class="badge badge-warning"><i class="fa-solid fa-thumbtack" style="margin-right:3px"></i>Fixado</span>' : ''}
       ${sol.canal?`<span class="badge badge-gray">${canalLabel[sol.canal]||sol.canal}</span>`:''}
       ${sol.produto?`<span class="badge badge-warning">${sol.produto}</span>`:''}
-      ${!sol.clienteId?'<span class="badge badge-danger">Sem cliente</span>':''}
       ${(sol.anexos||[]).length?`<span class="badge badge-gray"><i class="fa-solid fa-paperclip" style="margin-right:3px"></i>${(sol.anexos||[]).length}</span>`:''}
     </div>
     ${sol.descricao?`<div class="orcamento-card-desc">${sol.descricao.length>150?sol.descricao.slice(0,150)+'…':sol.descricao}</div>`:''}
-    <div class="orcamento-card-actions">
-      ${sol._concluida ? `<button class="btn btn-ghost btn-sm" onclick="abrirDetalhe(${sol.clienteId||0})" ${!sol.clienteId?'disabled':''}><i class="fa-solid fa-user"></i> Cliente</button>` : `${!sol.clienteId?`<button class="btn btn-ghost btn-sm" title="Criar cliente" onclick="criarClienteFromSolicitacao(${sol.id})"><i class="fa-solid fa-user-plus"></i></button>`:''}
-        <button class="btn btn-warning btn-sm" title="Editar" onclick="irParaSolicitacaoEditar(${sol.id})"><i class="fa-solid fa-pen"></i></button>
+    ${!sol._concluida ? `<div class="orcamento-card-stage-actions">
+      ${fixado ? '<span style="font-size:11.5px;color:var(--text3)"><i class="fa-solid fa-lock" style="margin-right:4px"></i>Fixado nesta coluna. Desafixe para mover.</span>' : `
+        ${etapa!=='nova'?`<button class="btn btn-ghost btn-sm" title="Mover para novas solicitações" onclick="moverSolicitacaoEtapa(${sol.id},'nova')"><i class="fa-solid fa-inbox"></i></button>`:''}
         ${etapa!=='aguardando_info'?`<button class="btn btn-ghost btn-sm" title="Aguardando informações" onclick="moverSolicitacaoEtapa(${sol.id},'aguardando_info')"><i class="fa-solid fa-circle-question"></i></button>`:''}
         ${etapa!=='aguardando_cotacao'?`<button class="btn btn-ghost btn-sm" title="Aguardando cotação de peças" onclick="moverSolicitacaoEtapa(${sol.id},'aguardando_cotacao')"><i class="fa-solid fa-gears"></i></button>`:''}
-        <button class="btn btn-success btn-sm" onclick="abrirConcluirSolicitacao(${sol.id})"><i class="fa-solid fa-check"></i> Feito</button>`}
-    </div>
+      `}
+    </div>` : ''}
   </div>`;
+}
+
+function toggleFixarSolicitacao(id) {
+  const sol = solicitacoesOrcamento.find(s => s.id === id);
+  if (!sol) return;
+  sol.fixado = !sol.fixado;
+  sol.atualizadoEm = today();
+  save();
+  renderSolicitacoesTabela();
+  notify(sol.fixado ? '✓ Solicitação fixada nesta coluna.' : '✓ Solicitação desafixada. Agora pode ser movida.', sol.fixado ? '#6a4a00' : '#0d3d2a');
+}
+
+function dragSolicitacaoKanban(ev, id) {
+  const sol = solicitacoesOrcamento.find(s => s.id === id);
+  if (!sol || sol.fixado) { ev.preventDefault(); return; }
+  ev.dataTransfer.setData('text/plain', String(id));
+  ev.dataTransfer.effectAllowed = 'move';
+  ev.currentTarget.classList.add('dragging');
+}
+
+function dragEndSolicitacaoKanban(ev) {
+  ev.currentTarget.classList.remove('dragging');
+  document.querySelectorAll('.orcamento-kanban-body.drag-over').forEach(el => el.classList.remove('drag-over'));
+}
+
+function allowDropSolicitacaoKanban(ev) {
+  ev.preventDefault();
+  ev.dataTransfer.dropEffect = 'move';
+  ev.currentTarget.classList.add('drag-over');
+}
+
+function leaveDropSolicitacaoKanban(ev) {
+  ev.currentTarget.classList.remove('drag-over');
+}
+
+function dropSolicitacaoKanban(ev, etapa) {
+  ev.preventDefault();
+  ev.currentTarget.classList.remove('drag-over');
+  const id = +(ev.dataTransfer.getData('text/plain') || 0);
+  const sol = solicitacoesOrcamento.find(s => s.id === id);
+  if (!sol) return;
+  if (sol.fixado) { notify('Esta solicitação está fixada. Desafixe antes de mover.', '#7a1a1a'); return; }
+  if (etapa === 'concluida') { abrirConcluirSolicitacao(id); return; }
+  moverSolicitacaoEtapa(id, etapa);
+}
+
+function criarClienteFromSolicitacaoAtualEdicao() {
+  const id = +(document.getElementById('modalSolicitacao')?.dataset.editId || 0);
+  if (!id) { notify('Salve a solicitação antes de criar o cliente.', '#7a1a1a'); return; }
+  closeModal('modalSolicitacao');
+  setTimeout(() => criarClienteFromSolicitacao(id), 120);
+}
+
+function atualizarBotaoClienteEdicaoSolicitacao() {
+  const btn = document.getElementById('btn-criar-cliente-edicao-sol');
+  if (!btn) return;
+  const editId = +(document.getElementById('modalSolicitacao')?.dataset.editId || 0);
+  const clienteId = +document.getElementById('sol-cliente')?.value || 0;
+  btn.style.display = editId && !clienteId ? 'inline-flex' : 'none';
 }
 
 function renderSolicitacoesKanban() {
@@ -3752,17 +3861,16 @@ function renderSolicitacoesKanban() {
   const totalExibido = cols.reduce((acc,c)=>acc+c.list.length,0);
   if (countEl) countEl.textContent = totalExibido;
   board.innerHTML = cols.map(col => `
-    <div class="orcamento-kanban-col">
+    <div class="orcamento-kanban-col" data-etapa="${col.key}">
       <div class="orcamento-kanban-head">
         <div class="orcamento-kanban-title"><i class="fa-solid ${col.icon}" style="color:${col.key==='nova'?'var(--warning)':col.key==='aguardando_info'?'var(--accent)':col.key==='aguardando_cotacao'?'var(--purple)':'var(--success)'}"></i> ${col.title}</div>
         <span class="badge badge-gray">${col.list.length}</span>
       </div>
-      <div class="orcamento-kanban-body">
+      <div class="orcamento-kanban-body" ondragover="allowDropSolicitacaoKanban(event)" ondragleave="leaveDropSolicitacaoKanban(event)" ondrop="dropSolicitacaoKanban(event,'${col.key}')">
         ${col.list.length ? col.list.map(sol => cardKanbanSolicitacao(sol, col.cls)).join('') : `<div class="empty" style="padding:24px 10px"><i class="fa-solid ${col.icon}"></i><p>Nenhum item aqui.</p></div>`}
       </div>
     </div>`).join('');
 }
-
 
 function criarClienteFromSolicitacao(id) {
   const sol = solicitacoesOrcamento.find(x => x.id === id);
@@ -3974,6 +4082,17 @@ Observação do envio: ${obsConclusao}` : ''}`,
 function marcarFeito(id) { abrirConcluir(id, 'retorno'); }
 function marcarFeitoOrcamento(id) { abrirConcluir(id, 'orcamento'); }
 
+function excluirAgendamento(id) {
+  const a = agendamentos.find(x => x.id === id);
+  if (!a) return;
+  const c = clientes.find(x => x.id === a.clienteId);
+  if (!confirm(`Excluir esta atividade programada${c ? ' de ' + c.nome : ''}?`)) return;
+  agendamentos = agendamentos.filter(x => x.id !== id);
+  save();
+  renderAgenda(); renderDashboard(); renderClientes();
+  notify('Atividade programada excluída.', '#7a1a1a');
+}
+
 // ===== EDITAR AGENDAMENTO / ORÇAMENTO (sem histórico de edição) =====
 function editarAgendamento(id) {
   const a = agendamentos.find(x=>x.id===id);
@@ -4143,6 +4262,7 @@ function renderKanbanItems(list) {
         <div style="display:flex;gap:6px">
           <button class="btn btn-warning btn-sm" title="Editar" onclick="editarAgendamento(${a.id})"><i class="fa-solid fa-pen"></i></button>
           <button class="btn btn-success btn-sm" onclick="marcarFeito(${a.id})"><i class="fa-solid fa-check"></i> Concluído</button>
+          <button class="btn btn-danger btn-sm" title="Excluir atividade" onclick="excluirAgendamento(${a.id})"><i class="fa-solid fa-trash"></i></button>
         </div>
       </div>
     </div>`;
