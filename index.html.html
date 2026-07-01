@@ -84,8 +84,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .logo-text { display: flex; flex-direction: column; line-height: 1.2; justify-content: center; }
 .logo-text h1 { font-size: 18.5px; font-weight: 700; color: var(--text); letter-spacing: -0.4px; white-space: nowrap; font-family: Georgia, 'Times New Roman', serif; }
 .logo-text h1 .logo-accent { color: var(--accent); font-weight: 700; font-style: italic; }
-.topnav { display: flex; align-items: center; gap: 3px; flex: 1; overflow-x: auto; background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 4px; }
-.topnav-item { display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 9px; cursor: pointer; color: var(--text2); font-size: 13px; font-weight: 600; transition: all 0.15s; white-space: nowrap; }
+.topnav { display: flex; align-items: center; gap: 3px; flex: 1; min-width: 0; overflow-x: auto; overflow-y: hidden; background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 4px 6px 7px; scrollbar-width: thin; scrollbar-color: var(--border2) transparent; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; scroll-snap-type: x proximity; }
+.topnav::-webkit-scrollbar { height: 8px; }
+.topnav::-webkit-scrollbar-track { background: transparent; border-radius: 999px; }
+.topnav::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 999px; border: 2px solid var(--surface2); }
+.topnav:hover::-webkit-scrollbar-thumb { background: var(--accent); }
+.topnav-item { display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 9px; cursor: pointer; color: var(--text2); font-size: 13px; font-weight: 600; transition: all 0.15s; white-space: nowrap; flex: 0 0 auto; scroll-snap-align: start; }
 .topnav-item:hover { background: var(--surface); color: var(--text); }
 .topnav-item.active { background: var(--surface); color: var(--accent); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
 .topnav-item i { font-size: 13.5px; }
@@ -120,7 +124,8 @@ body.theme-light .theme-switch { background: var(--surface3); }
 .quick-action-card.highlighted .quick-action-icon { background: rgba(59,125,232,.16); border-color: rgba(59,125,232,.28); }
 .quick-action-card strong { display: block; color: var(--text); font-size: 13px; line-height: 1.2; }
 .quick-action-card small { display: block; color: var(--text3); font-size: 11px; line-height: 1.25; margin-top: 2px; }
-.topnav-item.primary-flow { color: var(--accent); }
+.topnav-item.primary-flow:not(.active) { color: var(--text2); }
+.topnav-item.primary-flow:not(.active) i { color: var(--warning); }
 .fluxo-resumo { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin-bottom: 14px; }
 .fluxo-resumo-title { font-weight: 800; font-size: 14px; color: var(--text); margin-bottom: 6px; }
 .fluxo-resumo-meta { color: var(--text2); font-size: 12.5px; line-height: 1.45; }
@@ -367,6 +372,8 @@ tr.cliente-esquecido td:first-child { border-left: 3px solid var(--danger); }
 /* ATTACHMENTS */
 .attach-item { display: flex; align-items: center; gap: 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 9px 12px; margin-bottom: 6px; }
 .attach-item i.fa-file-pdf { color: var(--danger); font-size: 16px; }
+.attach-item i.fa-file-image { color: var(--accent); font-size: 16px; }
+.attach-item i.fa-file { color: var(--text2); font-size: 16px; }
 .attach-name { flex: 1; font-size: 12.5px; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .attach-size { font-size: 11px; color: var(--text3); }
 .attach-drop { border: 2px dashed var(--border2); border-radius: var(--radius-sm); padding: 18px; text-align: center; cursor: pointer; color: var(--text3); font-size: 12.5px; transition: all 0.15s; }
@@ -425,6 +432,7 @@ img, svg, video { max-width: 100%; }
     overflow-x: auto;
     overflow-y: hidden;
     scrollbar-width: thin;
+    scrollbar-color: var(--accent) transparent;
     -webkit-overflow-scrolling: touch;
   }
 
@@ -958,6 +966,8 @@ body.auth-locked .auth-screen { display: flex; }
 .concluir-summary-icon { width: 34px; height: 34px; border-radius: 10px; background: var(--success-bg); color: var(--success); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
 .concluir-summary-title { font-size: 13.5px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
 .concluir-summary-text { font-size: 12.5px; color: var(--text2); line-height: 1.45; }
+.concluir-budget-fields { display:none; grid-column:1 / -1; background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius); padding:12px; }
+.concluir-budget-fields .field-note { font-size:11.5px; color:var(--text3); margin-top:6px; line-height:1.35; }
 .concluir-help { background: var(--accent-light); border: 1px solid rgba(59,125,232,0.22); border-radius: var(--radius-sm); padding: 10px 12px; font-size: 12.5px; color: var(--text2); line-height: 1.45; margin-top: 8px; }
 .quick-actions-client { display:flex; gap:7px; flex-wrap:wrap; margin-bottom:20px; }
 .client-history-summary { display:grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap:8px; margin: 12px 0 14px; }
@@ -1940,6 +1950,8 @@ body.auth-locked .auth-screen { display: flex; }
         <div class="form-group"><label>Cliente / Apelido *</label><input type="text" id="sol-nome" placeholder="Ex: HOSPITAL SÃO LUCAS / CLÍNICA ALFA"></div>
         <div class="form-group"><label>Solicitante</label><input type="text" id="sol-solicitante" placeholder="Ex: JOÃO DO FINANCEIRO"></div>
         <div class="form-group"><label>Empresa / Razão Social</label><input type="text" id="sol-empresa" placeholder="Ex: RAZÃO SOCIAL DA EMPRESA"></div>
+        <div class="form-group"><label>Telefone</label><input type="text" id="sol-telefone" placeholder="99-99999-9999" maxlength="13" oninput="maskTelefone(this)"></div>
+        <div class="form-group"><label>E-mail</label><input type="email" id="sol-email" placeholder="email@empresa.com"></div>
         <div class="form-group"><label>Produto/Serviço Solicitado</label><input type="text" id="sol-produto" placeholder="Ex: CALIBRAÇÃO, MANUTENÇÃO, PEÇA X..."></div>
         <div class="form-group"><label>Data da solicitação *</label><input type="date" id="sol-data"></div>
         <div class="form-group"><label>Prazo para fazer *</label><input type="date" id="sol-prazo"></div>
@@ -1961,6 +1973,15 @@ body.auth-locked .auth-screen { display: flex; }
           </select>
         </div>
         <div class="form-group full"><label>Descrição do que foi solicitado *</label><textarea id="sol-descricao" placeholder="Ex: Cliente pediu orçamento de calibração/manutenção do equipamento X..."></textarea></div>
+        <div class="form-group full">
+          <label>Anexar Arquivos</label>
+          <div class="attach-drop" onclick="document.getElementById('sol-arquivos-input').click()">
+            <i class="fa-solid fa-file-arrow-up" style="font-size:18px;margin-bottom:6px;display:block"></i>
+            Clique para anexar fotos ou PDF da solicitação
+          </div>
+          <input type="file" id="sol-arquivos-input" accept="image/*,application/pdf" multiple style="display:none" onchange="handleSolicitacaoArquivoUpload(event)">
+          <div id="sol-arquivos-list" style="margin-top:8px"></div>
+        </div>
         <div class="form-group full"><label>Observações</label><textarea id="sol-obs" placeholder="Ex: pediu retorno ainda hoje, precisa de condição especial, enviar por e-mail..."></textarea></div>
       </div>
     </div>
@@ -2033,7 +2054,7 @@ body.auth-locked .auth-screen { display: flex; }
       <input type="hidden" id="concluir-tipo">
       <div id="concluir-resumo" class="concluir-summary-card" style="display:none"></div>
       <div class="form-grid">
-        <div class="form-group" id="concluir-canal-wrap" style="display:none"><label>Canal do envio/contato</label>
+        <div class="form-group" id="concluir-canal-wrap" style="display:none"><label>Canal do contato</label>
           <select id="concluir-canal">
             <option value="whatsapp">WhatsApp</option>
             <option value="email">E-mail</option>
@@ -2041,6 +2062,13 @@ body.auth-locked .auth-screen { display: flex; }
             <option value="presencial">Presencial</option>
             <option value="videochamada">Videochamada</option>
           </select>
+        </div>
+        <div id="concluir-orcamento-numeros" class="concluir-budget-fields">
+          <div class="form-grid" style="gap:12px">
+            <div class="form-group"><label>Nº orçamento de peças</label><input type="text" id="concluir-numero-pecas" placeholder="Opcional"></div>
+            <div class="form-group"><label>Nº orçamento de serviço</label><input type="text" id="concluir-numero-servico" placeholder="Opcional"></div>
+          </div>
+          <div class="field-note">Preencha somente se já houver número interno do orçamento enviado. Pode deixar vazio.</div>
         </div>
         <div class="form-group full"><label id="concluir-obs-label">Como foi o retorno?</label><textarea id="concluir-obs" placeholder="Descreva o resultado, o que foi acordado, próximos passos..."></textarea><div id="concluir-help" class="concluir-help" style="display:none"></div></div>
         <div class="form-group full" style="background:var(--accent-light);border:1px solid rgba(59,125,232,0.2);border-radius:var(--radius-sm);padding:12px">
@@ -2339,6 +2367,7 @@ let alarmAtivo = null;
 let alarmSnoozeTimer = null;
 let snoozedUntil = {};
 let pdfsTempCliente = [];
+let arquivosTempSolicitacao = [];
 let editClienteId = null;
 let appTheme = 'dark';
 let appLoaded = false;
@@ -2583,6 +2612,8 @@ function openModal(id) {
     document.getElementById('sol-nome').value = '';
     document.getElementById('sol-solicitante').value = '';
     document.getElementById('sol-empresa').value = '';
+    document.getElementById('sol-telefone').value = '';
+    document.getElementById('sol-email').value = '';
     document.getElementById('sol-produto').value = '';
     document.getElementById('sol-data').value = today();
     document.getElementById('sol-prazo').value = today();
@@ -2590,6 +2621,8 @@ function openModal(id) {
     document.getElementById('sol-prioridade').value = 'normal';
     document.getElementById('sol-descricao').value = '';
     document.getElementById('sol-obs').value = '';
+    arquivosTempSolicitacao = [];
+    renderSolicitacaoArquivoList();
   }
   if (id==='modalOrcamento' && !document.getElementById('modalOrcamento').dataset.editId) {
     document.getElementById('or-data').value = today();
@@ -2796,6 +2829,42 @@ function renderPdfList() {
     <span class="attach-size">${formatBytes(p.size)}</span>
     <button class="btn btn-ghost btn-sm" onclick="window.open('${p.data}','_blank')" title="Abrir"><i class="fa-solid fa-eye"></i></button>
     <button class="btn btn-danger btn-sm" onclick="removePdf(${i})" title="Remover"><i class="fa-solid fa-trash"></i></button>
+  </div>`).join('');
+}
+
+
+function arquivoIcone(anexo) {
+  const type = (anexo?.type || '').toLowerCase();
+  if (type.includes('pdf') || (anexo?.name || '').toLowerCase().endsWith('.pdf')) return 'fa-file-pdf';
+  if (type.startsWith('image/')) return 'fa-file-image';
+  return 'fa-file';
+}
+function handleSolicitacaoArquivoUpload(event) {
+  const files = Array.from(event.target.files || []);
+  files.forEach(file => {
+    const tipoOk = file.type === 'application/pdf' || file.type.startsWith('image/');
+    if (!tipoOk) { notify('Apenas imagens e PDF são aceitos na solicitação','#7a1a1a'); return; }
+    if (file.size > 5*1024*1024) { notify(`"${file.name}" é maior que 5MB e não pôde ser anexado`,'#7a1a1a'); return; }
+    if (arquivosTempSolicitacao.length >= 10) { notify('Limite de 10 arquivos por solicitação','#7a1a1a'); return; }
+    const reader = new FileReader();
+    reader.onload = e => {
+      arquivosTempSolicitacao.push({ name: file.name, size: file.size, type: file.type, data: e.target.result, addedEm: today() });
+      renderSolicitacaoArquivoList();
+    };
+    reader.readAsDataURL(file);
+  });
+  event.target.value = '';
+}
+function removeSolicitacaoArquivo(i) { arquivosTempSolicitacao.splice(i,1); renderSolicitacaoArquivoList(); }
+function renderSolicitacaoArquivoList() {
+  const el = document.getElementById('sol-arquivos-list');
+  if (!el) return;
+  el.innerHTML = arquivosTempSolicitacao.map((p,i)=>`<div class="attach-item">
+    <i class="fa-solid ${arquivoIcone(p)}"></i>
+    <span class="attach-name">${p.name}</span>
+    <span class="attach-size">${formatBytes(p.size || 0)}</span>
+    <button class="btn btn-ghost btn-sm" onclick="window.open('${p.data}','_blank')" title="Abrir"><i class="fa-solid fa-eye"></i></button>
+    <button class="btn btn-danger btn-sm" onclick="removeSolicitacaoArquivo(${i})" title="Remover"><i class="fa-solid fa-trash"></i></button>
   </div>`).join('');
 }
 
@@ -3142,6 +3211,8 @@ function limparModalSolicitacao() {
   document.getElementById('sol-nome').value = '';
   document.getElementById('sol-solicitante').value = '';
   document.getElementById('sol-empresa').value = '';
+  document.getElementById('sol-telefone').value = '';
+  document.getElementById('sol-email').value = '';
   document.getElementById('sol-produto').value = '';
   document.getElementById('sol-data').value = today();
   document.getElementById('sol-prazo').value = today();
@@ -3149,6 +3220,8 @@ function limparModalSolicitacao() {
   document.getElementById('sol-prioridade').value = 'normal';
   document.getElementById('sol-descricao').value = '';
   document.getElementById('sol-obs').value = '';
+  arquivosTempSolicitacao = [];
+  renderSolicitacaoArquivoList();
   delete document.getElementById('modalSolicitacao').dataset.editId;
   document.getElementById('modal-solicitacao-title').innerHTML = '<i class="fa-solid fa-clipboard-list" style="color:var(--warning);margin-right:8px"></i>Novo Orçamento';
 }
@@ -3165,6 +3238,7 @@ function abrirFluxoSolicitacao(id) {
     <div class="fluxo-resumo-title">${d.nome}${d.empresa ? ' — ' + d.empresa : ''}</div>
     <div class="fluxo-resumo-meta">
       <strong>Produto/serviço:</strong> ${sol.produto || 'Não informado'}<br>
+      ${sol.telefone ? `<strong>Telefone:</strong> ${sol.telefone}<br>` : ''}${sol.email ? `<strong>E-mail:</strong> ${sol.email}<br>` : ''}${(sol.anexos||[]).length ? `<strong>Anexos:</strong> ${(sol.anexos||[]).length}<br>` : ''}
       <strong>Prazo:</strong> ${fmtDate(sol.prazo)} • <strong>Prioridade:</strong> ${sol.prioridade || 'normal'}${sol.clienteId ? '<br><strong>Status operacional:</strong> cliente já vinculado' : '<br><strong>Status operacional:</strong> sem cliente cadastrado/vinculado'}
     </div>`;
   const bloqueado = !sol.clienteId;
@@ -3236,13 +3310,15 @@ function criarOrcamentoRecorrenteFromSolicitacao(id) {
 function salvarSolicitacaoOrcamento() {
   const clienteId = +document.getElementById('sol-cliente').value || null;
   const cliente = clienteId ? clientes.find(c => c.id === clienteId) : null;
-  const nome = (document.getElementById('sol-nome').value.trim() || (cliente ? cliente.nome : '')).trim();
-  const solicitante = document.getElementById('sol-solicitante').value.trim();
-  const empresa = (document.getElementById('sol-empresa').value.trim() || (cliente ? cliente.empresa || '' : '')).trim();
-  const produto = document.getElementById('sol-produto').value.trim();
+  const nome = toUpperBR(document.getElementById('sol-nome').value || (cliente ? cliente.nome : ''));
+  const solicitante = toUpperBR(document.getElementById('sol-solicitante').value);
+  const empresa = toUpperBR(document.getElementById('sol-empresa').value || (cliente ? cliente.empresa || '' : ''));
+  const telefone = (document.getElementById('sol-telefone').value.trim() || (cliente ? cliente.telefone || '' : '')).trim();
+  const email = (document.getElementById('sol-email').value.trim() || (cliente ? cliente.email || '' : '')).trim();
+  const produto = toUpperBR(document.getElementById('sol-produto').value);
   const dataSolicitacao = document.getElementById('sol-data').value;
   const prazo = document.getElementById('sol-prazo').value;
-  const descricao = document.getElementById('sol-descricao').value.trim();
+  const descricao = toUpperBR(document.getElementById('sol-descricao').value);
   if (!nome) { notify('Informe o cliente/empresa da solicitação','#7a1a1a'); return; }
   if (!dataSolicitacao || !prazo) { notify('Informe a data da solicitação e o prazo','#7a1a1a'); return; }
   if (!descricao) { notify('Descreva o que foi solicitado','#7a1a1a'); return; }
@@ -3252,13 +3328,16 @@ function salvarSolicitacaoOrcamento() {
     nome,
     solicitante,
     empresa,
+    telefone,
+    email,
     produto,
     dataSolicitacao,
     prazo,
     canal: document.getElementById('sol-canal').value,
     prioridade: document.getElementById('sol-prioridade').value,
     descricao,
-    obs: document.getElementById('sol-obs').value.trim(),
+    obs: toUpperBR(document.getElementById('sol-obs').value),
+    anexos: [...arquivosTempSolicitacao],
     atualizadoEm: today()
   };
 
@@ -3292,6 +3371,8 @@ function editarSolicitacaoOrcamento(id) {
   document.getElementById('sol-nome').value = sol.nome || '';
   document.getElementById('sol-solicitante').value = sol.solicitante || '';
   document.getElementById('sol-empresa').value = sol.empresa || '';
+  document.getElementById('sol-telefone').value = sol.telefone || '';
+  document.getElementById('sol-email').value = sol.email || '';
   document.getElementById('sol-produto').value = sol.produto || '';
   document.getElementById('sol-data').value = sol.dataSolicitacao || today();
   document.getElementById('sol-prazo').value = sol.prazo || today();
@@ -3299,7 +3380,10 @@ function editarSolicitacaoOrcamento(id) {
   document.getElementById('sol-prioridade').value = sol.prioridade || 'normal';
   document.getElementById('sol-descricao').value = sol.descricao || '';
   document.getElementById('sol-obs').value = sol.obs || '';
+  arquivosTempSolicitacao = [...(sol.anexos || [])];
+  renderSolicitacaoArquivoList();
 }
+
 
 function excluirSolicitacaoOrcamento(id) {
   if (!confirm('Excluir esta solicitação de orçamento?')) return;
@@ -3331,7 +3415,7 @@ function abrirConcluirSolicitacao(id) {
   abrirConcluir(id, 'solicitacao_orcamento');
 }
 
-function marcarSolicitacaoFeita(id, obsFinal='', canalContato='whatsapp') {
+function marcarSolicitacaoFeita(id, obsFinal='', canalContato='whatsapp', numerosOrcamento={}) {
   const sol = solicitacoesOrcamento.find(x => x.id === id);
   if (!sol) return;
   const dados = dadosSolicitacaoCliente(sol);
@@ -3343,6 +3427,11 @@ function marcarSolicitacaoFeita(id, obsFinal='', canalContato='whatsapp') {
     empresaAvulsa: dados.empresa,
     solicitanteAvulso: sol.solicitante || '',
     produto: sol.produto || '',
+    telefoneAvulso: sol.telefone || '',
+    emailAvulso: sol.email || '',
+    anexos: [...(sol.anexos || [])],
+    numeroOrcamentoPecas: numerosOrcamento.pecas || '',
+    numeroOrcamentoServico: numerosOrcamento.servico || '',
     dataOriginal: sol.prazo,
     dataSolicitacao: sol.dataSolicitacao,
     prioridade: sol.prioridade || 'normal',
@@ -3384,6 +3473,8 @@ function renderSolicitacaoCards(list) {
           <div class="kanban-client">${d.nome}</div>
           ${d.solicitante?`<div style="font-size:11px;color:var(--text3)">Solicitante: ${d.solicitante}</div>`:''}
           ${d.empresa?`<div style="font-size:11px;color:var(--text3)">${d.empresa}</div>`:''}
+          ${sol.telefone?`<div style="font-size:11px;color:var(--text3)"><i class="fa-solid fa-phone"></i> ${sol.telefone}</div>`:''}
+          ${sol.email?`<div style="font-size:11px;color:var(--text3)"><i class="fa-solid fa-envelope"></i> ${sol.email}</div>`:''}
         </div>
       </div>
       <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px">
@@ -3391,6 +3482,7 @@ function renderSolicitacaoCards(list) {
         <span class="badge badge-gray">${canalLabel[sol.canal]||sol.canal||'Canal'}</span>
         ${sol.produto?`<span class="badge badge-warning">${sol.produto}</span>`:''}
         ${!sol.clienteId?'<span class="badge badge-danger">Sem cliente</span>':''}
+        ${(sol.anexos||[]).length?`<span class="badge badge-gray"><i class="fa-solid fa-paperclip" style="margin-right:3px"></i>${(sol.anexos||[]).length}</span>`:''}
       </div>
       ${sol.descricao?`<div class="kanban-note">${sol.descricao.length>120?sol.descricao.slice(0,120)+'…':sol.descricao}</div>`:''}
       <div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-top:8px;flex-wrap:wrap">
@@ -3438,7 +3530,7 @@ function renderSolicitacoesTabela() {
 
   lista = lista.filter(sol => {
     const d = dadosSolicitacaoCliente(sol);
-    const hay = [d.nome, d.empresa, d.solicitante, d.produto, sol.descricao, sol.obs, sol.canal, sol.prioridade].filter(Boolean).join(' ').toLowerCase();
+    const hay = [d.nome, d.empresa, d.solicitante, sol.telefone, sol.email, d.produto, sol.descricao, sol.obs, sol.canal, sol.prioridade].filter(Boolean).join(' ').toLowerCase();
     if (q && !hay.includes(q)) return false;
     if (prioridade && sol.prioridade !== prioridade) return false;
     if (apenasAtrasadas && !(sol.prazo < hojeISO)) return false;
@@ -3468,7 +3560,7 @@ function renderSolicitacoesTabela() {
         <div class="avatar ${d.avatar}" style="width:30px;height:30px;font-size:11px">${d.iniciais}</div>
         <div>
           <div class="client-name">${d.nome}</div>
-          <div class="client-email">${sol._concluida ? 'Concluída' : sol.clienteId?'Cliente cadastrado':'Sem cadastro vinculado'}${d.solicitante ? ' • ' + d.solicitante : ''}</div>
+          <div class="client-email">${sol._concluida ? 'Concluída' : sol.clienteId?'Cliente cadastrado':'Sem cadastro vinculado'}${d.solicitante ? ' • ' + d.solicitante : ''}${sol.telefone ? ' • ' + sol.telefone : ''}${sol.email ? ' • ' + sol.email : ''}</div>
         </div>
       </div></td>
       <td style="color:var(--text2)">${d.empresa || '—'}</td>
@@ -3476,7 +3568,7 @@ function renderSolicitacoesTabela() {
       <td>${fmtDate(sol.prazo)} ${sol._concluida?`<span class="badge badge-success" style="margin-left:4px">Feita em ${fmtDate(sol.concluidoEm)}</span>`:atrasado?'<span class="badge badge-danger" style="margin-left:4px">Atrasada</span>':hoje?'<span class="badge badge-warning" style="margin-left:4px">Hoje</span>':''}</td>
       <td><span class="badge badge-gray">${canalLabel[sol.canal]||sol.canal||'—'}</span></td>
       <td><span class="badge ${priorBadge[sol.prioridade]||'badge-gray'}">${sol.prioridade||'normal'}</span></td>
-      <td style="color:var(--text2);max-width:180px">${d.produto || '—'}</td>
+      <td style="color:var(--text2);max-width:180px">${d.produto || '—'} ${(sol.anexos||[]).length?`<br><span class="badge badge-gray" style="margin-top:4px"><i class="fa-solid fa-paperclip" style="margin-right:3px"></i>${(sol.anexos||[]).length} anexo(s)</span>`:''}</td>
       <td style="color:var(--text2);max-width:260px">${(sol.descricao||'').length>90?sol.descricao.slice(0,90)+'…':(sol.descricao||'—')}</td>
       <td><div class="action-row">
         ${sol._concluida ? '<span class="badge badge-success"><i class="fa-solid fa-check" style="margin-right:3px"></i>Concluída</span>' : `${!sol.clienteId?`<button class="btn btn-ghost btn-sm" title="Criar cliente" onclick="criarClienteFromSolicitacao(${sol.id})"><i class="fa-solid fa-user-plus"></i></button>`:''}<button class="btn btn-warning btn-sm" title="Editar" onclick="editarSolicitacaoOrcamento(${sol.id})"><i class="fa-solid fa-pen"></i></button><button class="btn btn-success btn-sm" title="Marcar como feito" onclick="abrirConcluirSolicitacao(${sol.id})"><i class="fa-solid fa-check"></i></button><button class="btn btn-danger btn-sm" title="Excluir" onclick="excluirSolicitacaoOrcamento(${sol.id})"><i class="fa-solid fa-trash"></i></button>`}
@@ -3496,8 +3588,8 @@ function criarClienteFromSolicitacao(id) {
   document.getElementById('c-funcao').value = toUpperBR(sol.solicitante || '');
   document.getElementById('c-setor').value = '';
   document.getElementById('c-cnpj').value = '';
-  document.getElementById('c-email').value = '';
-  document.getElementById('c-tel').value = '';
+  document.getElementById('c-email').value = sol.email || '';
+  document.getElementById('c-tel').value = sol.telefone || '';
   document.getElementById('c-segmento').value = '';
   document.getElementById('c-cidade').value = '';
   document.getElementById('c-estado').value = '';
@@ -3558,6 +3650,9 @@ function configurarModalConclusao(tipo, item) {
   const canalWrap = document.getElementById('concluir-canal-wrap');
   const canal = document.getElementById('concluir-canal');
   const help = document.getElementById('concluir-help');
+  const budgetWrap = document.getElementById('concluir-orcamento-numeros');
+  const numPecas = document.getElementById('concluir-numero-pecas');
+  const numServico = document.getElementById('concluir-numero-servico');
 
   const cliente = item?.clienteId ? clientes.find(c=>c.id===item.clienteId) : null;
   const nomeCliente = cliente ? cliente.nome : (item?.nome || item?.nomeAvulso || 'Cliente não vinculado');
@@ -3567,9 +3662,12 @@ function configurarModalConclusao(tipo, item) {
   if (tipo === 'solicitacao_orcamento') {
     title.innerHTML = '<i class="fa-solid fa-file-invoice-dollar" style="color:var(--success);margin-right:8px"></i>Marcar orçamento como feito';
     label.textContent = 'Observação sobre o orçamento feito/enviado (opcional)';
-    obs.placeholder = 'Ex: orçamento enviado por WhatsApp, cliente pediu retorno amanhã, faltou algum item...';
-    canalWrap.style.display = 'flex';
+    obs.placeholder = 'Ex: cliente pediu retorno amanhã, faltou algum item, enviado conforme solicitado...';
+    canalWrap.style.display = 'none';
     canal.value = item?.canal || 'whatsapp';
+    if (budgetWrap) budgetWrap.style.display = 'block';
+    if (numPecas) numPecas.value = item?.numeroOrcamentoPecas || '';
+    if (numServico) numServico.value = item?.numeroOrcamentoServico || '';
     help.style.display = 'block';
     help.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:6px"></i>Ao confirmar, esta solicitação sairá dos pendentes e será registrado automaticamente um contato no histórico do cliente, se houver cliente vinculado.';
     resumo.style.display = 'flex';
@@ -3578,8 +3676,11 @@ function configurarModalConclusao(tipo, item) {
     title.innerHTML = '<i class="fa-solid fa-repeat" style="color:var(--purple);margin-right:8px"></i>Concluir orçamento recorrente';
     label.textContent = 'Observação sobre o orçamento recorrente feito/enviado (opcional)';
     obs.placeholder = 'Ex: orçamento recorrente enviado, combinar novo retorno, cliente pediu ajuste...';
-    canalWrap.style.display = 'flex';
+    canalWrap.style.display = 'none';
     canal.value = 'whatsapp';
+    if (budgetWrap) budgetWrap.style.display = 'block';
+    if (numPecas) numPecas.value = item?.numeroOrcamentoPecas || '';
+    if (numServico) numServico.value = item?.numeroOrcamentoServico || '';
     help.style.display = 'block';
     help.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:6px"></i>Ao confirmar, o sistema também registrará um contato no histórico do cliente. Se este orçamento for recorrente, o próximo será criado automaticamente para daqui 30 dias.';
     resumo.style.display = 'flex';
@@ -3589,6 +3690,9 @@ function configurarModalConclusao(tipo, item) {
     label.textContent = 'Como foi o retorno?';
     obs.placeholder = 'Descreva o resultado, o que foi acordado, próximos passos...';
     canalWrap.style.display = 'none';
+    if (budgetWrap) budgetWrap.style.display = 'none';
+    if (numPecas) numPecas.value = '';
+    if (numServico) numServico.value = '';
     help.style.display = 'none';
     resumo.style.display = 'none';
     resumo.innerHTML = '';
@@ -3610,6 +3714,8 @@ function abrirConcluir(id, tipo) {
   document.getElementById('concluir-novo-data').value = '';
   document.getElementById('concluir-novo-horario').value = '09:00';
   document.getElementById('concluir-novo-motivo').value = '';
+  document.getElementById('concluir-numero-pecas').value = '';
+  document.getElementById('concluir-numero-servico').value = '';
   configurarModalConclusao(tipo, item);
   openModal('modalConcluir');
 }
@@ -3622,19 +3728,28 @@ function confirmarConclusao() {
   const id = +document.getElementById('concluir-id').value;
   const tipo = document.getElementById('concluir-tipo').value;
   const obsConclusao = document.getElementById('concluir-obs').value.trim();
+  const numeroPecas = document.getElementById('concluir-numero-pecas')?.value.trim() || '';
+  const numeroServico = document.getElementById('concluir-numero-servico')?.value.trim() || '';
+  const numerosOrcamento = { pecas: numeroPecas, servico: numeroServico };
   const canalContato = document.getElementById('concluir-canal')?.value || 'whatsapp';
 
   if (tipo === 'solicitacao_orcamento') {
-    marcarSolicitacaoFeita(id, obsConclusao, canalContato);
+    const sol = solicitacoesOrcamento.find(s=>s.id===id);
+    marcarSolicitacaoFeita(id, obsConclusao, sol?.canal || 'whatsapp', numerosOrcamento);
   } else if (tipo === 'orcamento') {
     const item = orcamentos.find(o=>o.id===id);
     if (!item) return;
-    concluidos.push({ id: Date.now(), tipo:'orcamento', clienteId:item.clienteId, dataOriginal:item.data, motivo:item.obs, obsConclusao, concluidoEm: today() });
+    concluidos.push({ id: Date.now(), tipo:'orcamento', clienteId:item.clienteId, dataOriginal:item.data, motivo:item.obs, obsConclusao, numeroOrcamentoPecas: numeroPecas, numeroOrcamentoServico: numeroServico, concluidoEm: today() });
     registrarContatoOrcamentoEnviado(
       item.clienteId,
       'orcamento_recorrente',
-      `Orçamento recorrente feito/enviado.\nData do acompanhamento: ${fmtDate(item.data)}\nObservação original: ${item.obs || '—'}${obsConclusao ? `\nObservação do envio: ${obsConclusao}` : ''}`,
-      canalContato
+      `Orçamento recorrente feito/enviado.
+Data do acompanhamento: ${fmtDate(item.data)}${numeroPecas ? `
+Nº orçamento de peças: ${numeroPecas}` : ''}${numeroServico ? `
+Nº orçamento de serviço: ${numeroServico}` : ''}
+Observação original: ${item.obs || '—'}${obsConclusao ? `
+Observação do envio: ${obsConclusao}` : ''}`,
+      'whatsapp'
     );
     if (item.repetir) {
       orcamentos.push({ ...item, id: Date.now()+1, data: addDays(item.data, 30) });
@@ -4433,7 +4548,7 @@ function retornosParaRows(lista = agendamentos) {
   return [['ID','Data','Horário','Cliente','Razão Social','Prioridade','Motivo'], ...lista.map(a => { const c=clientes.find(x=>x.id===a.clienteId); return [a.id,fmtDate(a.data),a.horario||'09:00',c?c.nome:'—',c?c.empresa||'':'',a.prioridade||'normal',a.motivo||'']; })];
 }
 function solicitacoesParaRows(lista = solicitacoesOrcamento) {
-  return [['ID','Prazo','Data da Solicitação','Cliente/Solicitante','Solicitante','Razão Social','Produto/Serviço','Canal','Prioridade','Descrição','Observações','Vinculado a Cliente'], ...lista.map(sol => { const d=dadosSolicitacaoCliente(sol); return [sol.id,fmtDate(sol.prazo),fmtDate(sol.dataSolicitacao),d.nome,d.solicitante||'',d.empresa||'',d.produto||'',sol.canal||'',sol.prioridade||'normal',sol.descricao||'',sol.obs||'',sol.clienteId?'Sim':'Não']; })];
+  return [['ID','Prazo','Data da Solicitação','Cliente/Solicitante','Solicitante','Telefone','E-mail','Razão Social','Produto/Serviço','Canal','Prioridade','Descrição','Observações','Anexos','Vinculado a Cliente'], ...lista.map(sol => { const d=dadosSolicitacaoCliente(sol); return [sol.id,fmtDate(sol.prazo),fmtDate(sol.dataSolicitacao),d.nome,d.solicitante||'',sol.telefone||'',sol.email||'',d.empresa||'',d.produto||'',sol.canal||'',sol.prioridade||'normal',sol.descricao||'',sol.obs||'',(sol.anexos||[]).length,sol.clienteId?'Sim':'Não']; })];
 }
 function orcamentosParaRows(lista = orcamentos) {
   return [['ID','Data','Horário','Cliente','Razão Social','Mensal','Observação'], ...lista.map(o => { const c=clientes.find(x=>x.id===o.clienteId); return [o.id,fmtDate(o.data),o.horario||'09:00',c?c.nome:'—',c?c.empresa||'':'',o.repetir?'Sim':'Não',o.obs||'']; })];
@@ -5014,8 +5129,8 @@ function exportarPdf() {
     if (!lista.length) { notify('Nenhuma solicitação no período selecionado','#7a1a1a'); return; }
     lista.sort((a,b)=>a.prazo.localeCompare(b.prazo));
     pdfHeader(doc, 'Relatório de Solicitações de Orçamento' + (range?` (${fmtDate(range[0])} a ${fmtDate(range[1])})`:''));
-    const body = lista.map(sol => { const d = dadosSolicitacaoCliente(sol); return [fmtDate(sol.prazo), fmtDate(sol.dataSolicitacao), d.nome, d.solicitante||'—', d.empresa||'—', d.produto||'—', sol.prioridade||'normal', sol.descricao||'—']; });
-    doc.autoTable({ head: [['Prazo','Solicitado em','Cliente','Solicitante','Razão Social','Produto/Serviço','Prioridade','Descrição']], body, startY: 28, theme:'striped', headStyles:{fillColor:[245,166,35]}, styles:{fontSize:8}, columnStyles:{7:{cellWidth:75}} });
+    const body = lista.map(sol => { const d = dadosSolicitacaoCliente(sol); return [fmtDate(sol.prazo), fmtDate(sol.dataSolicitacao), d.nome, d.solicitante||'—', sol.telefone||'—', sol.email||'—', d.empresa||'—', d.produto||'—', sol.prioridade||'normal', sol.descricao||'—']; });
+    doc.autoTable({ head: [['Prazo','Solicitado em','Cliente','Solicitante','Telefone','E-mail','Razão Social','Produto/Serviço','Prioridade','Descrição']], body, startY: 28, theme:'striped', headStyles:{fillColor:[245,166,35]}, styles:{fontSize:8}, columnStyles:{7:{cellWidth:75}} });
     pdfFooter(doc); doc.save(`relatorio_solicitacoes_orcamento_${today()}.pdf`);
   }
 
