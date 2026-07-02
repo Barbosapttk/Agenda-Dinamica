@@ -2889,6 +2889,68 @@ body.theme-light .agenda-helper-tags span { background:rgba(255,255,255,.45); bo
 .orcamento-card-mini-actions .btn-icon-mini { min-width:28px; padding:5px 7px; }
 @media (max-width:900px){ .agenda-helper-card{flex-direction:column}.agenda-helper-tags{width:100%;min-width:0}.agenda-helper-tags span{white-space:normal} }
 
+
+/* AJUSTES: CONTATO OPCIONAL, PROPOSTA ENVIADA E HISTÓRICO ORGANIZADO */
+.optional-flow-box {
+  background: linear-gradient(135deg, rgba(13,102,232,0.10), rgba(13,102,232,0.04));
+  border: 1px solid rgba(13,102,232,0.22);
+  border-radius: 12px;
+  padding: 12px;
+}
+.optional-flow-help {
+  font-size: 11.5px;
+  color: var(--text3);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+.proposta-contato-box {
+  background: linear-gradient(135deg, rgba(29,214,165,0.11), rgba(13,102,232,0.05));
+  border-color: rgba(29,214,165,0.22);
+}
+.historico-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+  gap: 10px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(13,102,232,0.04);
+}
+.historico-overview-card {
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(11,30,78,0.82), rgba(8,22,52,0.82));
+  border-radius: 12px;
+  padding: 12px 13px;
+}
+.historico-overview-card span {
+  display:block;
+  font-size:10.5px;
+  color:var(--text3);
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+}
+.historico-overview-card strong {
+  display:block;
+  font-size:22px;
+  margin-top:4px;
+  color:var(--text);
+}
+.proposta-history-item {
+  display:flex;
+  gap:12px;
+  padding:14px 18px;
+  border-bottom:1px solid var(--border);
+}
+.proposta-history-item:last-child { border-bottom:none; }
+.proposta-history-icon {
+  width:34px;height:34px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--accent-light);color:var(--accent);flex:0 0 auto;
+}
+body.theme-light .optional-flow-box { background: linear-gradient(135deg, rgba(7,95,226,0.12), rgba(7,95,226,0.04)); }
+body.theme-light .proposta-contato-box { background: linear-gradient(135deg, rgba(8,127,104,0.14), rgba(7,95,226,0.05)); }
+body.theme-light .historico-overview-card { background: linear-gradient(135deg, rgba(7,95,226,0.12), #dbe8f7); }
+
 </style>
 </head>
 <body class="auth-locked">
@@ -3341,7 +3403,7 @@ body.theme-light .agenda-helper-tags span { background:rgba(255,255,255,.45); bo
   <div id="view-historico" class="view">
     <div class="card">
       <div class="card-header" style="flex-wrap:wrap;gap:10px">
-        <div class="card-title">Registros <span id="historico-count" class="badge badge-gray" style="margin-left:6px">0</span></div>
+        <div class="card-title"><i class="fa-solid fa-address-book" style="color:var(--accent)"></i> Histórico de Contatos <span id="historico-count" class="badge badge-gray" style="margin-left:6px">0</span></div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
           <select id="filtro-canal-historico" onchange="renderHistorico()" style="width:auto;min-width:140px;padding:6px 10px;font-size:12.5px">
             <option value="">Canal: Todos</option>
@@ -3360,7 +3422,16 @@ body.theme-light .agenda-helper-tags span { background:rgba(255,255,255,.45); bo
           </div>
         </div>
       </div>
+      <div id="historico-overview" class="historico-overview"></div>
       <div id="lista-historico"></div>
+    </div>
+
+    <div class="card" style="margin-top:20px;margin-bottom:20px">
+      <div class="card-header">
+        <div class="card-title"><i class="fa-solid fa-file-signature" style="color:var(--accent)"></i> Histórico de Propostas Enviadas</div>
+        <span id="propostas-enviadas-count" class="badge badge-gray">0</span>
+      </div>
+      <div id="dash-propostas-enviadas"></div>
     </div>
 
     <div class="card" style="margin-top:20px;margin-bottom:20px">
@@ -3549,6 +3620,12 @@ body.theme-light .agenda-helper-tags span { background:rgba(255,255,255,.45); bo
         </div>
         <div class="form-group full"><label>Observação Importante Fixa</label><textarea id="c-obs-importante" placeholder="Ex: Só fala com financeiro; pedir pedido de compra antes de faturar; exige orçamento formal em PDF..."></textarea></div>
         <div class="form-group full"><label>Observações</label><textarea id="c-obs" placeholder="Campo opcional. Preencha apenas se houver informação adicional."></textarea></div>
+        <div class="form-group full optional-flow-box">
+          <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:13px;color:var(--text);cursor:pointer">
+            <input type="checkbox" id="c-registrar-contato" style="width:auto"> Após salvar, registrar um contato para este cliente
+          </label>
+          <div class="optional-flow-help">Use esta opção quando o cadastro já nasceu de uma conversa, ligação ou troca de mensagens.</div>
+        </div>
         <div class="form-group full">
           <label>Anexar PDF</label>
           <div class="attach-drop" onclick="document.getElementById('c-pdf-input').click()">
@@ -3596,6 +3673,17 @@ body.theme-light .agenda-helper-tags span { background:rgba(255,255,255,.45); bo
           <div style="font-size:11.5px;color:var(--text3);margin-top:4px">Marque quando você tentou contato e o cliente não respondeu. Isso entra no contador do cliente.</div>
         </div>
         <div class="form-group full"><label>O que foi tratado *</label><textarea id="ct-descricao" placeholder="Descreva o que foi discutido, acordos firmados, próximos passos..."></textarea></div>
+        <div class="form-group full optional-flow-box proposta-contato-box">
+          <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:13px;color:var(--text);cursor:pointer">
+            <input type="checkbox" id="ct-proposta-enviada" style="width:auto" onchange="togglePropostaContato()"> Foi enviada proposta/orçamento neste contato?
+          </label>
+          <div class="optional-flow-help">Marque quando o contato também representar o envio de uma proposta ao cliente.</div>
+          <div id="ct-proposta-campos" class="form-grid" style="display:none;margin-top:10px">
+            <div class="form-group"><label>Nº orçamento de peças</label><input type="text" id="ct-numero-pecas" placeholder="Opcional"></div>
+            <div class="form-group"><label>Nº orçamento de serviço</label><input type="text" id="ct-numero-servico" placeholder="Opcional"></div>
+            <div class="form-group full"><label>Observação da proposta</label><textarea id="ct-proposta-obs" placeholder="Ex: Proposta enviada por e-mail, aguardando aprovação..."></textarea></div>
+          </div>
+        </div>
         <div class="form-group full">
           <label>Agendar Próximo Retorno</label>
           <input type="date" id="ct-retorno" onchange="aoMudarData('ct-retorno','ct-horario-alarme')">
@@ -7365,6 +7453,229 @@ async function initApp() {
 }
 
 iniciarComLogin();
+
+
+// ===== AJUSTES: CONTATO OPCIONAL, PROPOSTAS ENVIADAS E HISTÓRICO =====
+function togglePropostaContato() {
+  const checked = document.getElementById('ct-proposta-enviada')?.checked || false;
+  const box = document.getElementById('ct-proposta-campos');
+  if (box) box.style.display = checked ? 'grid' : 'none';
+}
+
+function prepararContatoAposCliente(clienteId, texto='') {
+  openModal('modalContato');
+  setTimeout(() => {
+    const clienteEl = document.getElementById('ct-cliente');
+    const dataEl = document.getElementById('ct-data');
+    const canalEl = document.getElementById('ct-canal');
+    const descEl = document.getElementById('ct-descricao');
+    if (clienteEl) clienteEl.value = clienteId;
+    if (dataEl) dataEl.value = today();
+    if (canalEl) canalEl.value = 'whatsapp';
+    if (descEl) descEl.value = texto || 'Contato registrado após cadastro do cliente.';
+    const proposta = document.getElementById('ct-proposta-enviada');
+    if (proposta) proposta.checked = false;
+    togglePropostaContato();
+  }, 100);
+}
+
+function salvarCliente() {
+  const nome = valorMaiusculo('c-nome');
+  if (!nome) { notify('Informe o nome do cliente','#7a1a1a'); return; }
+  const abrirContatoDepois = editClienteId === null && (document.getElementById('c-registrar-contato')?.checked || false);
+  const finalVal = document.querySelector('input[name="c-final"]:checked')?.value || 'nao';
+  const ieVal = document.querySelector('input[name="c-ie"]:checked')?.value || 'nao';
+  const pedidoVal = document.querySelector('input[name="c-pedido"]:checked')?.value || 'nao';
+  const dadosBase = {
+    nome,
+    empresa: valorMaiusculo('c-empresa'),
+    funcao: valorMaiusculo('c-funcao'),
+    setor: valorMaiusculo('c-setor'),
+    cnpj: valorMaiusculo('c-cnpj'),
+    email: document.getElementById('c-email').value.trim(),
+    telefone: valorMaiusculo('c-tel'),
+    segmento: document.getElementById('c-segmento').value,
+    cidade: valorMaiusculo('c-cidade'),
+    estado: document.getElementById('c-estado').value,
+    clienteFinal: finalVal,
+    inscricaoEstadual: ieVal,
+    pedidoCompra: pedidoVal,
+    status: document.getElementById('c-status').value,
+    equipamentos: valorMaiusculo('c-equipamentos'),
+    obsImportante: valorMaiusculo('c-obs-importante'),
+    obs: valorMaiusculo('c-obs'),
+    anexos: [...pdfsTempCliente]
+  };
+  let clienteSalvoId = editClienteId;
+  let fluxoSolicitacaoId = null;
+  let textoContatoInicial = 'Contato registrado após cadastro do cliente.';
+  if (editClienteId !== null) {
+    const idx = clientes.findIndex(c=>c.id===editClienteId);
+    if (idx !== -1) {
+      const anterior = { ...clientes[idx] };
+      clientes[idx] = { ...clientes[idx], ...dadosBase };
+      registrarAlteracoesCliente(anterior, clientes[idx]);
+      clienteSalvoId = clientes[idx].id;
+    }
+    notify('✓ Cliente atualizado!', '#0d3d2a');
+  } else {
+    const novoCliente = { id: Date.now(), ...dadosBase, criadoEm: today() };
+    clientes.push(novoCliente);
+    clienteSalvoId = novoCliente.id;
+    const solId = +document.getElementById('modalCliente').dataset.fromSolicitacaoId || null;
+    if (solId) {
+      const sol = solicitacoesOrcamento.find(x => x.id === solId);
+      if (sol) {
+        sol.clienteId = clienteSalvoId;
+        sol.nome = novoCliente.nome;
+        sol.empresa = novoCliente.empresa || sol.empresa || '';
+        sol.cnpj = novoCliente.cnpj || sol.cnpj || '';
+        sol.telefone = novoCliente.telefone || sol.telefone || '';
+        sol.email = novoCliente.email || sol.email || '';
+        sol.atualizadoEm = today();
+        fluxoSolicitacaoId = solId;
+        textoContatoInicial = `Contato registrado após cadastro do cliente a partir de solicitação de orçamento.\nProduto/serviço: ${sol.produto || 'Não informado'}\nSolicitação: ${sol.descricao || '—'}`;
+      }
+    }
+    notify('✓ Cliente cadastrado!', '#0d3d2a');
+  }
+  save();
+  closeModal('modalCliente');
+  document.getElementById('modalCliente').querySelectorAll('input[type=text],input[type=email],textarea').forEach(el=>el.value='');
+  document.getElementById('c-segmento').value='';
+  document.getElementById('c-estado').value='';
+  document.getElementById('c-status').value='ativo';
+  document.querySelectorAll('input[name="c-final"]')[1].checked = true;
+  document.querySelectorAll('input[name="c-ie"]')[1].checked = true;
+  document.querySelectorAll('input[name="c-pedido"]')[1].checked = true;
+  const checkContato = document.getElementById('c-registrar-contato');
+  if (checkContato) checkContato.checked = false;
+  pdfsTempCliente = []; editClienteId = null;
+  delete document.getElementById('modalCliente').dataset.fromSolicitacaoId;
+  document.getElementById('c-pdf-list').innerHTML = '';
+  renderDashboard(); renderClientes(); renderSolicitacoesTabela(); renderAgenda(); renderHistorico();
+  if (abrirContatoDepois && clienteSalvoId) {
+    closePanel();
+    setTimeout(()=>prepararContatoAposCliente(clienteSalvoId, textoContatoInicial), 180);
+  } else if (fluxoSolicitacaoId) {
+    closePanel();
+    setTimeout(()=>abrirFluxoSolicitacao(fluxoSolicitacaoId), 180);
+  } else if (clienteSalvoId) {
+    abrirDetalhe(clienteSalvoId);
+  }
+}
+
+function salvarContato() {
+  const clienteId = +document.getElementById('ct-cliente').value;
+  const descricao = document.getElementById('ct-descricao').value.trim();
+  if (!clienteId || !descricao) { notify('Preencha cliente e descrição','#7a1a1a'); return; }
+  const retorno = document.getElementById('ct-retorno').value;
+  const lembrete = document.getElementById('ct-lembrete').value.trim();
+  const horario = document.getElementById('ct-horario-alarme').value || '09:00';
+  const semResposta = document.getElementById('ct-sem-resposta')?.checked || false;
+  const propostaEnviada = document.getElementById('ct-proposta-enviada')?.checked || false;
+  contatos.push({
+    id: Date.now(), clienteId,
+    data: document.getElementById('ct-data').value || today(),
+    canal: document.getElementById('ct-canal').value,
+    descricao, semResposta, propostaEnviada,
+    numeroOrcamentoPecas: document.getElementById('ct-numero-pecas')?.value.trim() || '',
+    numeroOrcamentoServico: document.getElementById('ct-numero-servico')?.value.trim() || '',
+    observacaoProposta: document.getElementById('ct-proposta-obs')?.value.trim() || '',
+    editado: false, edicoes: []
+  });
+  if (retorno) agendamentos.push({ id: Date.now()+1, clienteId, data: retorno, horario, motivo: lembrete||'Retorno agendado', prioridade:'normal', criadoEm: today() });
+  save();
+  closeModal('modalContato');
+  ['ct-descricao','ct-retorno','ct-lembrete','ct-numero-pecas','ct-numero-servico','ct-proposta-obs'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('ct-cliente').value='';
+  document.getElementById('ct-sem-resposta').checked=false;
+  const propostaCheck = document.getElementById('ct-proposta-enviada');
+  if (propostaCheck) propostaCheck.checked=false;
+  togglePropostaContato();
+  document.getElementById('ct-horario-alarme').value='09:00';
+  const msg = propostaEnviada ? '✓ Contato registrado e proposta marcada como enviada!' : (semResposta ? '✓ Tentativa sem resposta registrada!' : '✓ Contato registrado!');
+  notify(msg, '#0d3d2a');
+  renderDashboard(); renderHistorico(); renderAgenda(); renderClientes();
+}
+
+function contatoRepresentaProposta(ct) {
+  return Boolean(ct?.propostaEnviada || ct?.origemOrcamento || /orçamento feito|orcamento feito|proposta enviada|orçamento enviado|orcamento enviado/i.test(ct?.descricao || ''));
+}
+
+function listaPropostasHistorico() {
+  const propostasContato = contatos.filter(contatoRepresentaProposta).map(ct => {
+    const c = clientes.find(x=>x.id===ct.clienteId);
+    return { id: 'ct-'+ct.id, data: ct.data || today(), clienteId: ct.clienteId, nome: c?.nome || 'Cliente removido', empresa: c?.empresa || '', origem: ct.origemOrcamento ? 'Orçamento feito/enviado' : 'Contato registrado', descricao: ct.observacaoProposta || ct.descricao || '', canal: ct.canal || '', pecas: ct.numeroOrcamentoPecas || '', servico: ct.numeroOrcamentoServico || '' };
+  });
+  const propostasAvulsas = concluidos.filter(cc => ['solicitacao_orcamento','orcamento'].includes(cc.tipo)).filter(cc => !cc.clienteId || !contatos.some(ct => ct.origemOrcamento && ct.clienteId === cc.clienteId && ct.data === cc.concluidoEm)).map(cc => {
+    const c = clientes.find(x=>x.id===cc.clienteId);
+    return { id:'cc-'+cc.id, data: cc.concluidoEm || today(), clienteId: cc.clienteId || null, nome: c?.nome || cc.nomeAvulso || 'Cliente não cadastrado', empresa: c?.empresa || cc.empresaAvulsa || '', origem: cc.tipo === 'orcamento' ? 'Orçamento recorrente concluído' : 'Solicitação concluída', descricao: cc.obsConclusao || cc.motivo || cc.produto || '', canal: cc.canal || '', pecas: cc.numeroOrcamentoPecas || '', servico: cc.numeroOrcamentoServico || '' };
+  });
+  return [...propostasContato, ...propostasAvulsas].sort((a,b)=>(b.data||'').localeCompare(a.data||''));
+}
+
+function renderHistorico() {
+  const q = (document.getElementById('search-historico')?.value||'').toLowerCase();
+  const fCanal = document.getElementById('filtro-canal-historico')?.value||'';
+  const canalIcon = {telefone:'fa-phone',whatsapp:'fa-brands fa-whatsapp',email:'fa-envelope',presencial:'fa-handshake',videochamada:'fa-video'};
+  const sorted = [...contatos].sort((a,b)=> ordenacaoHistorico==='desc' ? (b.data||'').localeCompare(a.data||'') : (a.data||'').localeCompare(b.data||''));
+  const filtered = sorted.filter(ct => {
+    const c = clientes.find(x=>x.id===ct.clienteId);
+    const matchQ = !q || (c&&[c.nome,c.empresa,c.cnpj].filter(Boolean).join(' ').toLowerCase().includes(q)) || (ct.descricao||'').toLowerCase().includes(q);
+    const matchCanal = !fCanal || ct.canal === fCanal;
+    return matchQ && matchCanal;
+  });
+  const propostas = listaPropostasHistorico();
+  const concluidosRetorno = [...concluidos].filter(cc=>cc.tipo==='retorno').sort((a,b)=>(b.concluidoEm||'').localeCompare(a.concluidoEm||''));
+  const concluidosSolicitacao = [...concluidos].filter(cc=>cc.tipo==='solicitacao_orcamento').sort((a,b)=>(b.concluidoEm||'').localeCompare(a.concluidoEm||''));
+  const concluidosOrcamento = [...concluidos].filter(cc=>cc.tipo==='orcamento').sort((a,b)=>(b.concluidoEm||'').localeCompare(a.concluidoEm||''));
+
+  const overview = document.getElementById('historico-overview');
+  if (overview) overview.innerHTML = `<div class="historico-overview-card"><span>Contatos</span><strong>${contatos.length}</strong></div><div class="historico-overview-card"><span>Propostas enviadas</span><strong>${propostas.length}</strong></div><div class="historico-overview-card"><span>Retornos concluídos</span><strong>${concluidosRetorno.length}</strong></div><div class="historico-overview-card"><span>Solicitações concluídas</span><strong>${concluidosSolicitacao.length}</strong></div><div class="historico-overview-card"><span>Recorrentes concluídos</span><strong>${concluidosOrcamento.length}</strong></div>`;
+
+  document.getElementById('historico-count').textContent = filtered.length;
+  const el = document.getElementById('lista-historico');
+  if (!filtered.length) el.innerHTML = `<div class="empty"><i class="fa-solid fa-inbox"></i><p>Nenhum contato encontrado.</p></div>`;
+  else el.innerHTML = filtered.map((ct,i)=>{
+    const c = clientes.find(x=>x.id===ct.clienteId);
+    const isLast = i===filtered.length-1;
+    const edicoesList = (ct.edicoes||[]).map(e=>`<div class="edit-note"><i class="fa-solid fa-pen-to-square" style="margin-right:5px"></i><strong>Editado em ${fmtDate(e.em)}:</strong> ${e.motivo||'Sem motivo informado'}</div>`).join('');
+    const propostaBadge = contatoRepresentaProposta(ct) ? '<span class="badge badge-success" style="margin-left:5px"><i class="fa-solid fa-file-signature" style="margin-right:3px"></i>Proposta enviada</span>' : '';
+    const numeros = contatoRepresentaProposta(ct) && (ct.numeroOrcamentoPecas || ct.numeroOrcamentoServico) ? `<div style="font-size:12px;color:var(--text2);margin-top:5px"><strong>Nº orçamento:</strong> ${ct.numeroOrcamentoPecas?`Peças ${ct.numeroOrcamentoPecas}`:''}${ct.numeroOrcamentoPecas&&ct.numeroOrcamentoServico?' • ':''}${ct.numeroOrcamentoServico?`Serviço ${ct.numeroOrcamentoServico}`:''}</div>` : '';
+    return `<div class="history-item"><div style="display:flex;flex-direction:column;align-items:center"><div class="history-dot"></div>${!isLast?`<div style="flex:1;width:2px;background:var(--border);margin:4px 0"></div>`:''}</div><div class="history-content"><div class="history-header"><div style="display:flex;align-items:center;gap:8px"><div class="avatar ${c?avColor(c.id):'av-blue'}" style="width:28px;height:28px;font-size:11px">${c?initials(c.nome):'?'}</div><span class="history-client">${c?c.nome:'Cliente removido'}</span></div><div style="display:flex;align-items:center;gap:6px"><span class="history-date">${fmtDate(ct.data)}</span><button class="btn btn-warning btn-sm" title="Editar" onclick="editarContato(${ct.id})"><i class="fa-solid fa-pen"></i></button><button class="btn btn-danger btn-sm" title="Apagar" onclick="apagarContato(${ct.id})"><i class="fa-solid fa-trash"></i></button></div></div><div style="margin-bottom:6px"><span class="badge badge-gray"><i class="fa-solid ${canalIcon[ct.canal]||'fa-phone'}" style="margin-right:4px"></i>${ct.canal}</span>${ct.semResposta?'<span class="badge badge-danger" style="margin-left:5px"><i class="fa-solid fa-phone-slash" style="margin-right:3px"></i>Sem resposta</span>':''}${propostaBadge}${ct.editado?'<span class="badge badge-warning" style="margin-left:5px"><i class="fa-solid fa-pen" style="margin-right:3px"></i>Editado</span>':''}</div><div class="history-text">${ct.descricao}</div>${numeros}${ct.observacaoProposta?`<div class="edit-note" style="margin-top:6px"><i class="fa-solid fa-file-signature" style="margin-right:5px"></i>${ct.observacaoProposta}</div>`:''}${edicoesList}</div></div>`;
+  }).join('');
+
+  const propCount = document.getElementById('propostas-enviadas-count');
+  const propList = document.getElementById('dash-propostas-enviadas');
+  if (propCount && propList) {
+    propCount.textContent = propostas.length;
+    propList.innerHTML = propostas.length ? propostas.slice(0,12).map(p => `<div class="proposta-history-item"><div class="proposta-history-icon"><i class="fa-solid fa-file-signature"></i></div><div style="flex:1"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:3px"><strong>${p.nome}</strong><span style="font-size:12px;color:var(--text3)">${fmtDate(p.data)}</span></div>${p.empresa?`<div style="font-size:12px;color:var(--text3);margin-bottom:3px">${p.empresa}</div>`:''}<div style="font-size:12px;color:var(--text2);margin-bottom:4px"><span class="badge badge-info">${p.origem}</span>${p.canal?`<span class="badge badge-gray" style="margin-left:5px">${p.canal}</span>`:''}</div>${(p.pecas||p.servico)?`<div style="font-size:12.5px;color:var(--text2);margin-bottom:4px"><strong>Nº orçamento:</strong> ${p.pecas?`Peças ${p.pecas}`:''}${p.pecas&&p.servico?' • ':''}${p.servico?`Serviço ${p.servico}`:''}</div>`:''}${p.descricao?`<div style="font-size:12.5px;color:var(--text2)">${String(p.descricao).replace(/\n/g,'<br>')}</div>`:''}</div></div>`).join('') : `<div class="empty"><i class="fa-solid fa-file-signature"></i><p>Nenhuma proposta enviada registrada ainda.</p></div>`;
+  }
+
+  function renderConcluidoItem(cc) {
+    const c=clientes.find(x=>x.id===cc.clienteId);
+    const isOrc = cc.tipo === 'orcamento';
+    const isSol = cc.tipo === 'solicitacao_orcamento';
+    const nomeExibicao = c ? c.nome : (cc.nomeAvulso || '—');
+    const tipoLabel = isSol ? 'Solicitação de orçamento' : isOrc ? 'Orçamento recorrente' : 'Retorno agendado';
+    const iconCls = isSol ? 'fa-clipboard-check' : isOrc ? 'fa-file-invoice-dollar' : 'fa-phone';
+    const acoesSol = isSol ? `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${cc.clienteId?`<button class="btn btn-ghost btn-sm" onclick="abrirDetalhe(${cc.clienteId})"><i class="fa-solid fa-user"></i> Ver cliente</button>`:''}${cc.clienteId?`<button class="btn btn-ghost btn-sm" onclick="registrarContatoFromSolicitacaoConcluida(${cc.id})"><i class="fa-solid fa-phone"></i> Registrar contato</button>`:''}${cc.clienteId?`<button class="btn btn-warning btn-sm" onclick="agendarRetornoFromSolicitacaoConcluida(${cc.id})"><i class="fa-regular fa-calendar-plus"></i> Agendar retorno</button>`:''}${cc.clienteId?`<button class="btn btn-primary btn-sm" onclick="criarOrcamentoRecorrenteFromSolicitacaoConcluida(${cc.id})"><i class="fa-solid fa-repeat"></i> Criar recorrente</button>`:''}<button class="btn btn-danger btn-sm" onclick="reabrirSolicitacaoConcluida(${cc.id})"><i class="fa-solid fa-rotate-left"></i> Reabrir</button></div>` : '';
+    return `<div class="concluido-item"><div class="concluido-icon ${(isOrc||isSol)?'orcamento':''}"><i class="fa-solid ${iconCls}"></i></div><div style="flex:1"><div style="display:flex;justify-content:space-between;margin-bottom:3px;gap:10px;flex-wrap:wrap"><span style="font-weight:700;font-size:13.5px">${nomeExibicao}</span><span style="font-size:12px;color:var(--text3)">Concluído em ${fmtDate(cc.concluidoEm)}</span></div><div style="font-size:11.5px;color:var(--text3);margin-bottom:4px">${tipoLabel} — previsto para ${fmtDate(cc.dataOriginal)}</div>${cc.motivo?`<div style="font-size:12.5px;color:var(--text2);margin-bottom:4px"><i class="fa-solid fa-circle-info" style="margin-right:4px;color:var(--text3)"></i>${cc.motivo}</div>`:''}${(cc.numeroOrcamentoPecas||cc.numeroOrcamentoServico)?`<div style="font-size:12.5px;color:var(--text2);margin-bottom:4px"><strong>Nº orçamento:</strong> ${cc.numeroOrcamentoPecas?`Peças ${cc.numeroOrcamentoPecas}`:''}${cc.numeroOrcamentoPecas&&cc.numeroOrcamentoServico?' • ':''}${cc.numeroOrcamentoServico?`Serviço ${cc.numeroOrcamentoServico}`:''}</div>`:''}${cc.obsConclusao?`<div style="font-size:12.5px;color:var(--success);background:var(--success-bg);border-radius:6px;padding:7px 10px;margin-top:4px"><i class="fa-solid fa-check" style="margin-right:5px"></i>${cc.obsConclusao}</div>`:''}${acoesSol}</div></div>`;
+  }
+
+  document.getElementById('concluidos-retorno-count').textContent = concluidosRetorno.length;
+  document.getElementById('dash-concluidos-retorno').innerHTML = concluidosRetorno.length ? concluidosRetorno.slice(0,10).map(renderConcluidoItem).join('') : `<div class="empty"><i class="fa-solid fa-clock-rotate-left"></i><p>Nenhum retorno concluído ainda</p></div>`;
+  const solCountEl = document.getElementById('concluidos-solicitacao-count');
+  const solListEl = document.getElementById('dash-concluidos-solicitacao');
+  if (solCountEl && solListEl) {
+    solCountEl.textContent = concluidosSolicitacao.length;
+    solListEl.innerHTML = concluidosSolicitacao.length ? concluidosSolicitacao.slice(0,10).map(renderConcluidoItem).join('') : `<div class="empty"><i class="fa-solid fa-clipboard-check"></i><p>Nenhuma solicitação concluída ainda</p></div>`;
+  }
+  document.getElementById('concluidos-orcamento-count').textContent = concluidosOrcamento.length;
+  document.getElementById('dash-concluidos-orcamento').innerHTML = concluidosOrcamento.length ? concluidosOrcamento.slice(0,10).map(renderConcluidoItem).join('') : `<div class="empty"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento recorrente concluído ainda</p></div>`;
+}
+
 </script>
 </body>
 </html>
