@@ -2866,6 +2866,29 @@ body.theme-light .brand-logo-header .logo-lightmode { display:block !important; 
   .brand-logo-header .brand-logo-full { height:42px; }
 }
 
+
+/* AJUSTES DE FLUXO, AGENDA E LEITURA */
+.agenda-helper-card {
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:18px;
+  padding:18px 20px;
+  border:1px solid var(--border);
+  border-radius:16px;
+  background:linear-gradient(135deg, rgba(13,102,232,0.18), rgba(9,26,57,0.88));
+  margin-bottom:16px;
+  box-shadow:var(--shadow);
+}
+.agenda-helper-card h2 { margin:0 0 5px; font-size:20px; color:var(--text); }
+.agenda-helper-card p { margin:0; color:var(--text2); line-height:1.45; max-width:760px; }
+.agenda-helper-tags { display:flex; flex-direction:column; gap:8px; min-width:220px; font-size:12px; color:var(--text2); }
+.agenda-helper-tags span { display:flex; align-items:center; gap:7px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); border-radius:999px; padding:7px 10px; white-space:nowrap; }
+body.theme-light .agenda-helper-card { background:linear-gradient(135deg, #c8dcfa, #d9e7fb); }
+body.theme-light .agenda-helper-tags span { background:rgba(255,255,255,.45); border-color:rgba(65,96,145,.18); color:var(--text2); }
+.orcamento-card-mini-actions .btn-icon-mini { min-width:28px; padding:5px 7px; }
+@media (max-width:900px){ .agenda-helper-card{flex-direction:column}.agenda-helper-tags{width:100%;min-width:0}.agenda-helper-tags span{white-space:normal} }
+
 </style>
 </head>
 <body class="auth-locked">
@@ -2985,7 +3008,7 @@ body.theme-light .brand-logo-header .logo-lightmode { display:block !important; 
       <div class="dashboard-hero-main">
         <div class="daily-eyebrow">Ações do Dia</div>
         <h2 id="daily-title">Olá, Patrick Barbosa.</h2>
-        <p id="daily-subtitle">Veja as atividades que precisam de atenção e siga pelo próximo passo mais importante.</p>
+        <p id="daily-subtitle">Acompanhe retornos, solicitações e orçamentos futuros em um único fluxo de trabalho.</p>
       </div>
       <div class="daily-date-feature">
         <span>Data de hoje</span>
@@ -3112,7 +3135,7 @@ body.theme-light .brand-logo-header .logo-lightmode { display:block !important; 
           <button class="btn btn-ghost btn-sm" onclick="showView('orcamentos')">Ver Tudo</button>
         </div>
         <div id="dash-orcamentos-semana" class="dash-card-grid">
-          <div class="empty" style="grid-column:1/-1"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento recorrente esta semana</p></div>
+          <div class="empty" style="grid-column:1/-1"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento recorrente nesta semana</p></div>
         </div>
       </div>
 
@@ -3169,6 +3192,18 @@ body.theme-light .brand-logo-header .logo-lightmode { display:block !important; 
 
   <!-- AGENDA -->
   <div id="view-agenda" class="view">
+    <div class="agenda-helper-card">
+      <div>
+        <div class="daily-eyebrow">Agenda operacional</div>
+        <h2>Calendário de compromissos e prazos</h2>
+        <p>Use esta aba para visualizar retornos, solicitações e orçamentos recorrentes por data. A lista lateral mostra os itens filtrados e permite agir diretamente sobre cada atividade.</p>
+      </div>
+      <div class="agenda-helper-tags">
+        <span><i class="fa-solid fa-circle" style="color:var(--warning)"></i> Solicitações e retornos</span>
+        <span><i class="fa-solid fa-circle" style="color:var(--purple)"></i> Orçamentos recorrentes</span>
+        <span><i class="fa-solid fa-circle" style="color:var(--success)"></i> Concluídos</span>
+      </div>
+    </div>
     <div class="agenda-layout">
       <div class="card agenda-cal-card">
         <div class="card-header">
@@ -3573,7 +3608,7 @@ body.theme-light .brand-logo-header .logo-lightmode { display:block !important; 
             </div>
           </div>
         </div>
-        <div class="form-group"><label>Horário do Alarme</label><input type="time" id="ct-horario-alarme" value="09:00"></div>
+        <div class="form-group"><label>Horário do alarme</label><input type="time" id="ct-horario-alarme" value="09:00"></div>
         <div class="form-group"><label>Lembrete do Retorno</label><input type="text" id="ct-lembrete" placeholder="Ex: Enviar proposta..."></div>
       </div>
     </div>
@@ -3615,7 +3650,7 @@ body.theme-light .brand-logo-header .logo-lightmode { display:block !important; 
             <option value="urgente">Urgente</option>
           </select>
         </div>
-        <div class="form-group"><label>Horário do Alarme</label><input type="time" id="ag-horario-alarme" value="09:00"></div>
+        <div class="form-group"><label>Horário do alarme</label><input type="time" id="ag-horario-alarme" value="09:00"></div>
         <div class="form-group full"><label>Motivo / O que fazer</label><textarea id="ag-motivo" placeholder="Ex: Dar retorno sobre proposta, confirmar pedido..."></textarea></div>
       </div>
     </div>
@@ -3652,7 +3687,7 @@ body.theme-light .brand-logo-header .logo-lightmode { display:block !important; 
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('modalEditContato')">Cancelar</button>
-      <button class="btn btn-warning" onclick="salvarEdicao()"><i class="fa-solid fa-floppy-disk"></i> Salvar Edição</button>
+      <button class="btn btn-warning" onclick="salvarEdicao()"><i class="fa-solid fa-floppy-disk"></i> Salvar edição</button>
     </div>
   </div>
 </div>
@@ -3674,17 +3709,18 @@ body.theme-light .brand-logo-header .logo-lightmode { display:block !important; 
       </div>
       <div class="form-grid">
         <div class="form-group full"><label>Cliente cadastrado (opcional)</label>
-          <select id="sol-cliente" onchange="preencherDadosSolicitacaoCliente(); renderDuplicidadeSolicitacao(); atualizarBotaoClienteEdicaoSolicitacao()"><option value="">Não atrelar a cliente cadastrado</option></select>
+          <select id="sol-cliente" onchange="preencherDadosSolicitacaoCliente(); renderDuplicidadeSolicitacao(); atualizarBotaoClienteEdicaoSolicitacao()"><option value="">Não vincular a cliente cadastrado</option></select>
           <div id="sol-duplicidade-alerta" class="duplicate-alert"></div>
         </div>
         <div class="form-group"><label>Cliente / Apelido *</label><input type="text" id="sol-nome" oninput="renderDuplicidadeSolicitacao()" placeholder="Ex: HOSPITAL SÃO LUCAS / CLÍNICA ALFA"></div>
         <div class="form-group"><label>Solicitante</label><input type="text" id="sol-solicitante" oninput="renderDuplicidadeSolicitacao()" placeholder="Ex: JOÃO DO FINANCEIRO"></div>
         <div class="form-group"><label>Empresa / Razão Social</label><input type="text" id="sol-empresa" oninput="renderDuplicidadeSolicitacao()" placeholder="Ex: RAZÃO SOCIAL DA EMPRESA"></div>
+        <div class="form-group"><label>CNPJ</label><input type="text" id="sol-cnpj" placeholder="00.000.000/0001-00" maxlength="18" oninput="maskCNPJ(this); renderDuplicidadeSolicitacao()"></div>
         <div class="form-group"><label>Telefone</label><input type="text" id="sol-telefone" placeholder="99-99999-9999" maxlength="13" oninput="maskTelefone(this); renderDuplicidadeSolicitacao()"></div>
         <div class="form-group"><label>E-mail</label><input type="email" id="sol-email" oninput="renderDuplicidadeSolicitacao()" placeholder="email@empresa.com"></div>
         <div class="form-group"><label>Produto/Serviço Solicitado</label><input type="text" id="sol-produto" placeholder="Ex: CALIBRAÇÃO, MANUTENÇÃO, PEÇA X..."></div>
         <div class="form-group"><label>Data da solicitação *</label><input type="date" id="sol-data"></div>
-        <div class="form-group"><label>Prazo para fazer *</label><input type="date" id="sol-prazo"></div>
+        <div class="form-group"><label>Prazo para preparar *</label><input type="date" id="sol-prazo"></div>
         <div class="form-group"><label>Canal da solicitação</label>
           <select id="sol-canal">
             <option value="whatsapp">WhatsApp</option>
@@ -3762,15 +3798,15 @@ body.theme-light .brand-logo-header .logo-lightmode { display:block !important; 
         <div class="form-group full"><label>Cliente *</label>
           <select id="or-cliente"><option value="">Selecione o cliente...</option></select>
         </div>
-        <div class="form-group"><label>Data do Envio *</label><input type="date" id="or-data" onchange="aoMudarData('or-data','or-horario-alarme')"></div>
-        <div class="form-group"><label>Horário do Alarme</label><input type="time" id="or-horario-alarme" value="09:00"></div>
-        <div class="form-group"><label>Repetir Mensalmente?</label>
+        <div class="form-group"><label>Data do envio *</label><input type="date" id="or-data" onchange="aoMudarData('or-data','or-horario-alarme')"></div>
+        <div class="form-group"><label>Horário do alarme</label><input type="time" id="or-horario-alarme" value="09:00"></div>
+        <div class="form-group"><label>Repetir mensalmente?</label>
           <div class="radio-row" style="margin-top:6px">
             <label><input type="radio" name="or-repetir" value="sim" checked> Sim</label>
             <label><input type="radio" name="or-repetir" value="nao"> Não</label>
           </div>
         </div>
-        <div class="form-group full"><label>Observação / Descrição do Orçamento</label><textarea id="or-obs" placeholder="Descreva os detalhes do orçamento a ser enviado..."></textarea></div>
+        <div class="form-group full"><label>Observação / descrição do orçamento</label><textarea id="or-obs" placeholder="Descreva os detalhes do orçamento a ser enviado..."></textarea></div>
       </div>
     </div>
     <div class="modal-footer">
@@ -3816,7 +3852,7 @@ body.theme-light .brand-logo-header .logo-lightmode { display:block !important; 
           <div id="concluir-novo-retorno-fields" style="display:none">
             <div class="form-grid" style="margin-bottom:8px">
               <div class="form-group"><label>Data</label><input type="date" id="concluir-novo-data" onchange="aoMudarData('concluir-novo-data','concluir-novo-horario')"></div>
-              <div class="form-group"><label>Horário do Alarme</label><input type="time" id="concluir-novo-horario" value="09:00"></div>
+              <div class="form-group"><label>Horário do alarme</label><input type="time" id="concluir-novo-horario" value="09:00"></div>
             </div>
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
               <span style="font-size:12px;color:var(--text3)">Calcular automaticamente:</span>
@@ -4374,6 +4410,7 @@ function openModal(id) {
     document.getElementById('sol-nome').value = '';
     document.getElementById('sol-solicitante').value = '';
     document.getElementById('sol-empresa').value = '';
+    document.getElementById('sol-cnpj').value = '';
     document.getElementById('sol-telefone').value = '';
     document.getElementById('sol-email').value = '';
     document.getElementById('sol-produto').value = '';
@@ -4427,7 +4464,7 @@ function populateClienteSelects() {
     const sel = document.getElementById(id);
     if (!sel) return;
     const prev = sel.value;
-    sel.innerHTML = id==='sol-cliente' ? '<option value="">Não atrelar a cliente cadastrado</option>' : '<option value="">Selecione o cliente...</option>';
+    sel.innerHTML = id==='sol-cliente' ? '<option value="">Não vincular a cliente cadastrado</option>' : '<option value="">Selecione o cliente...</option>';
     clientes.forEach(c => sel.innerHTML += `<option value="${c.id}">${c.nome}${c.empresa?' — '+c.empresa:''}</option>`);
     if (prev) sel.value = prev;
   });
@@ -4508,6 +4545,9 @@ function salvarCliente() {
         sol.clienteId = clienteSalvoId;
         sol.nome = novoCliente.nome;
         sol.empresa = novoCliente.empresa || sol.empresa || '';
+        sol.cnpj = novoCliente.cnpj || sol.cnpj || '';
+        sol.telefone = novoCliente.telefone || sol.telefone || '';
+        sol.email = novoCliente.email || sol.email || '';
         sol.atualizadoEm = today();
         fluxoSolicitacaoId = solId;
       }
@@ -4971,6 +5011,7 @@ function camposSolicitacaoAtual() {
     clienteId: +document.getElementById('sol-cliente')?.value || null,
     nome: document.getElementById('sol-nome')?.value || '',
     empresa: document.getElementById('sol-empresa')?.value || '',
+    cnpj: document.getElementById('sol-cnpj')?.value || '',
     telefone: document.getElementById('sol-telefone')?.value || '',
     email: document.getElementById('sol-email')?.value || ''
   };
@@ -4981,6 +5022,7 @@ function buscarClientesParecidosSolicitacao() {
   const email = String(f.email||'').trim().toLowerCase();
   const nome = normalizarBuscaBR(f.nome);
   const empresa = normalizarBuscaBR(f.empresa);
+  const cnpj = onlyDigits(f.cnpj);
   return clientes.map(c => {
     let pontos = 0;
     const motivos = [];
@@ -4988,6 +5030,8 @@ function buscarClientesParecidosSolicitacao() {
     const cEmail = String(c.email||'').trim().toLowerCase();
     const cNome = normalizarBuscaBR(c.nome);
     const cEmpresa = normalizarBuscaBR(c.empresa);
+    const cCnpj = onlyDigits(c.cnpj);
+    if (cnpj && cCnpj && cnpj === cCnpj) { pontos += 6; motivos.push('CNPJ igual'); }
     if (tel && cTel && tel === cTel) { pontos += 5; motivos.push('telefone igual'); }
     if (email && cEmail && email === cEmail) { pontos += 5; motivos.push('e-mail igual'); }
     if (nome && cNome && (nome === cNome || (nome.length > 4 && cNome.includes(nome)) || (cNome.length > 4 && nome.includes(cNome)))) { pontos += 3; motivos.push('cliente/nome fantasia parecido'); }
@@ -5010,7 +5054,7 @@ function renderDuplicidadeSolicitacao() {
   box.classList.add('open');
   box.innerHTML = `<div class="duplicate-alert-title"><i class="fa-solid fa-triangle-exclamation" style="margin-right:5px"></i>Possível cliente já cadastrado</div>
     ${lista.map(({c,motivos}) => `<div class="duplicate-item">
-      <div><strong>${c.nome || 'Cliente'}</strong><div style="font-size:11.5px;color:var(--text3)">${[c.empresa, c.telefone, c.email].filter(Boolean).join(' • ')}</div><div style="font-size:11px;color:var(--warning)">${motivos.join(', ')}</div></div>
+      <div><strong>${c.nome || 'Cliente'}</strong><div style="font-size:11.5px;color:var(--text3)">${[c.empresa, c.cnpj, c.telefone, c.email].filter(Boolean).join(' • ')}</div><div style="font-size:11px;color:var(--warning)">${motivos.join(', ')}</div></div>
       <button class="btn btn-warning btn-sm" type="button" onclick="usarClienteExistenteSolicitacao(${c.id})"><i class="fa-solid fa-link"></i> Usar</button>
     </div>`).join('')}`;
 }
@@ -5021,6 +5065,7 @@ function preencherDadosSolicitacaoCliente() {
   if (!c) return;
   if (!document.getElementById('sol-nome').value.trim()) document.getElementById('sol-nome').value = c.nome || '';
   if (!document.getElementById('sol-empresa').value.trim()) document.getElementById('sol-empresa').value = c.empresa || '';
+  if (document.getElementById('sol-cnpj') && !document.getElementById('sol-cnpj').value.trim()) document.getElementById('sol-cnpj').value = c.cnpj || '';
   if (!document.getElementById('sol-telefone').value.trim()) document.getElementById('sol-telefone').value = c.telefone || '';
   if (!document.getElementById('sol-email').value.trim()) document.getElementById('sol-email').value = c.email || '';
   renderDuplicidadeSolicitacao();
@@ -5031,6 +5076,7 @@ function limparModalSolicitacao() {
   document.getElementById('sol-nome').value = '';
   document.getElementById('sol-solicitante').value = '';
   document.getElementById('sol-empresa').value = '';
+  document.getElementById('sol-cnpj').value = '';
   document.getElementById('sol-telefone').value = '';
   document.getElementById('sol-email').value = '';
   document.getElementById('sol-produto').value = '';
@@ -5134,6 +5180,7 @@ function salvarSolicitacaoOrcamento() {
   const nome = toUpperBR(document.getElementById('sol-nome').value || (cliente ? cliente.nome : ''));
   const solicitante = toUpperBR(document.getElementById('sol-solicitante').value);
   const empresa = toUpperBR(document.getElementById('sol-empresa').value || (cliente ? cliente.empresa || '' : ''));
+  const cnpj = document.getElementById('sol-cnpj')?.value.trim() || (cliente ? cliente.cnpj || '' : '');
   const telefone = (document.getElementById('sol-telefone').value.trim() || (cliente ? cliente.telefone || '' : '')).trim();
   const email = (document.getElementById('sol-email').value.trim() || (cliente ? cliente.email || '' : '')).trim();
   const produto = toUpperBR(document.getElementById('sol-produto').value);
@@ -5149,6 +5196,7 @@ function salvarSolicitacaoOrcamento() {
     nome,
     solicitante,
     empresa,
+    cnpj,
     telefone,
     email,
     produto,
@@ -5194,6 +5242,7 @@ function editarSolicitacaoOrcamento(id) {
   document.getElementById('sol-nome').value = sol.nome || '';
   document.getElementById('sol-solicitante').value = sol.solicitante || '';
   document.getElementById('sol-empresa').value = sol.empresa || '';
+  if (document.getElementById('sol-cnpj')) document.getElementById('sol-cnpj').value = sol.cnpj || '';
   document.getElementById('sol-telefone').value = sol.telefone || '';
   document.getElementById('sol-email').value = sol.email || '';
   document.getElementById('sol-produto').value = sol.produto || '';
@@ -5262,6 +5311,7 @@ function marcarSolicitacaoFeita(id, obsFinal='', canalContato='whatsapp', numero
     clienteId: sol.clienteId || null,
     nomeAvulso: dados.nome,
     empresaAvulsa: dados.empresa,
+    cnpjAvulso: sol.cnpj || '',
     solicitanteAvulso: sol.solicitante || '',
     produto: sol.produto || '',
     telefoneAvulso: sol.telefone || '',
@@ -5310,6 +5360,7 @@ function renderSolicitacaoCards(list) {
           <div class="kanban-client">${d.nome}</div>
           ${d.solicitante?`<div style="font-size:11px;color:var(--text3)">Solicitante: ${d.solicitante}</div>`:''}
           ${d.empresa?`<div style="font-size:11px;color:var(--text3)">${d.empresa}</div>`:''}
+          ${sol.cnpj?`<div style="font-size:11px;color:var(--text3)"><i class="fa-solid fa-building-columns"></i> ${sol.cnpj}</div>`:''}
           ${sol.telefone?`<div style="font-size:11px;color:var(--text3)"><i class="fa-solid fa-phone"></i> ${sol.telefone}</div>`:''}
           ${sol.email?`<div style="font-size:11px;color:var(--text3)"><i class="fa-solid fa-envelope"></i> ${sol.email}</div>`:''}
         </div>
@@ -5340,7 +5391,7 @@ function getSolicitacoesFiltradasBase() {
   let lista = [...solicitacoesOrcamento].map(sol => ({...sol, etapa: sol.etapa || 'nova'}));
   lista = lista.filter(sol => {
     const d = dadosSolicitacaoCliente(sol);
-    const hay = [d.nome, d.empresa, d.solicitante, sol.telefone, sol.email, d.produto, sol.descricao, sol.obs, sol.canal, sol.prioridade, sol.etapa].filter(Boolean).join(' ').toLowerCase();
+    const hay = [d.nome, d.empresa, sol.cnpj, d.solicitante, sol.telefone, sol.email, d.produto, sol.descricao, sol.obs, sol.canal, sol.prioridade, sol.etapa].filter(Boolean).join(' ').toLowerCase();
     if (q && !hay.includes(q)) return false;
     if (prioridade && sol.prioridade !== prioridade) return false;
     if (apenasAtrasadas && !(sol.prazo < hojeISO)) return false;
@@ -5409,11 +5460,17 @@ function cardKanbanSolicitacao(sol, classeExtra='') {
         ${!sol._concluida ? `<button class="btn btn-ghost btn-sm btn-icon-mini" title="${fixado?'Desafixar da coluna':'Fixar nesta coluna'}" onclick="toggleFixarSolicitacao(${sol.id}); event.stopPropagation();"><i class="fa-solid fa-thumbtack"></i></button>` : ''}
         ${!sol._concluida ? `<button class="btn btn-warning btn-sm btn-icon-mini" title="Editar" onclick="irParaSolicitacaoEditar(${sol.id}); event.stopPropagation();"><i class="fa-solid fa-pen"></i></button>` : ''}
         ${!sol._concluida ? `<button class="btn btn-success btn-sm btn-icon-mini" title="Marcar como feito" onclick="abrirConcluirSolicitacao(${sol.id}); event.stopPropagation();"><i class="fa-solid fa-check"></i></button>` : ''}
+        ${sol._concluida && sol.clienteId ? `<button class="btn btn-ghost btn-sm btn-icon-mini" title="Ver cliente" onclick="abrirDetalhe(${sol.clienteId}); event.stopPropagation();"><i class="fa-solid fa-user-check"></i></button>` : ''}
+        ${sol._concluida && sol.clienteId ? `<button class="btn btn-ghost btn-sm btn-icon-mini" title="Registrar contato" onclick="registrarContatoFromSolicitacaoConcluida(${sol.id}); event.stopPropagation();"><i class="fa-solid fa-phone"></i></button>` : ''}
+        ${sol._concluida && sol.clienteId ? `<button class="btn btn-warning btn-sm btn-icon-mini" title="Agendar retorno" onclick="agendarRetornoFromSolicitacaoConcluida(${sol.id}); event.stopPropagation();"><i class="fa-regular fa-calendar-plus"></i></button>` : ''}
+        ${sol._concluida && sol.clienteId ? `<button class="btn btn-primary btn-sm btn-icon-mini" title="Criar recorrente" onclick="criarOrcamentoRecorrenteFromSolicitacaoConcluida(${sol.id}); event.stopPropagation();"><i class="fa-solid fa-repeat"></i></button>` : ''}
+        ${sol._concluida ? `<button class="btn btn-danger btn-sm btn-icon-mini" title="Reabrir solicitação" onclick="reabrirSolicitacaoConcluida(${sol.id}); event.stopPropagation();"><i class="fa-solid fa-rotate-left"></i></button>` : ''}
       </div>
     </div>
     <div class="orcamento-card-meta">
       ${d.solicitante ? `<strong>Solicitante:</strong> ${d.solicitante}<br>` : ''}
       ${d.empresa ? `<strong>Razão Social:</strong> ${d.empresa}<br>` : ''}
+      ${sol.cnpj ? `<strong>CNPJ:</strong> ${sol.cnpj}<br>` : ''}
       ${sol.telefone ? `<i class="fa-solid fa-phone"></i> ${sol.telefone}<br>` : ''}${sol.email ? `<i class="fa-solid fa-envelope"></i> ${sol.email}<br>` : ''}
       <strong>${sol._concluida ? 'Concluído em' : 'Prazo'}:</strong> ${fmtDate(sol._concluida ? sol.concluidoEm : sol.prazo)} ${atrasado?'<span class="badge badge-danger" style="margin-left:4px">Atrasada</span>':hoje?'<span class="badge badge-warning" style="margin-left:4px">Hoje</span>':''}
     </div>
@@ -5427,6 +5484,90 @@ function cardKanbanSolicitacao(sol, classeExtra='') {
     </div>
     ${sol.descricao?`<div class="orcamento-card-desc">${sol.descricao.length>150?sol.descricao.slice(0,150)+'…':sol.descricao}</div>`:''}
   </div>`;
+}
+
+
+function getSolicitacaoConcluida(id) {
+  return concluidos.find(x => x.tipo === 'solicitacao_orcamento' && x.id === id);
+}
+function exigirClienteSolicitacaoConcluida(cc) {
+  if (!cc?.clienteId) {
+    notify('Esta solicitação concluída não tem cliente vinculado. Reabra ou vincule um cliente antes de continuar.', '#7a1a1a');
+    return false;
+  }
+  return true;
+}
+function registrarContatoFromSolicitacaoConcluida(id) {
+  const cc = getSolicitacaoConcluida(id);
+  if (!exigirClienteSolicitacaoConcluida(cc)) return;
+  openModal('modalContato');
+  setTimeout(()=>{
+    document.getElementById('ct-cliente').value = cc.clienteId;
+    document.getElementById('ct-data').value = today();
+    document.getElementById('ct-canal').value = cc.canal || 'whatsapp';
+    document.getElementById('ct-descricao').value = `Acompanhamento após orçamento enviado.\nProduto/serviço: ${cc.produto || 'Não informado'}\nSolicitação original: ${cc.motivo || '—'}${cc.obsConclusao ? `\nObservação do envio: ${cc.obsConclusao}` : ''}`;
+  }, 80);
+}
+function agendarRetornoFromSolicitacaoConcluida(id) {
+  const cc = getSolicitacaoConcluida(id);
+  if (!exigirClienteSolicitacaoConcluida(cc)) return;
+  openModal('modalAgendamento');
+  setTimeout(()=>{
+    document.getElementById('ag-cliente').value = cc.clienteId;
+    document.getElementById('ag-data').value = addDays(today(), 3);
+    document.getElementById('ag-prioridade').value = cc.prioridade || 'normal';
+    document.getElementById('ag-motivo').value = cc.produto ? `Acompanhar orçamento enviado: ${cc.produto}` : 'Acompanhar orçamento enviado';
+    preencherHorarioAlarme('ag-horario-alarme','ag-data');
+  }, 80);
+}
+function criarOrcamentoRecorrenteFromSolicitacaoConcluida(id) {
+  const cc = getSolicitacaoConcluida(id);
+  if (!exigirClienteSolicitacaoConcluida(cc)) return;
+  openModal('modalOrcamento');
+  setTimeout(()=>{
+    document.getElementById('or-cliente').value = cc.clienteId;
+    document.getElementById('or-data').value = addDays(today(), 30);
+    document.getElementById('or-obs').value = cc.produto ? `Recorrência criada a partir de orçamento enviado: ${cc.produto}` : 'Recorrência criada a partir de solicitação concluída';
+    preencherHorarioAlarme('or-horario-alarme','or-data');
+  }, 80);
+}
+function reabrirSolicitacaoConcluida(id) {
+  const cc = getSolicitacaoConcluida(id);
+  if (!cc) return;
+  abrirConfirmacaoAcao({
+    titulo: 'Reabrir solicitação',
+    heading: 'Reabrir esta solicitação?',
+    mensagem: 'Ela voltará para Novas solicitações e poderá ser editada novamente. O registro concluído será removido para evitar duplicidade.',
+    textoBotao: 'Reabrir solicitação',
+    icone: 'fa-rotate-left',
+    cor: 'var(--warning)',
+    onConfirm: () => {
+      solicitacoesOrcamento.push({
+        id: Date.now(),
+        clienteId: cc.clienteId || null,
+        nome: cc.nomeAvulso || '',
+        empresa: cc.empresaAvulsa || '',
+        cnpj: cc.cnpjAvulso || '',
+        solicitante: cc.solicitanteAvulso || '',
+        telefone: cc.telefoneAvulso || '',
+        email: cc.emailAvulso || '',
+        produto: cc.produto || '',
+        dataSolicitacao: cc.dataSolicitacao || today(),
+        prazo: today(),
+        canal: cc.canal || 'whatsapp',
+        prioridade: cc.prioridade || 'normal',
+        etapa: 'nova',
+        descricao: cc.motivo || '',
+        obs: cc.obsConclusao || '',
+        anexos: [...(cc.anexos || [])],
+        criadoEm: today(),
+        atualizadoEm: today()
+      });
+      concluidos = concluidos.filter(x => x.id !== id);
+      save(); renderSolicitacoesTabela(); renderDashboard(); renderHistorico(); renderAgenda();
+      notify('Solicitação reaberta.', '#0d3d2a');
+    }
+  });
 }
 
 function toggleFixarSolicitacao(id) {
@@ -5501,6 +5642,7 @@ function renderSolicitacoesKanban() {
     clienteId: cc.clienteId || null,
     nome: cc.nomeAvulso || (clientes.find(c=>c.id===cc.clienteId)?.nome) || 'Cliente não cadastrado',
     empresa: cc.empresaAvulsa || (clientes.find(c=>c.id===cc.clienteId)?.empresa) || '',
+    cnpj: cc.cnpjAvulso || (clientes.find(c=>c.id===cc.clienteId)?.cnpj) || '',
     solicitante: cc.solicitanteAvulso || '',
     produto: cc.produto || '',
     dataSolicitacao: cc.dataSolicitacao || cc.dataOriginal || cc.concluidoEm,
@@ -5536,7 +5678,7 @@ function renderSolicitacoesKanban() {
         <div class="orcamento-kanban-title"><i class="fa-solid ${col.icon}" style="color:${col.key==='nova'?'var(--warning)':col.key==='aguardando_info'?'var(--accent)':col.key==='aguardando_cotacao'?'var(--purple)':'var(--success)'}"></i> ${col.title}</div>
       </div>
       <div class="orcamento-kanban-body" ondragover="allowDropSolicitacaoKanban(event)" ondragleave="leaveDropSolicitacaoKanban(event)" ondrop="dropSolicitacaoKanban(event,'${col.key}')">
-        ${col.list.length ? col.list.map(sol => cardKanbanSolicitacao(sol, col.cls)).join('') : `<div class="empty" style="padding:24px 10px"><i class="fa-solid ${col.icon}"></i><p>Nenhum item aqui.</p></div>`}
+        ${col.list.length ? col.list.map(sol => cardKanbanSolicitacao(sol, col.cls)).join('') : `<div class="empty" style="padding:24px 10px"><i class="fa-solid ${col.icon}"></i><p>Nenhum item nesta etapa.</p></div>`}
       </div>
     </div>`).join('');
 }
@@ -5550,7 +5692,7 @@ function criarClienteFromSolicitacao(id) {
   document.getElementById('c-empresa').value = toUpperBR(sol.empresa || '');
   document.getElementById('c-funcao').value = toUpperBR(sol.solicitante || '');
   document.getElementById('c-setor').value = '';
-  document.getElementById('c-cnpj').value = '';
+  document.getElementById('c-cnpj').value = sol.cnpj || '';
   document.getElementById('c-email').value = sol.email || '';
   document.getElementById('c-tel').value = sol.telefone || '';
   document.getElementById('c-segmento').value = '';
@@ -5562,7 +5704,7 @@ function criarClienteFromSolicitacao(id) {
   document.getElementById('c-obs').value = '';
   pdfsTempCliente = [];
   renderPdfList();
-  document.getElementById('modal-cliente-title').textContent = 'Novo Cliente a partir da Solicitação';
+  document.getElementById('modal-cliente-title').textContent = 'Novo cliente a partir da solicitação';
   document.getElementById('modalCliente').classList.add('open');
 }
 
@@ -5632,7 +5774,7 @@ function configurarModalConclusao(tipo, item) {
     if (numPecas) numPecas.value = item?.numeroOrcamentoPecas || '';
     if (numServico) numServico.value = item?.numeroOrcamentoServico || '';
     help.style.display = 'block';
-    help.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:6px"></i>Ao confirmar, esta solicitação sairá dos pendentes e será registrado automaticamente um contato no histórico do cliente, se houver cliente vinculado.';
+    help.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:6px"></i>Ao confirmar, esta solicitação será movida para Concluídos. Ela continuará com ações de acompanhamento disponíveis na coluna Concluídos e será registrado automaticamente um contato no histórico do cliente, se houver cliente vinculado.';
     resumo.style.display = 'flex';
     resumo.innerHTML = `<div class="concluir-summary-icon"><i class="fa-solid ${icon}"></i></div><div><div class="concluir-summary-title">${nomeCliente}</div><div class="concluir-summary-text">Produto/serviço: ${item?.produto || 'Não informado'}<br>Prazo original: ${fmtDate(item?.prazo)}</div></div>`;
   } else if (tipo === 'orcamento') {
@@ -6080,7 +6222,7 @@ function renderAcoesDoDia() {
   setTxt('daily-urgentes', urgentes);
   setTxt('daily-sem-cliente', semCliente);
   setTxt('daily-title', 'Olá, Patrick Barbosa.');
-  setTxt('daily-subtitle', totalImportante ? `Você tem ${totalImportante} ação${totalImportante!==1?'es':''} para resolver hoje ou em atraso.` : 'Nenhuma urgência para hoje. Aproveite para revisar clientes esquecidos e solicitações futuras.');
+  setTxt('daily-subtitle', totalImportante ? `Você tem ${totalImportante} ação${totalImportante!==1?'es':''} para acompanhar hoje ou em atraso.` : 'Sua fila principal está em dia. Use este espaço para acompanhar retornos, solicitações e orçamentos futuros.');
 
   const lista = criarAcoesDoDia();
   const wrap = document.getElementById('dash-acoes-prioritarias');
@@ -6105,7 +6247,7 @@ function renderAcoesDoDia() {
     const clientesEsquecidos = clientes.filter(c=>isClienteEsquecido(c.id)).length;
     prod.innerHTML = `
       <div><span>Contatos hoje</span><strong>${contatosHoje}</strong></div>
-      <div><span>Solicitações feitas</span><strong>${solConcHoje}</strong></div>
+      <div><span>Solicitações concluídas</span><strong>${solConcHoje}</strong></div>
       <div><span>Retornos concluídos</span><strong>${retConcHoje}</strong></div>
       <div><span>Clientes esquecidos</span><strong>${clientesEsquecidos}</strong></div>`;
   }
@@ -6145,6 +6287,25 @@ function renderConfiguracoes() {
   setTxt('config-total-concluidos', concluidos.length);
 }
 
+
+function renderAtividadesProgramadasPainel(lista) {
+  if (!lista || !lista.length) return `<div class="empty" style="grid-column:1/-1"><i class="fa-regular fa-calendar"></i><p>Nenhum retorno agendado</p></div>`;
+  const agrupadas = {};
+  lista.forEach(a => {
+    const key = a.data || 'sem_data';
+    if (!agrupadas[key]) agrupadas[key] = [];
+    agrupadas[key].push(a);
+  });
+  return Object.keys(agrupadas).sort().map(data => {
+    const itens = agrupadas[data].sort((a,b)=>(a.horario||'09:00').localeCompare(b.horario||'09:00'));
+    const titulo = data === today() ? 'Hoje' : data < today() ? 'Atrasadas' : fmtDate(data);
+    return `<div class="agenda-day-group" style="grid-column:1/-1;margin-bottom:4px">
+      <div class="agenda-day-group-title" style="font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.6px;color:var(--text2);padding:2px 0 8px;border-bottom:1px solid var(--border);margin-bottom:10px"><i class="fa-regular fa-calendar" style="margin-right:6px;color:var(--accent)"></i>${titulo}</div>
+      <div class="dash-card-grid" style="padding:0;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">${renderKanbanItems(itens.map(a=>({...a,_atrasado:(a.data||'')<today()})))}</div>
+    </div>`;
+  }).join('');
+}
+
 // ===== DASHBOARD =====
 function renderDashboard() {
   const todayISO=today(), mesAtual=todayISO.slice(0,7);
@@ -6177,12 +6338,10 @@ function renderDashboard() {
     msgEl.textContent = `Faltam ${faltam} contato${faltam>1?'s':''} para atingir a meta desta semana (${fmtDate(inicioSemana)} – ${fmtDate(fimSemanaMeta)})`;
   }
 
-  const atrasados=agendamentos.filter(a=>a.data<todayISO);
-  const upcoming=agendamentos.filter(a=>a.data>=todayISO).sort((a,b)=>a.data.localeCompare(b.data)).slice(0,6);
-  const allShow=[...atrasados.map(a=>({...a,_atrasado:true})),...upcoming];
+  const allShow = [...agendamentos].sort((a,b)=>(a.data||'').localeCompare(b.data||'') || (a.horario||'09:00').localeCompare(b.horario||'09:00'));
   const dashProx=document.getElementById('dash-proximos');
   dashProx.style.display='grid';
-  dashProx.innerHTML = allShow.length ? renderKanbanItems(allShow) : `<div class="empty" style="grid-column:1/-1"><i class="fa-regular fa-calendar"></i><p>Nenhum retorno agendado</p></div>`;
+  dashProx.innerHTML = renderAtividadesProgramadasPainel(allShow);
 
   const canalIcon={telefone:'fa-phone',whatsapp:'fa-brands fa-whatsapp',email:'fa-envelope',presencial:'fa-handshake',videochamada:'fa-video'};
   const recentContatos=[...contatos].sort((a,b)=>b.data.localeCompare(a.data)).slice(0,4);
@@ -6269,7 +6428,7 @@ function renderDashboard() {
   const fimSemana = addDays(todayISO, 7);
   const orcamentosSemana = orcamentos.filter(o=>o.data>=todayISO && o.data<=fimSemana).sort((a,b)=>a.data.localeCompare(b.data));
   const dashOrcSemana = document.getElementById('dash-orcamentos-semana');
-  dashOrcSemana.innerHTML = orcamentosSemana.length ? renderOrcamentoCards(orcamentosSemana) : `<div class="empty" style="grid-column:1/-1"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento recorrente esta semana</p></div>`;
+  dashOrcSemana.innerHTML = orcamentosSemana.length ? renderOrcamentoCards(orcamentosSemana) : `<div class="empty" style="grid-column:1/-1"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento recorrente nesta semana</p></div>`;
 
   document.getElementById('dash-date').textContent=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 }
@@ -6545,7 +6704,7 @@ function retornosParaRows(lista = agendamentos) {
   return [['ID','Data','Horário','Cliente','Razão Social','Prioridade','Motivo'], ...lista.map(a => { const c=clientes.find(x=>x.id===a.clienteId); return [a.id,fmtDate(a.data),a.horario||'09:00',c?c.nome:'—',c?c.empresa||'':'',a.prioridade||'normal',a.motivo||'']; })];
 }
 function solicitacoesParaRows(lista = solicitacoesOrcamento) {
-  return [['ID','Prazo','Data da Solicitação','Cliente/Solicitante','Solicitante','Telefone','E-mail','Razão Social','Produto/Serviço','Canal','Prioridade','Descrição','Observações','Anexos','Vinculado a Cliente'], ...lista.map(sol => { const d=dadosSolicitacaoCliente(sol); return [sol.id,fmtDate(sol.prazo),fmtDate(sol.dataSolicitacao),d.nome,d.solicitante||'',sol.telefone||'',sol.email||'',d.empresa||'',d.produto||'',sol.canal||'',sol.prioridade||'normal',sol.descricao||'',sol.obs||'',(sol.anexos||[]).length,sol.clienteId?'Sim':'Não']; })];
+  return [['ID','Prazo','Data da Solicitação','Cliente/Solicitante','Solicitante','CNPJ','Telefone','E-mail','Razão Social','Produto/Serviço','Canal','Prioridade','Descrição','Observações','Anexos','Vinculado a Cliente'], ...lista.map(sol => { const d=dadosSolicitacaoCliente(sol); return [sol.id,fmtDate(sol.prazo),fmtDate(sol.dataSolicitacao),d.nome,d.solicitante||'',sol.cnpj||'',sol.telefone||'',sol.email||'',d.empresa||'',d.produto||'',sol.canal||'',sol.prioridade||'normal',sol.descricao||'',sol.obs||'',(sol.anexos||[]).length,sol.clienteId?'Sim':'Não']; })];
 }
 function orcamentosParaRows(lista = orcamentos) {
   return [['ID','Data','Horário','Cliente','Razão Social','Mensal','Observação'], ...lista.map(o => { const c=clientes.find(x=>x.id===o.clienteId); return [o.id,fmtDate(o.data),o.horario||'09:00',c?c.nome:'—',c?c.empresa||'':'',o.repetir?'Sim':'Não',o.obs||'']; })];
