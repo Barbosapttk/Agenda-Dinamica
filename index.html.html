@@ -2951,6 +2951,89 @@ body.theme-light .optional-flow-box { background: linear-gradient(135deg, rgba(7
 body.theme-light .proposta-contato-box { background: linear-gradient(135deg, rgba(8,127,104,0.14), rgba(7,95,226,0.05)); }
 body.theme-light .historico-overview-card { background: linear-gradient(135deg, rgba(7,95,226,0.12), #dbe8f7); }
 
+
+/* AJUSTES DE LAYOUT DIVIDIDO, FILTROS E BARRAS DE ROLAGEM */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(108,157,235,0.55) rgba(7,20,46,0.35);
+}
+*::-webkit-scrollbar { width: 9px; height: 9px; }
+*::-webkit-scrollbar-track { background: rgba(7,20,46,0.35); border-radius: 999px; }
+*::-webkit-scrollbar-thumb { background: linear-gradient(180deg, rgba(13,102,232,0.75), rgba(108,157,235,0.45)); border-radius: 999px; border: 2px solid rgba(7,20,46,0.35); }
+*::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, rgba(43,134,255,0.9), rgba(108,157,235,0.65)); }
+body.theme-light * { scrollbar-color: rgba(7,95,226,0.45) rgba(207,219,234,0.65); }
+body.theme-light *::-webkit-scrollbar-track { background: rgba(207,219,234,0.65); }
+body.theme-light *::-webkit-scrollbar-thumb { background: linear-gradient(180deg, rgba(7,95,226,0.55), rgba(70,101,151,0.32)); border-color: rgba(207,219,234,0.65); }
+
+.topheader { gap: 10px !important; padding: 0 14px !important; }
+.topnav { gap: 2px !important; padding: 3px 5px 6px !important; overflow-x: auto; }
+.topnav-item { padding: 7px 9px !important; font-size: 12px !important; }
+.topnav-item[data-view="configuracoes"] { display:none !important; }
+.auth-user-pill { display:none !important; }
+.topheader > button[onclick="openGlobalSearch()"] { width:42px; min-width:42px; padding:9px 0 !important; justify-content:center; font-size:0 !important; }
+.topheader > button[onclick="openGlobalSearch()"] i { font-size:14px !important; margin:0 !important; }
+.topheader > button[onclick="openGlobalSearch()"] span,
+.topheader > button[onclick="openGlobalSearch()"] kbd { display:none !important; }
+
+.floating-config-btn {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  border: 1px solid rgba(108,157,235,0.35);
+  background: linear-gradient(180deg, rgba(13,102,232,0.95), rgba(5,72,167,0.95));
+  color: #fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow: 0 14px 34px rgba(0,0,0,0.35);
+  z-index: 400;
+  cursor:pointer;
+}
+.floating-config-btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+
+.dashboard-order-control { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.dashboard-order-control label { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.7px; color:var(--text2); }
+.dashboard-order-control select { width:auto; min-width:150px; padding:7px 10px; font-size:12.5px; }
+.daily-action-item { cursor: default; }
+.daily-action-solicitacao { cursor: pointer; }
+.daily-action-solicitacao:hover { border-color: rgba(108,157,235,0.48) !important; filter: brightness(1.04); }
+.daily-action-content { min-width:0; }
+.daily-action-hint { margin-top:6px; font-size:11.5px; color:var(--text2); opacity:.9; }
+
+.solicitacoes-overview { display:none !important; }
+#view-solicitacoes .card-header > div:last-child { gap:8px !important; }
+#view-solicitacoes .card-header select,
+#view-solicitacoes .card-header .search-bar { min-height:34px; }
+.orcamento-kanban-body { overflow-y:auto; overflow-x:hidden; padding-right:8px !important; }
+.orcamento-kanban-wrap { overflow: hidden; }
+.orcamento-kanban-board { overflow-x:auto; padding-bottom:6px; }
+
+@media (max-width: 1180px) {
+  .brand-logo-header .brand-logo-full { height:40px !important; }
+  .topheader { height:66px !important; }
+  .sidebar { top:66px !important; height:calc(100vh - 66px) !important; width:76px !important; }
+  .sidebar-top { padding:12px 10px !important; }
+  .quick-main-action { min-height:44px !important; padding:0 !important; font-size:0 !important; width:54px !important; margin:0 auto; border-radius:14px !important; }
+  .quick-main-action i { font-size:18px !important; margin:0 !important; }
+  .quick-action-grid { padding:10px 8px !important; align-items:center; }
+  .quick-action-grid .nav-section { display:none !important; }
+  .quick-action-card { width:52px !important; height:52px !important; padding:0 !important; justify-content:center !important; border-radius:15px !important; }
+  .quick-action-card > span:not(.quick-action-icon) { display:none !important; }
+  .quick-action-icon { width:36px !important; height:36px !important; margin:0 !important; }
+  .main { padding:14px 16px 28px !important; }
+  .topnav-item { padding:7px 8px !important; font-size:11.5px !important; }
+  .topnav-item i { margin-right:0; }
+}
+@media (max-width: 980px) {
+  .topnav-item { padding:7px 7px !important; font-size:0 !important; }
+  .topnav-item i { font-size:14px !important; }
+  .topnav-item.active { min-width:40px; justify-content:center; }
+  .theme-toggle-wrap { margin-left:0 !important; }
+}
+
 </style>
 </head>
 <body class="auth-locked">
@@ -3033,7 +3116,7 @@ body.theme-light .historico-overview-card { background: linear-gradient(135deg, 
 <aside class="sidebar">
   <div class="sidebar-top">
     <button class="btn btn-primary quick-main-action" onclick="openModal('modalSolicitacao')" title="Registrar uma nova solicitação de orçamento">
-      <i class="fa-solid fa-plus"></i> Novo Orçamento
+      <i class="fa-solid fa-plus"></i> Nova Solicitação
     </button>
   </div>
   <nav class="nav quick-action-grid">
@@ -3070,7 +3153,7 @@ body.theme-light .historico-overview-card { background: linear-gradient(135deg, 
       <div class="dashboard-hero-main">
         <div class="daily-eyebrow">Ações do Dia</div>
         <h2 id="daily-title">Olá, Patrick Barbosa.</h2>
-        <p id="daily-subtitle">Acompanhe retornos, solicitações e orçamentos futuros em um único fluxo de trabalho.</p>
+        <p id="daily-subtitle">Acompanhe pendências, retornos, solicitações e orçamentos futuros em um único fluxo de trabalho.</p>
       </div>
       <div class="daily-date-feature">
         <span>Data de hoje</span>
@@ -3100,9 +3183,14 @@ body.theme-light .historico-overview-card { background: linear-gradient(135deg, 
     <div class="card daily-actions-card" id="card-acoes-prioritarias" style="margin-bottom:20px">
       <div class="card-header">
         <div class="card-title"><i class="fa-solid fa-list-check" style="color:var(--danger)"></i> O que preciso fazer agora?</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn btn-ghost btn-sm" onclick="showView('solicitacoes')"><i class="fa-solid fa-clipboard-list"></i> Solicitações</button>
-          <button class="btn btn-ghost btn-sm" onclick="showView('agenda')"><i class="fa-solid fa-calendar-days"></i> Agenda</button>
+        <div class="dashboard-order-control">
+          <label for="dashboard-order">Ordenar</label>
+          <select id="dashboard-order" onchange="renderAcoesDoDia()">
+            <option value="prioridade">Prioridade</option>
+            <option value="prazo">Prazo mais próximo</option>
+            <option value="tipo">Tipo de atividade</option>
+            <option value="cliente">Cliente A-Z</option>
+          </select>
         </div>
       </div>
       <div id="dash-acoes-prioritarias" class="daily-actions-list"></div>
@@ -3340,7 +3428,8 @@ body.theme-light .historico-overview-card { background: linear-gradient(135deg, 
             <i class="fa-solid fa-magnifying-glass"></i>
             <input type="text" placeholder="Buscar solicitação..." id="search-solicitacoes" oninput="renderSolicitacoesTabela()">
           </div>
-          <button class="btn btn-primary btn-sm" onclick="openModal('modalSolicitacao')"><i class="fa-solid fa-plus"></i> Novo Orçamento</button>
+          <button class="btn btn-ghost btn-sm" onclick="limparFiltrosSolicitacoes()"><i class="fa-solid fa-filter-circle-xmark"></i> Limpar filtros</button>
+          <button class="btn btn-primary btn-sm" onclick="openModal('modalSolicitacao')"><i class="fa-solid fa-plus"></i> Nova Solicitação</button>
         </div>
       </div>
       <div class="solicitacoes-overview">
@@ -6248,6 +6337,18 @@ function diasEntreDatas(inicio, fim) {
   return Math.round((b - a) / 86400000);
 }
 
+function ordenarAcoesDoDia(lista) {
+  const ordem = document.getElementById('dashboard-order')?.value || 'prioridade';
+  const pr = { urgente: 0, alta: 1, normal: 2 };
+  return [...lista].sort((a,b) => {
+    if (ordem === 'prazo') return (a.data||'').localeCompare(b.data||'') || (a.nome||'').localeCompare(b.nome||'');
+    if (ordem === 'tipo') return (a.tipo||'').localeCompare(b.tipo||'') || (a.data||'').localeCompare(b.data||'');
+    if (ordem === 'cliente') return (a.nome||'').localeCompare(b.nome||'') || (a.data||'').localeCompare(b.data||'');
+    const pa = pr[a.prioridade] ?? 3, pb = pr[b.prioridade] ?? 3;
+    return (a.score - b.score) || (pa - pb) || (a.data||'').localeCompare(b.data||'') || (a.nome||'').localeCompare(b.nome||'');
+  });
+}
+
 function criarAcoesDoDia() {
   const hoje = today();
   const acoes = [];
@@ -6275,7 +6376,9 @@ function criarAcoesDoDia() {
         detalhe: s.descricao || 'Fazer orçamento solicitado.',
         classe: s.prazo < hoje ? 'atrasado' : s.prazo === hoje ? 'hoje' : 'urgente',
         score: (s.prazo < hoje ? 0 : s.prioridade === 'urgente' ? 1 : 2),
-        htmlAcoes: `<button class="btn btn-success btn-sm" onclick="abrirConcluirSolicitacao(${s.id})"><i class="fa-solid fa-check"></i> Feito</button><button class="btn btn-warning btn-sm" onclick="irParaSolicitacaoEditar(${s.id})"><i class="fa-solid fa-pen"></i> Editar</button>`
+        htmlAcoes: '',
+        ondblclick: `irParaSolicitacaoEditar(${s.id})`,
+        dica: 'Clique duas vezes para abrir e editar a solicitação.'
       });
     }
   });
@@ -6293,7 +6396,7 @@ function criarAcoesDoDia() {
       });
     }
   });
-  return acoes.sort((a,b) => (a.score - b.score) || (a.data||'').localeCompare(b.data||'')).slice(0, 10);
+  return ordenarAcoesDoDia(acoes).slice(0, 10);
 }
 
 function renderAcoesDoDia() {
@@ -6310,21 +6413,22 @@ function renderAcoesDoDia() {
   setTxt('daily-urgentes', urgentes);
   setTxt('daily-sem-cliente', semCliente);
   setTxt('daily-title', 'Olá, Patrick Barbosa.');
-  setTxt('daily-subtitle', totalImportante ? `Você tem ${totalImportante} ação${totalImportante!==1?'es':''} para acompanhar hoje ou em atraso.` : 'Sua fila principal está em dia. Use este espaço para acompanhar retornos, solicitações e orçamentos futuros.');
+  setTxt('daily-subtitle', totalImportante ? `Você tem ${totalImportante} pendência${totalImportante!==1?'s':''} para acompanhar hoje ou em atraso.` : 'Sua fila principal está em dia. Use este espaço para acompanhar retornos, solicitações e orçamentos futuros.');
 
   const lista = criarAcoesDoDia();
   const wrap = document.getElementById('dash-acoes-prioritarias');
   if (wrap) {
     wrap.innerHTML = lista.length ? lista.map(a => `
-      <div class="daily-action-item ${a.classe}">
+      <div class="daily-action-item ${a.classe} ${a.tipo==='solicitacao'?'daily-action-solicitacao':''}" ${a.ondblclick ? `ondblclick="${a.ondblclick}" title="${a.dica||'Clique duas vezes para abrir'}"` : ''}>
         <div class="daily-action-icon"><i class="fa-solid ${a.tipo==='solicitacao'?'fa-clipboard-list':a.tipo==='orcamento'?'fa-file-invoice-dollar':'fa-phone'}" style="color:${a.classe==='atrasado'?'var(--danger)':a.classe==='hoje'?'var(--warning)':'var(--accent)'}"></i></div>
-        <div>
+        <div class="daily-action-content">
           <div class="daily-action-title">${a.titulo} — ${a.nome}</div>
           <div class="daily-action-meta">Prazo: ${fmtDate(a.data)}${a.meta ? ' • ' + a.meta : ''}</div>
           <div class="daily-action-meta">${(a.detalhe||'').length>140 ? a.detalhe.slice(0,140)+'…' : a.detalhe}</div>
+          ${a.dica ? `<div class="daily-action-hint"><i class="fa-solid fa-computer-mouse"></i> ${a.dica}</div>` : ''}
         </div>
-        <div class="action-row">${a.htmlAcoes}</div>
-      </div>`).join('') : `<div class="empty"><i class="fa-solid fa-circle-check"></i><p>Nenhuma ação prioritária para hoje.</p></div>`;
+        ${a.htmlAcoes ? `<div class="action-row">${a.htmlAcoes}</div>` : ''}
+      </div>`).join('') : `<div class="empty"><i class="fa-solid fa-circle-check"></i><p>Nenhuma pendência prioritária para hoje.</p></div>`;
   }
 
   const prod = document.getElementById('dash-resumo-produtividade');
@@ -6356,6 +6460,18 @@ function setFiltroSolicitacoes(valor) {
   if (filtro) filtro.value = valor;
   const chk = document.getElementById('filtro-atrasadas-solicitacoes');
   if (chk) chk.checked = false;
+  renderSolicitacoesTabela();
+}
+
+function limparFiltrosSolicitacoes() {
+  const situacao = document.getElementById('filtro-situacao-solicitacoes');
+  const prioridade = document.getElementById('filtro-prioridade-solicitacoes');
+  const atrasadas = document.getElementById('filtro-atrasadas-solicitacoes');
+  const busca = document.getElementById('search-solicitacoes');
+  if (situacao) situacao.value = 'pendentes';
+  if (prioridade) prioridade.value = '';
+  if (atrasadas) atrasadas.checked = false;
+  if (busca) busca.value = '';
   renderSolicitacoesTabela();
 }
 
@@ -7677,5 +7793,8 @@ function renderHistorico() {
 }
 
 </script>
+<button class="floating-config-btn" type="button" onclick="showView('configuracoes')" title="Configurações, backup e exportações">
+  <i class="fa-solid fa-gear"></i>
+</button>
 </body>
 </html>
