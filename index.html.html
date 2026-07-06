@@ -3034,6 +3034,47 @@ body.theme-light *::-webkit-scrollbar-thumb { background: linear-gradient(180deg
   .theme-toggle-wrap { margin-left:0 !important; }
 }
 
+
+/* AJUSTES PÓS-TESTE: LAYOUT DIVIDIDO, KANBAN, CLIENTES E ATALHOS */
+.floating-config-btn {
+  left: 14px !important;
+  right: auto !important;
+  bottom: 14px !important;
+  width: 182px !important;
+  height: 44px !important;
+  border-radius: 14px !important;
+  gap: 9px !important;
+  font-weight: 800 !important;
+  font-size: 12.5px !important;
+}
+.floating-config-btn span { display:inline-block; }
+.nav.quick-action-grid { padding-bottom: 76px !important; }
+@media (max-width: 1180px) {
+  .topnav-item { font-size: 11.5px !important; padding: 7px 8px !important; }
+  .topnav-item i { font-size: 13.5px !important; margin-right: 0 !important; }
+  .topnav { flex: 1 1 auto !important; }
+  .floating-config-btn { width: 52px !important; height: 52px !important; left: 12px !important; bottom: 12px !important; border-radius: 15px !important; padding: 0 !important; }
+  .floating-config-btn span { display:none !important; }
+  .floating-config-btn i { font-size: 17px !important; }
+}
+@media (max-width: 980px) {
+  .topnav-item { font-size: 11px !important; padding: 7px 7px !important; min-width: auto !important; justify-content:flex-start !important; }
+  .topnav-item i { font-size: 13px !important; }
+}
+#view-clientes .search-bar { min-width: 310px; flex: 1 1 360px; max-width: 520px; }
+#search-clientes { min-width: 240px; }
+@media (max-width: 900px) { #view-clientes .search-bar { min-width: 100%; max-width: none; } }
+.orcamento-kanban-board { grid-template-columns: repeat(5, minmax(220px, 1fr)) !important; }
+.orcamento-card[ondblclick] { cursor: grab; }
+.orcamento-card[ondblclick]:hover { border-color: rgba(108,157,235,0.55) !important; filter: brightness(1.04); }
+.orcamento-card.elaboracao { border-left-color: var(--cyan); background: var(--cyan-bg); }
+body.theme-light .orcamento-card.elaboracao { background: linear-gradient(180deg, rgba(8,126,163,0.16), rgba(255,255,255,0.68)) !important; }
+body.theme-light .orcamento-kanban-col:nth-child(4) { background: linear-gradient(180deg, #d6edf4, #c8e4ee) !important; border-color: rgba(8,126,163,0.28) !important; }
+body.theme-light .orcamento-kanban-col:nth-child(5) { background: linear-gradient(180deg, #e5d8f8, #d7c8f0) !important; border-color: rgba(102,62,199,0.26) !important; }
+@media (max-width: 1380px) { .orcamento-kanban-board { grid-template-columns: repeat(5, minmax(210px, 1fr)) !important; } }
+@media (max-width: 1180px) { .orcamento-kanban-board { grid-template-columns: repeat(3, minmax(220px, 1fr)) !important; } }
+@media (max-width: 760px) { .orcamento-kanban-board { grid-template-columns: 1fr !important; } }
+
 </style>
 </head>
 <body class="auth-locked">
@@ -3306,7 +3347,7 @@ body.theme-light *::-webkit-scrollbar-thumb { background: linear-gradient(180deg
         <div class="card-title">Todos os Clientes <span id="cliente-count" class="badge badge-gray" style="margin-left:6px">0</span></div>
         <div class="search-bar">
           <i class="fa-solid fa-magnifying-glass"></i>
-          <input type="text" placeholder="Buscar cliente..." id="search-clientes" oninput="renderClientes()">
+          <input type="text" placeholder="Buscar por nome, razão social, CNPJ, telefone, e-mail ou cidade..." id="search-clientes" oninput="renderClientes()">
         </div>
       </div>
       <div style="padding:14px 20px;border-bottom:1px solid var(--border);display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:var(--surface2)">
@@ -3920,6 +3961,7 @@ body.theme-light *::-webkit-scrollbar-thumb { background: linear-gradient(180deg
             <option value="nova">Nova solicitação</option>
             <option value="aguardando_info">Aguardando informações</option>
             <option value="aguardando_cotacao">Aguardando cotação de peças</option>
+            <option value="em_elaboracao">Orçamento em elaboração</option>
           </select>
         </div>
         <div class="form-group full"><label>Descrição do que foi solicitado *</label><textarea id="sol-descricao" placeholder="Ex: Cliente pediu orçamento de calibração/manutenção do equipamento X..."></textarea></div>
@@ -4111,13 +4153,14 @@ body.theme-light *::-webkit-scrollbar-thumb { background: linear-gradient(180deg
     </div>
     <div class="modal-body">
       <div class="shortcut-row"><span>Busca rápida</span><span class="kbd-key">Ctrl</span> + <span class="kbd-key">K</span></div>
-      <div class="shortcut-row"><span>Novo cliente</span><span class="kbd-key">N</span></div>
-      <div class="shortcut-row"><span>Registrar contato</span><span class="kbd-key">C</span></div>
-      <div class="shortcut-row"><span>Agendar retorno</span><span class="kbd-key">R</span></div>
+      <div class="shortcut-row"><span>Nova solicitação</span><span class="kbd-key">Alt</span> + <span class="kbd-key">S</span></div>
+      <div class="shortcut-row"><span>Novo cliente</span><span class="kbd-key">Alt</span> + <span class="kbd-key">N</span></div>
+      <div class="shortcut-row"><span>Registrar contato</span><span class="kbd-key">Alt</span> + <span class="kbd-key">C</span></div>
+      <div class="shortcut-row"><span>Agendar retorno</span><span class="kbd-key">Alt</span> + <span class="kbd-key">R</span></div>
       <div class="shortcut-row"><span>Fechar janela / painel</span><span class="kbd-key">Esc</span></div>
-      <div class="shortcut-row"><span>Ir para Painel</span><span class="kbd-key">G</span> então <span class="kbd-key">P</span></div>
-      <div class="shortcut-row"><span>Ir para Clientes</span><span class="kbd-key">G</span> então <span class="kbd-key">C</span></div>
-      <div class="shortcut-row"><span>Ir para Agenda</span><span class="kbd-key">G</span> então <span class="kbd-key">A</span></div>
+      <div class="shortcut-row"><span>Ir para Painel</span><span class="kbd-key">Alt</span> + <span class="kbd-key">P</span></div>
+      <div class="shortcut-row"><span>Ir para Clientes</span><span class="kbd-key">Alt</span> + <span class="kbd-key">L</span></div>
+      <div class="shortcut-row"><span>Ir para Agenda</span><span class="kbd-key">Alt</span> + <span class="kbd-key">A</span></div>
       <div class="divider"></div>
       <button class="btn btn-primary" style="width:100%;justify-content:center;margin-bottom:8px" onclick="solicitarPermissaoPush();closeModal('modalAtalhos')">
         <i class="fa-solid fa-bell"></i> Ativar Notificações Push
@@ -4893,23 +4936,27 @@ function isClienteEsquecido(clienteId) {
 
 function renderClientes() {
   popularFiltrosClientes();
-  const q = (document.getElementById('search-clientes')?.value||'').toLowerCase();
+  const qRaw = (document.getElementById('search-clientes')?.value||'').trim();
+  const qNorm = normalizarBuscaBR(qRaw);
+  const tokens = qNorm.split(/\s+/).filter(Boolean);
   const fCidade = document.getElementById('filtro-cidade')?.value||'';
   const fEstado = document.getElementById('filtro-estado')?.value||'';
   const fSegmento = document.getElementById('filtro-segmento')?.value||'';
   const fSetor = document.getElementById('filtro-setor')?.value||'';
   const fEsquecidos = document.getElementById('filtro-esquecidos')?.checked||false;
-  let filtered = clientes.filter(c =>
-    (c.nome.toLowerCase().includes(q) ||
-     (c.empresa||'').toLowerCase().includes(q) ||
-     (c.cnpj||'').includes(q) ||
-     (c.cidade||'').toLowerCase().includes(q)) &&
-    (!fCidade || c.cidade===fCidade) &&
-    (!fEstado || c.estado===fEstado) &&
-    (!fSegmento || c.segmento===fSegmento) &&
-    (!fSetor || c.setor===fSetor) &&
-    (!fEsquecidos || isClienteEsquecido(c.id))
-  );
+  let filtered = clientes.filter(c => {
+    const buscaCliente = normalizarBuscaBR([
+      c.nome, c.empresa, c.cnpj, c.telefone, c.email, c.cidade, c.estado,
+      c.segmento, c.setor, c.funcao, c.status, c.obsImportante, c.obs, c.equipamentos
+    ].filter(Boolean).join(' '));
+    const matchBusca = !tokens.length || tokens.every(t => buscaCliente.includes(t));
+    return matchBusca &&
+      (!fCidade || c.cidade===fCidade) &&
+      (!fEstado || c.estado===fEstado) &&
+      (!fSegmento || c.segmento===fSegmento) &&
+      (!fSetor || c.setor===fSetor) &&
+      (!fEsquecidos || isClienteEsquecido(c.id));
+  });
   if (ordenacaoContato) {
     filtered = [...filtered].sort((a,b) => {
       const ucA = ultimoContato(a.id), ucB = ultimoContato(b.id);
@@ -5597,6 +5644,7 @@ function etapaSolicitacaoLabel(etapa) {
     nova: 'Nova solicitação',
     aguardando_info: 'Aguardando informações',
     aguardando_cotacao: 'Aguardando cotação de peças',
+    em_elaboracao: 'Orçamento em elaboração',
     concluida: 'Concluída'
   }[etapa || 'nova'] || 'Nova solicitação';
 }
@@ -5624,17 +5672,15 @@ function cardKanbanSolicitacao(sol, classeExtra='') {
   const atrasado = !sol._concluida && sol.prazo < today();
   const hoje = !sol._concluida && sol.prazo === today();
   const etapa = sol.etapa || 'nova';
-  const fixado = !!sol.fixado;
   const colCls = sol._concluida ? 'concluido' : atrasado ? 'atrasado' : classeExtra;
-  const canDrag = !sol._concluida && !fixado;
-  return `<div class="orcamento-card ${colCls} ${fixado?'fixado':''}" draggable="${canDrag?'true':'false'}" data-sol-id="${sol.id}" ondragstart="dragSolicitacaoKanban(event, ${sol.id})" ondragend="dragEndSolicitacaoKanban(event)">
+  const canDrag = !sol._concluida;
+  return `<div class="orcamento-card ${colCls}" draggable="${canDrag?'true':'false'}" data-sol-id="${sol.id}" ${!sol._concluida ? `ondblclick="irParaSolicitacaoEditar(${sol.id})" title="Duplo clique para editar"` : ''} ondragstart="dragSolicitacaoKanban(event, ${sol.id})" ondragend="dragEndSolicitacaoKanban(event)">
     <div class="orcamento-card-top">
       <div style="min-width:0;flex:1">
         <div class="orcamento-card-title">${d.nome}</div>
         ${!sol.clienteId?'<div style="font-size:11px;color:var(--danger);font-weight:700;margin-top:2px">Sem cliente cadastrado</div>':''}
       </div>
       <div class="orcamento-card-mini-actions">
-        ${!sol._concluida ? `<button class="btn btn-ghost btn-sm btn-icon-mini" title="${fixado?'Desafixar da coluna':'Fixar nesta coluna'}" onclick="toggleFixarSolicitacao(${sol.id}); event.stopPropagation();"><i class="fa-solid fa-thumbtack"></i></button>` : ''}
         ${!sol._concluida ? `<button class="btn btn-warning btn-sm btn-icon-mini" title="Editar" onclick="irParaSolicitacaoEditar(${sol.id}); event.stopPropagation();"><i class="fa-solid fa-pen"></i></button>` : ''}
         ${!sol._concluida ? `<button class="btn btn-success btn-sm btn-icon-mini" title="Marcar como feito" onclick="abrirConcluirSolicitacao(${sol.id}); event.stopPropagation();"><i class="fa-solid fa-check"></i></button>` : ''}
         ${sol._concluida && sol.clienteId ? `<button class="btn btn-ghost btn-sm btn-icon-mini" title="Ver cliente" onclick="abrirDetalhe(${sol.clienteId}); event.stopPropagation();"><i class="fa-solid fa-user-check"></i></button>` : ''}
@@ -5654,7 +5700,6 @@ function cardKanbanSolicitacao(sol, classeExtra='') {
     <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:8px">
       <span class="badge ${priorBadge[sol.prioridade]||'badge-gray'}">${sol.prioridade||'normal'}</span>
       ${sol._concluida ? '<span class="badge badge-success">Concluída</span>' : `<span class="badge badge-gray">${etapaSolicitacaoLabel(etapa)}</span>`}
-      ${fixado ? '<span class="badge badge-warning"><i class="fa-solid fa-thumbtack" style="margin-right:3px"></i>Fixado</span>' : ''}
       ${sol.canal?`<span class="badge badge-gray">${canalLabel[sol.canal]||sol.canal}</span>`:''}
       ${sol.produto?`<span class="badge badge-warning">${sol.produto}</span>`:''}
       ${(sol.anexos||[]).length?`<span class="badge badge-gray"><i class="fa-solid fa-paperclip" style="margin-right:3px"></i>${(sol.anexos||[]).length}</span>`:''}
@@ -5759,7 +5804,7 @@ function toggleFixarSolicitacao(id) {
 
 function dragSolicitacaoKanban(ev, id) {
   const sol = solicitacoesOrcamento.find(s => s.id === id);
-  if (!sol || sol.fixado) { ev.preventDefault(); return; }
+  if (!sol) { ev.preventDefault(); return; }
   ev.dataTransfer.setData('text/plain', String(id));
   ev.dataTransfer.effectAllowed = 'move';
   ev.currentTarget.classList.add('dragging');
@@ -5786,7 +5831,6 @@ function dropSolicitacaoKanban(ev, etapa) {
   const id = +(ev.dataTransfer.getData('text/plain') || 0);
   const sol = solicitacoesOrcamento.find(s => s.id === id);
   if (!sol) return;
-  if (sol.fixado) { notify('Esta solicitação está fixada. Desafixe antes de mover.', '#7a1a1a'); return; }
   if (etapa === 'concluida') { abrirConcluirSolicitacao(id); return; }
   moverSolicitacaoEtapa(id, etapa);
 }
@@ -5845,6 +5889,7 @@ function renderSolicitacoesKanban() {
     {key:'nova', title:'Novas solicitações', icon:'fa-inbox', cls:'', list:lista.filter(s=>(s.etapa||'nova')==='nova')},
     {key:'aguardando_info', title:'Aguardando informações', icon:'fa-circle-question', cls:'info', list:lista.filter(s=>s.etapa==='aguardando_info')},
     {key:'aguardando_cotacao', title:'Aguardando cotação de peças', icon:'fa-gears', cls:'pecas', list:lista.filter(s=>s.etapa==='aguardando_cotacao')},
+    {key:'em_elaboracao', title:'Orçamento em elaboração', icon:'fa-file-pen', cls:'elaboracao', list:lista.filter(s=>s.etapa==='em_elaboracao')},
     {key:'concluida', title:'Concluídos', icon:'fa-circle-check', cls:'concluido', list:concluidas}
   ];
   const totalExibido = cols.reduce((acc,c)=>acc+c.list.length,0);
@@ -5852,7 +5897,7 @@ function renderSolicitacoesKanban() {
   board.innerHTML = cols.map(col => `
     <div class="orcamento-kanban-col" data-etapa="${col.key}">
       <div class="orcamento-kanban-head">
-        <div class="orcamento-kanban-title"><i class="fa-solid ${col.icon}" style="color:${col.key==='nova'?'var(--warning)':col.key==='aguardando_info'?'var(--accent)':col.key==='aguardando_cotacao'?'var(--purple)':'var(--success)'}"></i> ${col.title}</div>
+        <div class="orcamento-kanban-title"><i class="fa-solid ${col.icon}" style="color:${col.key==='nova'?'var(--warning)':col.key==='aguardando_info'?'var(--accent)':col.key==='aguardando_cotacao'?'var(--purple)':col.key==='em_elaboracao'?'var(--cyan)':'var(--success)'}"></i> ${col.title}</div>
       </div>
       <div class="orcamento-kanban-body" ondragover="allowDropSolicitacaoKanban(event)" ondragleave="leaveDropSolicitacaoKanban(event)" ondrop="dropSolicitacaoKanban(event,'${col.key}')">
         ${col.list.length ? col.list.map(sol => cardKanbanSolicitacao(sol, col.cls)).join('') : `<div class="empty" style="padding:24px 10px"><i class="fa-solid ${col.icon}"></i><p>Nenhum item nesta etapa.</p></div>`}
@@ -6838,7 +6883,7 @@ document.addEventListener('keydown', e => {
   const tag = (e.target.tagName||'').toLowerCase();
   const isTyping = tag==='input' || tag==='textarea' || tag==='select' || e.target.isContentEditable;
 
-  // Ctrl+K / Cmd+K sempre funciona, mesmo digitando
+  // Busca global continua em Ctrl+K / Cmd+K. Demais atalhos usam Alt para não conflitar com copiar/colar.
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase()==='k') {
     e.preventDefault();
     openGlobalSearch();
@@ -6850,24 +6895,19 @@ document.addEventListener('keydown', e => {
     closePanel();
     return;
   }
-  if (isTyping) return; // demais atalhos não disparam durante digitação
+  if (isTyping) return;
 
-  if (gKeyPressed) {
-    gKeyPressed = false;
-    clearTimeout(gKeyTimer);
-    if (e.key.toLowerCase()==='p') { showView('dashboard'); return; }
-    if (e.key.toLowerCase()==='c') { showView('clientes'); return; }
-    if (e.key.toLowerCase()==='a') { showView('agenda'); return; }
-    return;
+  // Atalhos remapeados: Alt + tecla. Assim Ctrl+C volta a copiar normalmente.
+  if (e.altKey && !e.ctrlKey && !e.metaKey) {
+    const k = e.key.toLowerCase();
+    if (k==='s') { e.preventDefault(); openModal('modalSolicitacao'); return; }
+    if (k==='n') { e.preventDefault(); openModal('modalCliente'); return; }
+    if (k==='c') { e.preventDefault(); openModal('modalContato'); return; }
+    if (k==='r') { e.preventDefault(); openModal('modalAgendamento'); return; }
+    if (k==='p') { e.preventDefault(); showView('dashboard'); return; }
+    if (k==='l') { e.preventDefault(); showView('clientes'); return; }
+    if (k==='a') { e.preventDefault(); showView('agenda'); return; }
   }
-  if (e.key.toLowerCase()==='g') {
-    gKeyPressed = true;
-    gKeyTimer = setTimeout(()=>{ gKeyPressed=false; }, 1200);
-    return;
-  }
-  if (e.key.toLowerCase()==='n') { openModal('modalCliente'); return; }
-  if (e.key.toLowerCase()==='c') { openModal('modalContato'); return; }
-  if (e.key.toLowerCase()==='r') { openModal('modalAgendamento'); return; }
 });
 
 // ===== EXPORTAR CSV =====
@@ -7794,7 +7834,7 @@ function renderHistorico() {
 
 </script>
 <button class="floating-config-btn" type="button" onclick="showView('configuracoes')" title="Configurações, backup e exportações">
-  <i class="fa-solid fa-gear"></i>
+  <i class="fa-solid fa-gear"></i><span>Configurações</span>
 </button>
 </body>
 </html>
