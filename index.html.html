@@ -3075,6 +3075,70 @@ body.theme-light .orcamento-kanban-col:nth-child(5) { background: linear-gradien
 @media (max-width: 1180px) { .orcamento-kanban-board { grid-template-columns: repeat(3, minmax(220px, 1fr)) !important; } }
 @media (max-width: 760px) { .orcamento-kanban-board { grid-template-columns: 1fr !important; } }
 
+
+/* NOVA SOLICITAÇÃO - MODAL PAISAGEM */
+.modal-solicitacao-landscape {
+  width: min(1180px, 96vw) !important;
+  max-height: 92vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.sol-modal-header { align-items:flex-start; }
+.sol-modal-subtitle { margin-top:4px; color:var(--text2); font-size:12.5px; font-weight:500; }
+.sol-modal-body { overflow:auto; padding:18px 22px; }
+.sol-modal-footer { flex-shrink:0; }
+.sol-landscape-form { display:grid; grid-template-columns: 1fr; gap:16px; }
+.sol-form-section { border:1px solid var(--border); background:linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.015)); border-radius:14px; padding:16px; }
+body.theme-light .sol-form-section { background:linear-gradient(180deg, rgba(255,255,255,0.56), rgba(255,255,255,0.28)); }
+.sol-section-head { display:flex; align-items:center; justify-content:space-between; gap:12px; padding-bottom:12px; margin-bottom:14px; border-bottom:1px solid var(--border); }
+.sol-section-head strong { display:flex; align-items:center; gap:8px; font-size:14px; color:var(--text); }
+.sol-section-head span { display:block; color:var(--text2); font-size:12.5px; margin-top:3px; line-height:1.35; }
+.sol-client-link-panel { margin-bottom:14px; padding:12px; border:1px solid var(--border); border-radius:12px; background:rgba(0,0,0,0.08); }
+body.theme-light .sol-client-link-panel { background:rgba(7,95,226,0.055); }
+.sol-client-search-row { display:grid; grid-template-columns: minmax(320px,1fr) minmax(260px,360px); gap:10px; align-items:center; }
+.sol-client-search-input { position:relative; display:flex; align-items:center; }
+.sol-client-search-input i { position:absolute; left:11px; color:var(--text3); font-size:12px; }
+.sol-client-search-input input { padding-left:32px; }
+.sol-client-results { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:8px; margin-top:10px; }
+.sol-client-result-card { border:1px solid var(--border); border-radius:10px; padding:9px 10px; background:var(--surface2); display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+body.theme-light .sol-client-result-card { background:rgba(255,255,255,0.42); }
+.sol-client-result-card strong { display:block; font-size:12.8px; color:var(--text); margin-bottom:2px; }
+.sol-client-result-card small { display:block; color:var(--text2); line-height:1.35; }
+.sol-client-result-card .match-score { color:var(--accent); font-size:10.8px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; margin-top:4px; }
+.sol-client-fields-grid { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:12px; }
+.sol-request-grid { display:grid; grid-template-columns: 1.4fr repeat(5, minmax(150px,1fr)); gap:12px; align-items:end; }
+.sol-produto-field { grid-column: span 1; }
+.sol-description-highlight { margin-top:14px; padding:14px; border:1px solid rgba(245,166,35,.28); background:var(--warning-bg); border-radius:12px; }
+.sol-description-highlight label { color:var(--text); }
+.sol-description-highlight textarea { min-height:170px; font-size:15px; line-height:1.55; background:rgba(0,0,0,0.16); }
+body.theme-light .sol-description-highlight textarea { background:rgba(255,255,255,0.58); }
+.sol-bottom-grid { display:grid; grid-template-columns: minmax(0,1.15fr) minmax(280px,.85fr); gap:14px; margin-top:14px; }
+.sol-obs-box textarea { min-height:138px; }
+.sol-attachment-list { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:8px; margin-top:10px; }
+.sol-attachment-card { border:1px solid var(--border); border-radius:10px; background:var(--surface2); overflow:hidden; display:flex; align-items:center; gap:10px; padding:9px; }
+body.theme-light .sol-attachment-card { background:rgba(255,255,255,0.52); }
+.sol-attachment-thumb { width:46px; height:46px; border-radius:8px; background:var(--surface3); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; flex-shrink:0; overflow:hidden; color:var(--accent); }
+.sol-attachment-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+.sol-attachment-info { min-width:0; flex:1; }
+.sol-attachment-info strong { display:block; font-size:12.5px; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.sol-attachment-info small { display:block; color:var(--text3); font-size:11px; margin-top:2px; }
+.sol-attachment-actions { display:flex; gap:5px; flex-shrink:0; }
+.modal-anexo-preview { width:min(980px,94vw) !important; max-height:92vh; }
+.anexo-preview-content { min-height:520px; display:flex; align-items:center; justify-content:center; background:var(--surface2); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+.anexo-preview-content img { max-width:100%; max-height:72vh; display:block; }
+.anexo-preview-content iframe { width:100%; height:72vh; border:0; background:#fff; }
+.anexo-preview-empty { padding:30px; text-align:center; color:var(--text2); }
+@media (max-width: 1180px) {
+  .sol-request-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+  .sol-produto-field { grid-column: 1 / -1; }
+}
+@media (max-width: 820px) {
+  .modal-solicitacao-landscape { width:96vw !important; max-height:94vh; }
+  .sol-client-search-row, .sol-client-fields-grid, .sol-request-grid, .sol-bottom-grid { grid-template-columns: 1fr; }
+  .sol-description-highlight textarea { min-height:150px; }
+}
+
 </style>
 </head>
 <body class="auth-locked">
@@ -3912,75 +3976,141 @@ body.theme-light .orcamento-kanban-col:nth-child(5) { background: linear-gradien
 
 <!-- MODAL SOLICITAÇÃO DE ORÇAMENTO -->
 <div class="modal-overlay" id="modalSolicitacao">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title" id="modal-solicitacao-title"><i class="fa-solid fa-clipboard-list" style="color:var(--warning);margin-right:8px"></i>Novo Orçamento</div>
+  <div class="modal modal-solicitacao-landscape">
+    <div class="modal-header sol-modal-header">
+      <div>
+        <div class="modal-title" id="modal-solicitacao-title"><i class="fa-solid fa-clipboard-list" style="color:var(--warning);margin-right:8px"></i>Nova Solicitação</div>
+        <div class="sol-modal-subtitle">Registre primeiro os dados do cliente/contato e depois detalhe exatamente o que foi solicitado.</div>
+      </div>
       <button class="modal-close" onclick="closeModal('modalSolicitacao')"><i class="fa-solid fa-xmark"></i></button>
     </div>
-    <div class="modal-body">
+    <div class="modal-body sol-modal-body">
       <div id="sol-edit-top-actions" class="modal-top-action-bar" style="display:none">
         <div class="modal-top-action-copy">
-          <strong>Orçamento sem cliente cadastrado</strong>
+          <strong>Solicitação sem cliente cadastrado</strong>
           <span>Cadastre o cliente a partir dos dados desta solicitação para continuar o fluxo.</span>
         </div>
         <button class="btn btn-success btn-sm" id="btn-criar-cliente-edicao-sol" onclick="criarClienteFromSolicitacaoAtualEdicao()"><i class="fa-solid fa-user-plus"></i> Cadastrar cliente</button>
       </div>
-      <div class="form-grid">
-        <div class="form-group full"><label>Cliente cadastrado (opcional)</label>
-          <select id="sol-cliente" onchange="preencherDadosSolicitacaoCliente(); renderDuplicidadeSolicitacao(); atualizarBotaoClienteEdicaoSolicitacao()"><option value="">Não vincular a cliente cadastrado</option></select>
-          <div id="sol-duplicidade-alerta" class="duplicate-alert"></div>
-        </div>
-        <div class="form-group"><label>Cliente / Apelido *</label><input type="text" id="sol-nome" oninput="renderDuplicidadeSolicitacao()" placeholder="Ex: HOSPITAL SÃO LUCAS / CLÍNICA ALFA"></div>
-        <div class="form-group"><label>Solicitante</label><input type="text" id="sol-solicitante" oninput="renderDuplicidadeSolicitacao()" placeholder="Ex: JOÃO DO FINANCEIRO"></div>
-        <div class="form-group"><label>Empresa / Razão Social</label><input type="text" id="sol-empresa" oninput="renderDuplicidadeSolicitacao()" placeholder="Ex: RAZÃO SOCIAL DA EMPRESA"></div>
-        <div class="form-group"><label>CNPJ</label><input type="text" id="sol-cnpj" placeholder="00.000.000/0001-00" maxlength="18" oninput="maskCNPJ(this); renderDuplicidadeSolicitacao()"></div>
-        <div class="form-group"><label>Telefone</label><input type="text" id="sol-telefone" placeholder="99-99999-9999" maxlength="13" oninput="maskTelefone(this); renderDuplicidadeSolicitacao()"></div>
-        <div class="form-group"><label>E-mail</label><input type="email" id="sol-email" oninput="renderDuplicidadeSolicitacao()" placeholder="email@empresa.com"></div>
-        <div class="form-group"><label>Produto/Serviço Solicitado</label><input type="text" id="sol-produto" placeholder="Ex: CALIBRAÇÃO, MANUTENÇÃO, PEÇA X..."></div>
-        <div class="form-group"><label>Data da solicitação *</label><input type="date" id="sol-data"></div>
-        <div class="form-group"><label>Prazo para preparar *</label><input type="date" id="sol-prazo"></div>
-        <div class="form-group"><label>Canal da solicitação</label>
-          <select id="sol-canal">
-            <option value="whatsapp">WhatsApp</option>
-            <option value="telefone">Telefone</option>
-            <option value="email">E-mail</option>
-            <option value="presencial">Presencial</option>
-            <option value="videochamada">Videochamada</option>
-            <option value="outro">Outro</option>
-          </select>
-        </div>
-        <div class="form-group"><label>Prioridade</label>
-          <select id="sol-prioridade">
-            <option value="normal">Normal</option>
-            <option value="alta">Alta</option>
-            <option value="urgente">Urgente</option>
-          </select>
-        </div>
-        <div class="form-group"><label>Etapa da fila</label>
-          <select id="sol-etapa">
-            <option value="nova">Nova solicitação</option>
-            <option value="aguardando_info">Aguardando informações</option>
-            <option value="aguardando_cotacao">Aguardando cotação de peças</option>
-            <option value="em_elaboracao">Orçamento em elaboração</option>
-          </select>
-        </div>
-        <div class="form-group full"><label>Descrição do que foi solicitado *</label><textarea id="sol-descricao" placeholder="Ex: Cliente pediu orçamento de calibração/manutenção do equipamento X..."></textarea></div>
-        <div class="form-group full">
-          <label>Anexar Arquivos</label>
-          <div class="attach-drop" onclick="document.getElementById('sol-arquivos-input').click()">
-            <i class="fa-solid fa-file-arrow-up" style="font-size:18px;margin-bottom:6px;display:block"></i>
-            Clique para anexar fotos ou PDF da solicitação
+
+      <div class="sol-landscape-form">
+        <section class="sol-form-section sol-client-section">
+          <div class="sol-section-head">
+            <div>
+              <strong><i class="fa-solid fa-user-tie"></i> Dados do cliente/contato</strong>
+              <span>Essas informações identificam quem solicitou e ajudam a vincular com a base existente.</span>
+            </div>
           </div>
-          <input type="file" id="sol-arquivos-input" accept="image/*,application/pdf" multiple style="display:none" onchange="handleSolicitacaoArquivoUpload(event)">
-          <div id="sol-arquivos-list" style="margin-top:8px"></div>
-        </div>
-        <div class="form-group full"><label>Observações</label><textarea id="sol-obs" placeholder="Ex: pediu retorno ainda hoje, precisa de condição especial, enviar por e-mail..."></textarea></div>
+
+          <div class="sol-client-link-panel">
+            <div class="form-group full">
+              <label>Vincular a cliente cadastrado</label>
+              <div class="sol-client-search-row">
+                <div class="sol-client-search-input">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                  <input type="text" id="sol-cliente-busca" placeholder="Buscar por nome fantasia, razão social, CNPJ, telefone, e-mail ou cidade..." oninput="filtrarClientesSolicitacao()">
+                </div>
+                <select id="sol-cliente" onchange="preencherDadosSolicitacaoCliente(); renderDuplicidadeSolicitacao(); atualizarBotaoClienteEdicaoSolicitacao(); atualizarBuscaClienteSolicitacaoSelecionado()"><option value="">Não vincular a cliente cadastrado</option></select>
+              </div>
+              <div id="sol-cliente-resultados" class="sol-client-results"></div>
+              <div id="sol-duplicidade-alerta" class="duplicate-alert"></div>
+            </div>
+          </div>
+
+          <div class="sol-client-fields-grid">
+            <div class="form-group"><label>Cliente / Apelido *</label><input type="text" id="sol-nome" oninput="renderDuplicidadeSolicitacao(); filtrarClientesSolicitacao(true)" placeholder="Ex: HOSPITAL SÃO LUCAS / CLÍNICA ALFA"></div>
+            <div class="form-group"><label>Solicitante</label><input type="text" id="sol-solicitante" oninput="renderDuplicidadeSolicitacao(); filtrarClientesSolicitacao(true)" placeholder="Ex: JOÃO DO FINANCEIRO"></div>
+            <div class="form-group"><label>Empresa / Razão Social</label><input type="text" id="sol-empresa" oninput="renderDuplicidadeSolicitacao(); filtrarClientesSolicitacao(true)" placeholder="Ex: RAZÃO SOCIAL DA EMPRESA"></div>
+            <div class="form-group"><label>CNPJ</label><input type="text" id="sol-cnpj" placeholder="00.000.000/0001-00" maxlength="18" oninput="maskCNPJ(this); renderDuplicidadeSolicitacao(); filtrarClientesSolicitacao(true)"></div>
+            <div class="form-group"><label>Telefone</label><input type="text" id="sol-telefone" placeholder="99-99999-9999" maxlength="13" oninput="maskTelefone(this); renderDuplicidadeSolicitacao(); filtrarClientesSolicitacao(true)"></div>
+            <div class="form-group"><label>E-mail</label><input type="email" id="sol-email" oninput="renderDuplicidadeSolicitacao(); filtrarClientesSolicitacao(true)" placeholder="email@empresa.com"></div>
+          </div>
+        </section>
+
+        <section class="sol-form-section sol-request-section">
+          <div class="sol-section-head">
+            <div>
+              <strong><i class="fa-solid fa-file-invoice-dollar"></i> Dados da solicitação</strong>
+              <span>Descreva o pedido com detalhes para preparar o orçamento sem perder contexto.</span>
+            </div>
+          </div>
+
+          <div class="sol-request-grid">
+            <div class="form-group sol-produto-field"><label>Produto/Serviço solicitado</label><input type="text" id="sol-produto" placeholder="Ex: CALIBRAÇÃO, MANUTENÇÃO, PEÇA X..."></div>
+            <div class="form-group"><label>Data da solicitação *</label><input type="date" id="sol-data"></div>
+            <div class="form-group"><label>Prazo para preparar *</label><input type="date" id="sol-prazo"></div>
+            <div class="form-group"><label>Canal da solicitação</label>
+              <select id="sol-canal">
+                <option value="whatsapp">WhatsApp</option>
+                <option value="telefone">Telefone</option>
+                <option value="email">E-mail</option>
+                <option value="presencial">Presencial</option>
+                <option value="videochamada">Videochamada</option>
+                <option value="outro">Outro</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Prioridade</label>
+              <select id="sol-prioridade">
+                <option value="normal">Normal</option>
+                <option value="alta">Alta</option>
+                <option value="urgente">Urgente</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Etapa da fila</label>
+              <select id="sol-etapa">
+                <option value="nova">Nova solicitação</option>
+                <option value="aguardando_info">Aguardando informações</option>
+                <option value="aguardando_cotacao">Aguardando cotação de peças</option>
+                <option value="em_elaboracao">Orçamento em elaboração</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group sol-description-highlight">
+            <label>Descrição do que foi solicitado *</label>
+            <textarea id="sol-descricao" placeholder="Descreva com detalhes o que o cliente pediu, equipamentos envolvidos, quantidades, modelos, condições, links enviados e qualquer ponto necessário para preparar o orçamento."></textarea>
+          </div>
+
+          <div class="sol-bottom-grid">
+            <div class="form-group sol-attachments-box">
+              <label>Anexar arquivos</label>
+              <div class="attach-drop" onclick="document.getElementById('sol-arquivos-input').click()">
+                <i class="fa-solid fa-file-arrow-up" style="font-size:18px;margin-bottom:6px;display:block"></i>
+                Clique para anexar fotos ou PDF da solicitação
+                <small>Os anexos ficam salvos na solicitação e podem ser visualizados ao reabrir o registro.</small>
+              </div>
+              <input type="file" id="sol-arquivos-input" accept="image/*,application/pdf" multiple style="display:none" onchange="handleSolicitacaoArquivoUpload(event)">
+              <div id="sol-arquivos-list" class="sol-attachment-list"></div>
+            </div>
+            <div class="form-group sol-obs-box">
+              <label>Observações internas</label>
+              <textarea id="sol-obs" placeholder="Ex: pediu retorno ainda hoje, precisa de condição especial, enviar por e-mail..."></textarea>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
-    <div class="modal-footer">
+    <div class="modal-footer sol-modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('modalSolicitacao')">Cancelar</button>
       <button class="btn btn-danger" id="btn-excluir-solicitacao-edicao" onclick="excluirSolicitacaoEditandoAtual()" style="display:none"><i class="fa-solid fa-trash"></i> Excluir solicitação</button>
-      <button class="btn btn-primary" onclick="salvarSolicitacaoOrcamento()" style="background:var(--warning)"><i class="fa-solid fa-floppy-disk"></i> Salvar Orçamento</button>
+      <button class="btn btn-primary" onclick="salvarSolicitacaoOrcamento()" style="background:var(--warning)"><i class="fa-solid fa-floppy-disk"></i> Salvar solicitação</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PREVIEW ANEXO SOLICITAÇÃO -->
+<div class="modal-overlay" id="modalPreviewAnexoSolicitacao">
+  <div class="modal modal-anexo-preview">
+    <div class="modal-header">
+      <div class="modal-title" id="preview-anexo-title"><i class="fa-solid fa-paperclip" style="color:var(--accent);margin-right:8px"></i>Visualizar anexo</div>
+      <button class="modal-close" onclick="closeModal('modalPreviewAnexoSolicitacao')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div id="preview-anexo-content" class="anexo-preview-content"></div>
+    </div>
+    <div class="modal-footer">
+      <a id="preview-anexo-download" class="btn btn-primary" href="#" download><i class="fa-solid fa-download"></i> Baixar anexo</a>
+      <button class="btn btn-ghost" onclick="closeModal('modalPreviewAnexoSolicitacao')">Fechar</button>
     </div>
   </div>
 </div>
@@ -4624,7 +4754,7 @@ function openModal(id) {
     preencherHorarioAlarme('ag-horario-alarme', 'ag-data');
   }
   if (id==='modalSolicitacao' && !document.getElementById('modalSolicitacao').dataset.editId) {
-    document.getElementById('modal-solicitacao-title').textContent = 'Novo Orçamento';
+    document.getElementById('modal-solicitacao-title').textContent = 'Nova Solicitação';
     document.getElementById('sol-cliente').value = '';
     atualizarBotaoClienteEdicaoSolicitacao();
     document.getElementById('sol-nome').value = '';
@@ -4643,7 +4773,7 @@ function openModal(id) {
     document.getElementById('sol-obs').value = '';
     arquivosTempSolicitacao = [];
     renderSolicitacaoArquivoList();
-    setTimeout(renderDuplicidadeSolicitacao, 50);
+    setTimeout(()=>{ renderDuplicidadeSolicitacao(); filtrarClientesSolicitacao(false); }, 50);
   }
   if (id==='modalOrcamento' && !document.getElementById('modalOrcamento').dataset.editId) {
     document.getElementById('or-data').value = today();
@@ -4685,7 +4815,10 @@ function populateClienteSelects() {
     if (!sel) return;
     const prev = sel.value;
     sel.innerHTML = id==='sol-cliente' ? '<option value="">Não vincular a cliente cadastrado</option>' : '<option value="">Selecione o cliente...</option>';
-    clientes.forEach(c => sel.innerHTML += `<option value="${c.id}">${c.nome}${c.empresa?' — '+c.empresa:''}</option>`);
+    clientes.forEach(c => {
+      const extras = [c.empresa, c.cnpj, c.telefone, c.email, c.cidade].filter(Boolean).join(' • ');
+      sel.innerHTML += `<option value="${c.id}">${c.nome}${extras ? ' — '+extras : ''}</option>`;
+    });
     if (prev) sel.value = prev;
   });
 }
@@ -4880,16 +5013,50 @@ function handleSolicitacaoArquivoUpload(event) {
   event.target.value = '';
 }
 function removeSolicitacaoArquivo(i) { arquivosTempSolicitacao.splice(i,1); renderSolicitacaoArquivoList(); }
+function getSolicitacaoArquivoSrc(anexo) {
+  return anexo?.data || anexo?.url || anexo?.src || '';
+}
+function abrirPreviewSolicitacaoArquivo(i) {
+  const anexo = arquivosTempSolicitacao[i];
+  const src = getSolicitacaoArquivoSrc(anexo);
+  const content = document.getElementById('preview-anexo-content');
+  const title = document.getElementById('preview-anexo-title');
+  const download = document.getElementById('preview-anexo-download');
+  if (!content || !anexo) return;
+  const nome = anexo.name || 'Anexo';
+  if (title) title.innerHTML = `<i class="fa-solid ${arquivoIcone(anexo)}" style="color:var(--accent);margin-right:8px"></i>${nome}`;
+  if (download) { download.href = src || '#'; download.download = nome; download.style.display = src ? 'inline-flex' : 'none'; }
+  if (!src) {
+    content.innerHTML = `<div class="anexo-preview-empty"><i class="fa-solid fa-triangle-exclamation" style="font-size:28px;margin-bottom:10px;display:block"></i>Arquivo sem dados de visualização salvos. Reanexe o arquivo para visualizar.</div>`;
+  } else if ((anexo.type || '').startsWith('image/')) {
+    content.innerHTML = `<img src="${src}" alt="${nome}">`;
+  } else if ((anexo.type || '').includes('pdf') || nome.toLowerCase().endsWith('.pdf')) {
+    content.innerHTML = `<iframe src="${src}" title="${nome}"></iframe>`;
+  } else {
+    content.innerHTML = `<div class="anexo-preview-empty"><i class="fa-solid ${arquivoIcone(anexo)}" style="font-size:28px;margin-bottom:10px;display:block"></i>Pré-visualização indisponível para este tipo de arquivo.<br>Use o botão de baixar para abrir no computador.</div>`;
+  }
+  openModal('modalPreviewAnexoSolicitacao');
+}
 function renderSolicitacaoArquivoList() {
   const el = document.getElementById('sol-arquivos-list');
   if (!el) return;
-  el.innerHTML = arquivosTempSolicitacao.map((p,i)=>`<div class="attach-item">
-    <i class="fa-solid ${arquivoIcone(p)}"></i>
-    <span class="attach-name">${p.name}</span>
-    <span class="attach-size">${formatBytes(p.size || 0)}</span>
-    <button class="btn btn-ghost btn-sm" onclick="window.open('${p.data}','_blank')" title="Abrir"><i class="fa-solid fa-eye"></i></button>
-    <button class="btn btn-danger btn-sm" onclick="removeSolicitacaoArquivo(${i})" title="Remover"><i class="fa-solid fa-trash"></i></button>
-  </div>`).join('');
+  if (!arquivosTempSolicitacao.length) {
+    el.innerHTML = '<div class="field-note">Nenhum arquivo anexado.</div>';
+    return;
+  }
+  el.innerHTML = arquivosTempSolicitacao.map((p,i)=>{
+    const src = getSolicitacaoArquivoSrc(p);
+    const isImg = (p.type || '').startsWith('image/') && src;
+    return `<div class="sol-attachment-card">
+      <div class="sol-attachment-thumb">${isImg ? `<img src="${src}" alt="${p.name}">` : `<i class="fa-solid ${arquivoIcone(p)}"></i>`}</div>
+      <div class="sol-attachment-info"><strong title="${p.name}">${p.name}</strong><small>${formatBytes(p.size || 0)}${src ? ' • disponível para visualização' : ' • sem prévia salva'}</small></div>
+      <div class="sol-attachment-actions">
+        <button class="btn btn-ghost btn-sm" onclick="abrirPreviewSolicitacaoArquivo(${i})" title="Visualizar"><i class="fa-solid fa-eye"></i></button>
+        ${src ? `<a class="btn btn-ghost btn-sm" href="${src}" download="${p.name}" title="Baixar"><i class="fa-solid fa-download"></i></a>` : ''}
+        <button class="btn btn-danger btn-sm" onclick="removeSolicitacaoArquivo(${i})" title="Remover"><i class="fa-solid fa-trash"></i></button>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function popularFiltrosClientes() {
@@ -5023,7 +5190,7 @@ function excluirCliente(id) {
 function openContatoFor(id) { openModal('modalContato'); setTimeout(()=>{ document.getElementById('ct-cliente').value=id; },10); }
 function openAgendamentoFor(id) { openModal('modalAgendamento'); setTimeout(()=>{ document.getElementById('ag-cliente').value=id; },10); }
 function openOrcamentoFor(id) { openModal('modalOrcamento'); setTimeout(()=>{ document.getElementById('or-cliente').value=id; },10); }
-function openSolicitacaoFor(id) { openModal('modalSolicitacao'); setTimeout(()=>{ document.getElementById('sol-cliente').value=id; preencherDadosSolicitacaoCliente(); },10); }
+function openSolicitacaoFor(id) { openModal('modalSolicitacao'); setTimeout(()=>{ document.getElementById('sol-cliente').value=id; preencherDadosSolicitacaoCliente(); atualizarBuscaClienteSolicitacaoSelecionado(); },10); }
 
 // ===== DETALHE CLIENTE =====
 function abrirDetalhe(id) {
@@ -5267,8 +5434,76 @@ function usarClienteExistenteSolicitacao(id) {
   const sel = document.getElementById('sol-cliente');
   if (sel) sel.value = String(id);
   preencherDadosSolicitacaoCliente();
+  atualizarBuscaClienteSolicitacaoSelecionado();
   renderDuplicidadeSolicitacao();
   notify('Cliente existente vinculado à solicitação.', '#0d3d2a');
+}
+
+function clienteTextoBuscaSolicitacao(c) {
+  return [c.nome, c.empresa, c.cnpj, c.telefone, c.email, c.cidade, c.estado, c.segmento, c.setor, c.funcao, c.obsImportante, c.obs, c.equipamentos]
+    .filter(Boolean).join(' ');
+}
+function scoreClienteBuscaSolicitacao(c, termoRaw) {
+  const termo = normalizarBuscaBR(termoRaw);
+  const termoDigits = onlyDigits(termoRaw);
+  if (!termo && !termoDigits) return 0;
+  const texto = normalizarBuscaBR(clienteTextoBuscaSolicitacao(c));
+  const nome = normalizarBuscaBR(c.nome);
+  const empresa = normalizarBuscaBR(c.empresa);
+  const cnpj = onlyDigits(c.cnpj);
+  const tel = onlyDigits(c.telefone);
+  const email = String(c.email || '').toLowerCase();
+  let score = 0;
+  if (termoDigits && cnpj && cnpj.includes(termoDigits)) score += 9;
+  if (termoDigits && tel && tel.includes(termoDigits)) score += 7;
+  if (termo && email && email.includes(String(termoRaw||'').toLowerCase().trim())) score += 6;
+  if (termo && nome === termo) score += 8;
+  if (termo && empresa === termo) score += 8;
+  if (termo && nome.includes(termo)) score += 5;
+  if (termo && empresa.includes(termo)) score += 5;
+  if (termo && texto.includes(termo)) score += 2;
+  return score;
+}
+function filtrarClientesSolicitacao(usarCamposComoBusca=false) {
+  const input = document.getElementById('sol-cliente-busca');
+  const sel = document.getElementById('sol-cliente');
+  const box = document.getElementById('sol-cliente-resultados');
+  if (!sel || !box) return;
+  const campos = camposSolicitacaoAtual();
+  const buscaCampos = [campos.nome, campos.empresa, campos.cnpj, campos.telefone, campos.email].filter(Boolean).join(' ');
+  const termo = (input?.value || '').trim() || (usarCamposComoBusca ? buscaCampos : '');
+  const selecionado = sel.value;
+  const ranking = clientes.map(c => ({ c, score: scoreClienteBuscaSolicitacao(c, termo) }))
+    .filter(x => termo ? x.score > 0 : false)
+    .sort((a,b)=> b.score - a.score || String(a.c.nome||'').localeCompare(String(b.c.nome||'')))
+    .slice(0, 6);
+  Array.from(sel.options).forEach((opt, idx) => {
+    if (idx === 0) return;
+    const c = clientes.find(x => String(x.id) === opt.value);
+    const visible = !termo || (c && scoreClienteBuscaSolicitacao(c, termo) > 0);
+    opt.hidden = !visible;
+  });
+  if (selecionado) sel.value = selecionado;
+  if (!termo) {
+    box.innerHTML = '<div class="field-note">Digite para buscar clientes cadastrados ou preencha os dados acima para receber sugestões automáticas.</div>';
+    return;
+  }
+  if (!ranking.length) {
+    box.innerHTML = '<div class="field-note">Nenhum cliente cadastrado encontrado com esses dados.</div>';
+    return;
+  }
+  box.innerHTML = ranking.map(({c, score}) => `<div class="sol-client-result-card">
+    <div><strong>${c.nome || 'Cliente'}</strong><small>${[c.empresa, c.cnpj, c.telefone, c.email, c.cidade].filter(Boolean).join(' • ') || 'Sem dados complementares'}</small><div class="match-score">Compatibilidade ${score}</div></div>
+    <button type="button" class="btn btn-primary btn-sm" onclick="usarClienteExistenteSolicitacao(${c.id}); atualizarBuscaClienteSolicitacaoSelecionado();"><i class="fa-solid fa-link"></i> Vincular</button>
+  </div>`).join('');
+}
+function atualizarBuscaClienteSolicitacaoSelecionado() {
+  const input = document.getElementById('sol-cliente-busca');
+  const sel = document.getElementById('sol-cliente');
+  if (!input || !sel) return;
+  const c = clientes.find(x => String(x.id) === String(sel.value || ''));
+  input.value = c ? [c.nome, c.empresa].filter(Boolean).join(' — ') : '';
+  filtrarClientesSolicitacao(false);
 }
 function renderDuplicidadeSolicitacao() {
   const box = document.getElementById('sol-duplicidade-alerta');
@@ -5297,6 +5532,8 @@ function preencherDadosSolicitacaoCliente() {
 
 function limparModalSolicitacao() {
   document.getElementById('sol-cliente').value = '';
+  if (document.getElementById('sol-cliente-busca')) document.getElementById('sol-cliente-busca').value = '';
+  if (document.getElementById('sol-cliente-resultados')) document.getElementById('sol-cliente-resultados').innerHTML = '<div class="field-note">Digite para buscar clientes cadastrados ou preencha os dados acima para receber sugestões automáticas.</div>';
   document.getElementById('sol-nome').value = '';
   document.getElementById('sol-solicitante').value = '';
   document.getElementById('sol-empresa').value = '';
@@ -5314,7 +5551,7 @@ function limparModalSolicitacao() {
   arquivosTempSolicitacao = [];
   renderSolicitacaoArquivoList();
   delete document.getElementById('modalSolicitacao').dataset.editId; atualizarBotaoClienteEdicaoSolicitacao();
-  document.getElementById('modal-solicitacao-title').innerHTML = '<i class="fa-solid fa-clipboard-list" style="color:var(--warning);margin-right:8px"></i>Novo Orçamento';
+  document.getElementById('modal-solicitacao-title').innerHTML = '<i class="fa-solid fa-clipboard-list" style="color:var(--warning);margin-right:8px"></i>Nova Solicitação';
 }
 
 
@@ -5460,7 +5697,7 @@ function editarSolicitacaoOrcamento(id) {
   populateClienteSelects();
   document.getElementById('modalSolicitacao').classList.add('open');
   document.getElementById('modalSolicitacao').dataset.editId = id;
-  document.getElementById('modal-solicitacao-title').innerHTML = '<i class="fa-solid fa-pen" style="color:var(--warning);margin-right:8px"></i>Editar Orçamento Solicitado';
+  document.getElementById('modal-solicitacao-title').innerHTML = '<i class="fa-solid fa-pen" style="color:var(--warning);margin-right:8px"></i>Editar solicitação';
   document.getElementById('sol-cliente').value = sol.clienteId || '';
   atualizarBotaoClienteEdicaoSolicitacao();
   document.getElementById('sol-nome').value = sol.nome || '';
@@ -5476,7 +5713,7 @@ function editarSolicitacaoOrcamento(id) {
   document.getElementById('sol-prioridade').value = sol.prioridade || 'normal';
   if (document.getElementById('sol-etapa')) document.getElementById('sol-etapa').value = sol.etapa || 'nova';
   document.getElementById('sol-descricao').value = sol.descricao || '';
-  setTimeout(renderDuplicidadeSolicitacao, 80);
+  setTimeout(()=>{ atualizarBuscaClienteSolicitacaoSelecionado(); renderDuplicidadeSolicitacao(); filtrarClientesSolicitacao(true); }, 80);
   document.getElementById('sol-obs').value = sol.obs || '';
   arquivosTempSolicitacao = [...(sol.anexos || [])];
   renderSolicitacaoArquivoList();
