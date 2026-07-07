@@ -6,7 +6,263 @@
 <title>Agenda Dinâmica</title>
 <link rel="icon" type="image/png" href="data:image/png;base64,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">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
+// ===== MELHORIA: REGISTRAR PROPOSTA ENVIADA E ACOMPANHAR RETORNO =====
+function statusPropostaLabel(status) {
+  return {
+    aguardando_retorno: 'Aguardando retorno',
+    cliente_pediu_ajuste: 'Cliente pediu ajuste',
+    aprovada: 'Aprovada',
+    recusada: 'Recusada',
+    sem_resposta: 'Sem resposta',
+    nao_acompanhar: 'Sem acompanhamento'
+  }[status || 'aguardando_retorno'] || 'Aguardando retorno';
+}
+function statusPropostaBadge(status) {
+  return {
+    aguardando_retorno: 'badge-info',
+    cliente_pediu_ajuste: 'badge-warning',
+    aprovada: 'badge-success',
+    recusada: 'badge-danger',
+    sem_resposta: 'badge-gray',
+    nao_acompanhar: 'badge-gray'
+  }[status || 'aguardando_retorno'] || 'badge-info';
+}
+function toggleStatusProposta() {
+  const status = document.getElementById('concluir-status-proposta')?.value || 'aguardando_retorno';
+  const checkbox = document.getElementById('concluir-agendar-novo');
+  const fields = document.getElementById('concluir-novo-retorno-fields');
+  if (status === 'nao_acompanhar') {
+    if (checkbox) checkbox.checked = false;
+    if (fields) fields.style.display = 'none';
+  }
+}
+function toggleNovoRetorno() {
+  const checked = document.getElementById('concluir-agendar-novo')?.checked || false;
+  const status = document.getElementById('concluir-status-proposta')?.value || '';
+  if (status === 'nao_acompanhar') {
+    const cb = document.getElementById('concluir-agendar-novo');
+    if (cb) cb.checked = false;
+    document.getElementById('concluir-novo-retorno-fields').style.display = 'none';
+    return;
+  }
+  document.getElementById('concluir-novo-retorno-fields').style.display = checked ? 'block' : 'none';
+}
+function configurarModalConclusao(tipo, item) {
+  const title = document.getElementById('modal-concluir-title');
+  const resumo = document.getElementById('concluir-resumo');
+  const label = document.getElementById('concluir-obs-label');
+  const obs = document.getElementById('concluir-obs');
+  const canalWrap = document.getElementById('concluir-canal-wrap');
+  const canal = document.getElementById('concluir-canal');
+  const help = document.getElementById('concluir-help');
+  const budgetWrap = document.getElementById('concluir-orcamento-numeros');
+  const statusWrap = document.getElementById('concluir-status-wrap');
+  const status = document.getElementById('concluir-status-proposta');
+  const numPecas = document.getElementById('concluir-numero-pecas');
+  const numServico = document.getElementById('concluir-numero-servico');
+  const btn = document.getElementById('concluir-confirm-btn');
+  const retornoLabel = document.getElementById('concluir-retorno-label');
+  const cliente = item?.clienteId ? clientes.find(c=>c.id===item.clienteId) : null;
+  const nomeCliente = cliente ? cliente.nome : (item?.nome || item?.nomeAvulso || 'Cliente não vinculado');
+  const isOrcamento = tipo === 'orcamento' || tipo === 'solicitacao_orcamento';
+  const icon = isOrcamento ? 'fa-file-invoice-dollar' : 'fa-circle-check';
+
+  if (tipo === 'solicitacao_orcamento') {
+    title.innerHTML = '<i class="fa-solid fa-file-signature" style="color:var(--success);margin-right:8px"></i>Registrar proposta enviada';
+    label.textContent = 'Observação sobre a proposta enviada (opcional)';
+    obs.placeholder = 'Ex: proposta enviada conforme solicitado, cliente pediu retorno amanhã, faltou algum item, aguardando aprovação...';
+    canalWrap.style.display = 'none';
+    canal.value = item?.canal || 'whatsapp';
+    if (budgetWrap) budgetWrap.style.display = 'block';
+    if (statusWrap) statusWrap.style.display = 'block';
+    if (status) status.value = item?.statusProposta || 'aguardando_retorno';
+    if (numPecas) numPecas.value = item?.numeroOrcamentoPecas || '';
+    if (numServico) numServico.value = item?.numeroOrcamentoServico || '';
+    if (retornoLabel) retornoLabel.textContent = 'Agendar retorno para acompanhar esta proposta';
+    if (btn) btn.innerHTML = '<i class="fa-solid fa-check"></i> Salvar proposta enviada';
+    help.style.display = 'block';
+    help.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:6px"></i>Ao salvar, esta solicitação será movida para Concluídos, ficará como proposta enviada em acompanhamento e será registrado automaticamente um contato no histórico do cliente, se houver cliente vinculado.';
+    resumo.style.display = 'flex';
+    resumo.innerHTML = `<div class="concluir-summary-icon"><i class="fa-solid ${icon}"></i></div><div><div class="concluir-summary-title">${nomeCliente}</div><div class="concluir-summary-text">Produto/serviço: ${item?.produto || 'Não informado'}<br>Prazo original: ${fmtDate(item?.prazo)}</div></div>`;
+  } else if (tipo === 'orcamento') {
+    title.innerHTML = '<i class="fa-solid fa-repeat" style="color:var(--purple);margin-right:8px"></i>Registrar proposta recorrente enviada';
+    label.textContent = 'Observação sobre a proposta recorrente enviada (opcional)';
+    obs.placeholder = 'Ex: orçamento recorrente enviado, combinar novo retorno, cliente pediu ajuste...';
+    canalWrap.style.display = 'none';
+    canal.value = 'whatsapp';
+    if (budgetWrap) budgetWrap.style.display = 'block';
+    if (statusWrap) statusWrap.style.display = 'block';
+    if (status) status.value = item?.statusProposta || 'aguardando_retorno';
+    if (numPecas) numPecas.value = item?.numeroOrcamentoPecas || '';
+    if (numServico) numServico.value = item?.numeroOrcamentoServico || '';
+    if (retornoLabel) retornoLabel.textContent = 'Agendar retorno para acompanhar esta proposta';
+    if (btn) btn.innerHTML = '<i class="fa-solid fa-check"></i> Salvar proposta enviada';
+    help.style.display = 'block';
+    help.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:6px"></i>Ao salvar, o sistema registrará um contato no histórico do cliente. Se este orçamento for recorrente, o próximo acompanhamento será criado automaticamente para daqui 30 dias.';
+    resumo.style.display = 'flex';
+    resumo.innerHTML = `<div class="concluir-summary-icon"><i class="fa-solid ${icon}"></i></div><div><div class="concluir-summary-title">${nomeCliente}</div><div class="concluir-summary-text">Data do orçamento recorrente: ${fmtDate(item?.data)}<br>Observação: ${item?.obs || '—'}</div></div>`;
+  } else {
+    title.innerHTML = '<i class="fa-solid fa-circle-check" style="color:var(--success);margin-right:8px"></i>Concluir retorno';
+    label.textContent = 'Como foi o retorno?';
+    obs.placeholder = 'Descreva o resultado, o que foi acordado, próximos passos...';
+    canalWrap.style.display = 'none';
+    if (budgetWrap) budgetWrap.style.display = 'none';
+    if (statusWrap) statusWrap.style.display = 'none';
+    if (numPecas) numPecas.value = '';
+    if (numServico) numServico.value = '';
+    if (retornoLabel) retornoLabel.textContent = 'Agendar retorno para acompanhar esta proposta';
+    if (btn) btn.innerHTML = '<i class="fa-solid fa-check"></i> Salvar proposta enviada';
+    help.style.display = 'none';
+    resumo.style.display = 'none';
+    resumo.innerHTML = '';
+  }
+}
+function abrirConcluir(id, tipo) {
+  let item = null;
+  if (tipo === 'orcamento') item = orcamentos.find(o=>o.id===id);
+  else if (tipo === 'solicitacao_orcamento') item = solicitacoesOrcamento.find(s=>s.id===id);
+  else item = agendamentos.find(a=>a.id===id);
+  if (!item) return;
+  document.getElementById('concluir-id').value = id;
+  document.getElementById('concluir-tipo').value = tipo;
+  document.getElementById('concluir-obs').value = '';
+  document.getElementById('concluir-numero-pecas').value = '';
+  document.getElementById('concluir-numero-servico').value = '';
+  const isProposta = tipo === 'orcamento' || tipo === 'solicitacao_orcamento';
+  const cb = document.getElementById('concluir-agendar-novo');
+  if (cb) cb.checked = isProposta;
+  document.getElementById('concluir-novo-retorno-fields').style.display = isProposta ? 'block' : 'none';
+  document.getElementById('concluir-novo-data').value = isProposta ? addDays(today(), 3) : '';
+  document.getElementById('concluir-novo-horario').value = '09:00';
+  document.getElementById('concluir-novo-motivo').value = isProposta ? 'Acompanhar proposta enviada' : '';
+  const st = document.getElementById('concluir-status-proposta');
+  if (st) st.value = 'aguardando_retorno';
+  configurarModalConclusao(tipo, item);
+  openModal('modalConcluir');
+}
+function registrarContatoOrcamentoEnviado(clienteId, origem, texto, canal='whatsapp', extra={}) {
+  if (!clienteId) return false;
+  contatos.push({
+    id: Date.now() + Math.floor(Math.random()*1000),
+    clienteId,
+    data: today(),
+    canal,
+    descricao: texto,
+    semResposta: false,
+    editado: false,
+    edicoes: [],
+    origemOrcamento: origem,
+    propostaEnviada: true,
+    numeroOrcamentoPecas: extra.numeroOrcamentoPecas || '',
+    numeroOrcamentoServico: extra.numeroOrcamentoServico || '',
+    observacaoProposta: extra.observacaoProposta || '',
+    statusProposta: extra.statusProposta || 'aguardando_retorno'
+  });
+  return true;
+}
+function agendarProximoRetornoConclusao(clienteId, produto='') {
+  const check = document.getElementById('concluir-agendar-novo')?.checked || false;
+  const status = document.getElementById('concluir-status-proposta')?.value || '';
+  if (!check || status === 'nao_acompanhar') return false;
+  if (!clienteId) return false;
+  const data = document.getElementById('concluir-novo-data')?.value || '';
+  if (!data) {
+    notify('Proposta salva, mas o próximo retorno não foi agendado porque a data ficou vazia.', '#854f0b');
+    return false;
+  }
+  agendamentos.push({
+    id: Date.now() + 2,
+    clienteId,
+    data,
+    horario: document.getElementById('concluir-novo-horario')?.value || '09:00',
+    motivo: document.getElementById('concluir-novo-motivo')?.value.trim() || (produto ? `Acompanhar proposta enviada: ${produto}` : 'Acompanhar proposta enviada'),
+    prioridade: 'normal',
+    criadoEm: today()
+  });
+  return true;
+}
+function marcarSolicitacaoFeita(id, obsFinal='', canalContato='whatsapp', numerosOrcamento={}, opcoes={}) {
+  const sol = solicitacoesOrcamento.find(x => x.id === id);
+  if (!sol) return;
+  const dados = dadosSolicitacaoCliente(sol);
+  const statusProposta = opcoes.statusProposta || 'aguardando_retorno';
+  concluidos.push({
+    id: Date.now(), tipo: 'solicitacao_orcamento', clienteId: sol.clienteId || null,
+    nomeAvulso: dados.nome, empresaAvulsa: dados.empresa, cnpjAvulso: sol.cnpj || '', solicitanteAvulso: sol.solicitante || '',
+    produto: sol.produto || '', telefoneAvulso: sol.telefone || '', emailAvulso: sol.email || '', anexos: [...(sol.anexos || [])],
+    numeroOrcamentoPecas: numerosOrcamento.pecas || '', numeroOrcamentoServico: numerosOrcamento.servico || '',
+    dataOriginal: sol.prazo, dataSolicitacao: sol.dataSolicitacao, prioridade: sol.prioridade || 'normal', canal: sol.canal || '',
+    motivo: sol.descricao, obsConclusao: (obsFinal || '').trim() || sol.obs || '', concluidoEm: today(), statusProposta
+  });
+  const contatoRegistrado = registrarContatoOrcamentoEnviado(
+    sol.clienteId,
+    'solicitacao_orcamento',
+    `Proposta enviada a partir de uma solicitação registrada.\nProduto/serviço: ${sol.produto || 'Não informado'}\nStatus inicial: ${statusPropostaLabel(statusProposta)}\nSolicitação original: ${sol.descricao || '—'}${obsFinal ? `\nObservação do envio: ${obsFinal}` : ''}`,
+    canalContato || sol.canal || 'whatsapp',
+    { numeroOrcamentoPecas: numerosOrcamento.pecas || '', numeroOrcamentoServico: numerosOrcamento.servico || '', observacaoProposta: obsFinal || '', statusProposta }
+  );
+  agendarProximoRetornoConclusao(sol.clienteId, sol.produto || '');
+  solicitacoesOrcamento = solicitacoesOrcamento.filter(s => s.id !== id);
+  save(); renderSolicitacoesTabela(); renderDashboard(); renderHistorico(); renderAgenda(); renderClientes();
+  notify(contatoRegistrado ? '✓ Proposta enviada, contato registrado e acompanhamento atualizado!' : '✓ Proposta enviada registrada!', '#0d3d2a');
+}
+function confirmarConclusao() {
+  const id = +document.getElementById('concluir-id').value;
+  const tipo = document.getElementById('concluir-tipo').value;
+  const obsConclusao = document.getElementById('concluir-obs').value.trim();
+  const numeroPecas = document.getElementById('concluir-numero-pecas')?.value.trim() || '';
+  const numeroServico = document.getElementById('concluir-numero-servico')?.value.trim() || '';
+  const numerosOrcamento = { pecas: numeroPecas, servico: numeroServico };
+  const canalContato = document.getElementById('concluir-canal')?.value || 'whatsapp';
+  const statusProposta = document.getElementById('concluir-status-proposta')?.value || 'aguardando_retorno';
+  if (tipo === 'solicitacao_orcamento') {
+    const sol = solicitacoesOrcamento.find(s=>s.id===id);
+    marcarSolicitacaoFeita(id, obsConclusao, sol?.canal || canalContato, numerosOrcamento, { statusProposta });
+  } else if (tipo === 'orcamento') {
+    const item = orcamentos.find(o=>o.id===id);
+    if (!item) return;
+    concluidos.push({ id: Date.now(), tipo:'orcamento', clienteId:item.clienteId, dataOriginal:item.data, motivo:item.obs, obsConclusao, numeroOrcamentoPecas: numeroPecas, numeroOrcamentoServico: numeroServico, concluidoEm: today(), statusProposta });
+    registrarContatoOrcamentoEnviado(
+      item.clienteId,
+      'orcamento_recorrente',
+      `Proposta recorrente enviada.\nData do acompanhamento: ${fmtDate(item.data)}\nStatus inicial: ${statusPropostaLabel(statusProposta)}${numeroPecas ? `\nNº orçamento de peças: ${numeroPecas}` : ''}${numeroServico ? `\nNº orçamento de serviço: ${numeroServico}` : ''}\nObservação original: ${item.obs || '—'}${obsConclusao ? `\nObservação do envio: ${obsConclusao}` : ''}`,
+      'whatsapp',
+      { numeroOrcamentoPecas: numeroPecas, numeroOrcamentoServico: numeroServico, observacaoProposta: obsConclusao, statusProposta }
+    );
+    agendarProximoRetornoConclusao(item.clienteId, item.obs || '');
+    if (item.repetir) orcamentos.push({ ...item, id: Date.now()+1, data: addDays(item.data, 30) });
+    orcamentos = orcamentos.filter(o=>o.id!==id);
+    save(); closeModal('modalConcluir'); renderAgenda(); renderDashboard(); renderOrcamentosTabela(); renderSolicitacoesTabela(); renderHistorico(); renderClientes();
+    notify('✓ Proposta recorrente enviada e registrada no histórico!', '#0d3d2a');
+  } else {
+    const item = agendamentos.find(a=>a.id===id);
+    if (item) {
+      concluidos.push({ id: Date.now(), tipo:'retorno', clienteId:item.clienteId, dataOriginal:item.data, motivo:item.motivo, obsConclusao, concluidoEm: today() });
+      agendamentos = agendamentos.filter(a=>a.id!==id);
+      if (document.getElementById('concluir-agendar-novo').checked) {
+        const novaData = document.getElementById('concluir-novo-data').value;
+        if (novaData) agendamentos.push({ id: Date.now()+1, clienteId: item.clienteId, data: novaData, horario: document.getElementById('concluir-novo-horario').value || '09:00', motivo: document.getElementById('concluir-novo-motivo').value.trim() || 'Retorno agendado', prioridade: 'normal', criadoEm: today() });
+        else notify('Conclusão salva, mas o próximo retorno não foi agendado (data vazia)', '#854f0b');
+      }
+    }
+    save(); closeModal('modalConcluir'); renderAgenda(); renderDashboard(); renderOrcamentosTabela(); renderSolicitacoesTabela(); renderHistorico(); renderClientes();
+    notify('✓ Concluído e registrado no histórico!', '#0d3d2a');
+  }
+}
+function listaPropostasHistorico() {
+  const propostasContato = contatos.filter(contatoRepresentaProposta).map(ct => {
+    const c = clientes.find(x=>x.id===ct.clienteId);
+    return { id: 'ct-'+ct.id, data: ct.data || today(), clienteId: ct.clienteId, nome: c?.nome || 'Cliente removido', empresa: c?.empresa || '', origem: ct.origemOrcamento ? 'Orçamento feito/enviado' : 'Contato registrado', descricao: ct.observacaoProposta || ct.descricao || '', canal: ct.canal || '', pecas: ct.numeroOrcamentoPecas || '', servico: ct.numeroOrcamentoServico || '', status: ct.statusProposta || 'aguardando_retorno' };
+  });
+  const propostasAvulsas = concluidos.filter(cc => ['solicitacao_orcamento','orcamento'].includes(cc.tipo)).filter(cc => !cc.clienteId || !contatos.some(ct => ct.origemOrcamento && ct.clienteId === cc.clienteId && ct.data === cc.concluidoEm)).map(cc => {
+    const c = clientes.find(x=>x.id===cc.clienteId);
+    return { id:'cc-'+cc.id, data: cc.concluidoEm || today(), clienteId: cc.clienteId || null, nome: c?.nome || cc.nomeAvulso || 'Cliente não cadastrado', empresa: c?.empresa || cc.empresaAvulsa || '', origem: cc.tipo === 'orcamento' ? 'Orçamento recorrente concluído' : 'Solicitação concluída', descricao: cc.obsConclusao || cc.motivo || cc.produto || '', canal: cc.canal || '', pecas: cc.numeroOrcamentoPecas || '', servico: cc.numeroOrcamentoServico || '', status: cc.statusProposta || 'aguardando_retorno' };
+  });
+  return [...propostasContato, ...propostasAvulsas].sort((a,b)=>(b.data||'').localeCompare(a.data||''));
+}
+
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -3139,6 +3395,338 @@ body.theme-light .sol-attachment-card { background:rgba(255,255,255,0.52); }
   .sol-description-highlight textarea { min-height:150px; }
 }
 
+
+/* TESTE DE PALETA - NOVA SOLICITAÇÃO / MODO ESCURO */
+body:not(.theme-light) #modalSolicitacao .modal-solicitacao-landscape {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(29,214,165,0.16), transparent 30%),
+    radial-gradient(circle at 88% 12%, rgba(124,92,255,0.18), transparent 34%),
+    linear-gradient(145deg, #06142c 0%, #081b3b 45%, #071126 100%) !important;
+  border: 1px solid rgba(93,154,255,0.36) !important;
+  box-shadow: 0 26px 90px rgba(0,0,0,0.62), 0 0 0 1px rgba(255,255,255,0.035) inset !important;
+}
+
+body:not(.theme-light) #modalSolicitacao .sol-modal-header {
+  background:
+    linear-gradient(90deg, rgba(18,96,220,0.30), rgba(20,184,166,0.14), rgba(124,92,255,0.20));
+  border-bottom: 1px solid rgba(93,154,255,0.28);
+}
+
+body:not(.theme-light) #modalSolicitacao .sol-modal-subtitle {
+  color: rgba(219,232,255,0.78);
+}
+
+body:not(.theme-light) #modalSolicitacao .sol-form-section {
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(93,154,255,0.24);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.045);
+}
+
+body:not(.theme-light) #modalSolicitacao .sol-form-section::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  border-radius: 14px 0 0 14px;
+  background: linear-gradient(180deg, rgba(29,214,165,0.95), rgba(13,102,232,0.85));
+}
+
+body:not(.theme-light) #modalSolicitacao .sol-client-section {
+  background:
+    linear-gradient(145deg, rgba(11,116,150,0.20), rgba(9,31,70,0.58)),
+    rgba(5,19,43,0.82) !important;
+}
+
+body:not(.theme-light) #modalSolicitacao .sol-request-section {
+  background:
+    linear-gradient(145deg, rgba(99,76,255,0.18), rgba(9,31,70,0.56)),
+    rgba(5,19,43,0.82) !important;
+}
+
+body:not(.theme-light) #modalSolicitacao .sol-request-section::before {
+  background: linear-gradient(180deg, rgba(124,92,255,0.95), rgba(13,102,232,0.85));
+}
+
+body:not(.theme-light) #modalSolicitacao .sol-section-head {
+  border-bottom-color: rgba(148,184,255,0.18);
+}
+
+body:not(.theme-light) #modalSolicitacao .sol-section-head strong {
+  color: #f5f9ff;
+}
+
+body:not(.theme-light) #modalSolicitacao .sol-section-head strong i {
+  color: #22d3ee;
+  filter: drop-shadow(0 0 10px rgba(34,211,238,0.20));
+}
+
+body:not(.theme-light) #modalSolicitacao .sol-request-section .sol-section-head strong i {
+  color: #a78bfa;
+  filter: drop-shadow(0 0 10px rgba(167,139,250,0.24));
+}
+
+body:not(.theme-light) #modalSolicitacao .sol-client-link-panel {
+  background: linear-gradient(135deg, rgba(29,214,165,0.11), rgba(13,102,232,0.13));
+  border-color: rgba(29,214,165,0.26);
+}
+
+body:not(.theme-light) #modalSolicitacao .sol-client-search-input input,
+body:not(.theme-light) #modalSolicitacao input,
+body:not(.theme-light) #modalSolicitacao select,
+body:not(.theme-light) #modalSolicitacao textarea {
+  background: rgba(2,10,28,0.72) !important;
+  border-color: rgba(126,164,255,0.25) !important;
+}
+
+body:not(.theme-light) #modalSolicitacao .sol-client-search-input input:focus,
+body:not(.theme-light) #modalSolicitacao input:focus,
+body:not(.theme-light) #modalSolicitacao select:focus,
+body:not(.theme-light) #modalSolicitacao textarea:focus {
+  border-color: rgba(29,214,165,0.72) !important;
+  box-shadow: 0 0 0 3px rgba(29,214,165,0.12), 0 0 18px rgba(29,214,165,0.07) !important;
+}
+
+body:not(.theme-light) #modalSolicitacao .sol-client-result-card {
+  background: linear-gradient(135deg, rgba(10,51,90,0.88), rgba(5,19,43,0.92));
+  border-color: rgba(34,211,238,0.24);
+}
+
+body:not(.theme-light) #modalSolicitacao .sol-description-highlight {
+  background:
+    linear-gradient(135deg, rgba(245,166,35,0.18), rgba(255,122,61,0.10)),
+    rgba(50,28,6,0.42) !important;
+  border-color: rgba(245,166,35,0.42) !important;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+body:not(.theme-light) #modalSolicitacao .sol-description-highlight label {
+  color: #ffe2a6;
+}
+
+body:not(.theme-light) #modalSolicitacao .sol-description-highlight textarea {
+  background: rgba(8,14,30,0.82) !important;
+  border-color: rgba(245,166,35,0.34) !important;
+}
+
+body:not(.theme-light) #modalSolicitacao .sol-attachments-box,
+body:not(.theme-light) #modalSolicitacao .sol-obs-box {
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(93,154,255,0.18);
+  background: rgba(2,12,30,0.34);
+}
+
+body:not(.theme-light) #modalSolicitacao .sol-attachments-box {
+  background: linear-gradient(135deg, rgba(14,165,233,0.12), rgba(13,102,232,0.07));
+  border-color: rgba(14,165,233,0.24);
+}
+
+body:not(.theme-light) #modalSolicitacao .sol-obs-box {
+  background: linear-gradient(135deg, rgba(124,92,255,0.13), rgba(13,102,232,0.06));
+  border-color: rgba(167,139,250,0.22);
+}
+
+body:not(.theme-light) #modalSolicitacao .attach-drop {
+  background: linear-gradient(135deg, rgba(14,165,233,0.16), rgba(29,214,165,0.10));
+  border-color: rgba(34,211,238,0.30);
+  color: rgba(234,244,255,0.92);
+}
+
+body:not(.theme-light) #modalSolicitacao .attach-drop i {
+  color: #22d3ee;
+}
+
+body:not(.theme-light) #modalSolicitacao .sol-attachment-card {
+  background: linear-gradient(135deg, rgba(10,51,90,0.84), rgba(5,19,43,0.94));
+  border-color: rgba(34,211,238,0.22);
+}
+
+body:not(.theme-light) #modalSolicitacao .sol-modal-footer {
+  background: linear-gradient(90deg, rgba(6,20,44,0.96), rgba(8,30,65,0.96));
+  border-top-color: rgba(93,154,255,0.22);
+}
+
+
+/* MELHORIA: CONCLUSÃO COMO PROPOSTA ENVIADA */
+.proposta-status-card {
+  background: linear-gradient(135deg, rgba(29,214,165,0.11), rgba(13,102,232,0.06));
+  border: 1px solid rgba(29,214,165,0.22);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+}
+body.theme-light .proposta-status-card {
+  background: linear-gradient(135deg, rgba(8,127,104,0.14), rgba(7,95,226,0.06));
+}
+#concluir-novo-retorno-fields .quick-day-btn {
+  min-width: 74px;
+}
+
+
+/* PROPOSTAS EM ACOMPANHAMENTO */
+.proposta-acompanhamento-list {
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap:12px;
+  padding:16px;
+}
+.proposta-acompanhamento-card {
+  border:1px solid var(--border);
+  background:linear-gradient(180deg, rgba(11,30,78,0.92), rgba(8,22,52,0.92));
+  border-radius:14px;
+  padding:14px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  min-height:170px;
+}
+.proposta-acompanhamento-card.alerta { border-color:rgba(255,89,101,.38); box-shadow:0 0 0 1px rgba(255,89,101,.10) inset; }
+.proposta-acompanhamento-card.ajuste { border-color:rgba(255,174,66,.38); box-shadow:0 0 0 1px rgba(255,174,66,.10) inset; }
+.proposta-acompanhamento-top { display:flex; justify-content:space-between; gap:10px; align-items:flex-start; }
+.proposta-acompanhamento-title { font-weight:900; color:var(--text); line-height:1.25; }
+.proposta-acompanhamento-meta { font-size:12px; color:var(--text2); line-height:1.45; }
+.proposta-acompanhamento-desc { font-size:12.5px; color:var(--text2); line-height:1.45; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); border-radius:10px; padding:8px 10px; max-height:92px; overflow:auto; }
+.proposta-acompanhamento-actions { display:flex; flex-wrap:wrap; gap:6px; margin-top:auto; }
+.proposta-status-summary {
+  border:1px solid var(--border);
+  background:var(--accent-light);
+  border-radius:12px;
+  padding:12px;
+  margin-bottom:14px;
+}
+.proposta-status-summary strong { display:block; margin-bottom:4px; }
+.proposta-status-summary div { color:var(--text2); font-size:12.5px; line-height:1.45; }
+.proposta-status-log { font-size:11.5px; color:var(--text3); margin-top:4px; }
+body.theme-light .proposta-acompanhamento-card { background:linear-gradient(180deg, #edf4fb, #dfeaf6); }
+body.theme-light .proposta-acompanhamento-card.alerta { background:linear-gradient(135deg, #f5cfd8, #e7e0f0); }
+body.theme-light .proposta-acompanhamento-card.ajuste { background:linear-gradient(135deg, #f4e2c7, #e7e6f0); }
+body.theme-light .proposta-acompanhamento-desc { background:rgba(255,255,255,.46); border-color:rgba(65,96,145,.18); }
+
+
+/* AJUSTES FINAIS: KANBAN PROPOSTAS, HISTÓRICO E NOTIFICAÇÕES INTERNAS */
+#view-historico .card:has(#dash-propostas-acompanhamento) { display:none !important; }
+.propostas-kanban-wrap { margin-top: 20px; padding: 16px; background: var(--surface2); border-top: 1px solid var(--border); }
+.propostas-kanban-title-clean { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:2px 2px 12px; border-bottom:1px solid var(--border); margin-bottom:14px; }
+.propostas-kanban-title-clean h3 { font-size:18px; letter-spacing:-.2px; margin:0; display:flex; align-items:center; gap:8px; }
+.propostas-kanban-title-clean small { display:block; color:var(--text3); font-size:12px; font-weight:500; margin-top:3px; }
+.propostas-kanban-board { display:grid; grid-template-columns: repeat(3, minmax(260px, 1fr)); gap:14px; align-items:start; }
+.propostas-kanban-col { background: var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden; min-height:260px; box-shadow:var(--shadow); }
+.propostas-kanban-col[data-status="aguardando_retorno"] { border-color: rgba(13,102,232,.30); }
+.propostas-kanban-col[data-status="cliente_pediu_ajuste"] { border-color: rgba(255,174,66,.34); }
+.propostas-kanban-col[data-status="sem_resposta"] { border-color: rgba(255,89,101,.34); }
+.propostas-kanban-head { padding:12px 14px; border-bottom:1px solid var(--border); background:linear-gradient(90deg, rgba(13,102,232,.14), rgba(13,102,232,.03)); }
+.propostas-kanban-col[data-status="cliente_pediu_ajuste"] .propostas-kanban-head { background:linear-gradient(90deg, rgba(255,174,66,.16), rgba(255,174,66,.04)); }
+.propostas-kanban-col[data-status="sem_resposta"] .propostas-kanban-head { background:linear-gradient(90deg, rgba(255,89,101,.16), rgba(255,89,101,.04)); }
+.propostas-kanban-title { display:flex; align-items:center; gap:8px; font-weight:900; color:var(--text); font-size:13px; text-transform:uppercase; letter-spacing:.5px; }
+.propostas-kanban-subtitle { color:var(--text3); font-size:11.5px; margin-top:4px; }
+.propostas-kanban-body { display:flex; flex-direction:column; gap:10px; padding:12px; min-height:210px; max-height:620px; overflow:auto; }
+.propostas-kanban-body.drag-over { background:rgba(13,102,232,.08); outline:1px dashed var(--accent); outline-offset:-8px; }
+.proposta-kanban-card { background:linear-gradient(180deg, rgba(11,30,78,.94), rgba(8,22,52,.94)); border:1px solid var(--border); border-left:4px solid var(--accent); border-radius:12px; padding:12px; cursor:grab; box-shadow:0 8px 20px rgba(0,0,0,.16); }
+.proposta-kanban-card:active { cursor:grabbing; }
+.proposta-kanban-card.ajuste { border-left-color:var(--warning); }
+.proposta-kanban-card.alerta { border-left-color:var(--danger); }
+.proposta-kanban-card-top { display:flex; justify-content:space-between; gap:10px; align-items:flex-start; margin-bottom:8px; }
+.proposta-kanban-title { font-weight:900; color:var(--text); line-height:1.25; font-size:13.5px; }
+.proposta-kanban-status { font-size:11px; font-weight:800; border-radius:999px; padding:4px 8px; background:rgba(255,255,255,.07); color:var(--text2); white-space:nowrap; }
+.proposta-kanban-meta { font-size:12px; color:var(--text2); line-height:1.45; }
+.proposta-kanban-desc { margin-top:8px; font-size:12.5px; color:var(--text2); line-height:1.45; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); border-radius:10px; padding:8px 10px; max-height:88px; overflow:auto; }
+.proposta-kanban-actions { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+.proposta-kanban-empty { padding:26px 10px; color:var(--text3); text-align:center; border:1px dashed var(--border); border-radius:12px; background:rgba(255,255,255,.02); }
+.proposta-kanban-empty i { display:block; font-size:20px; margin-bottom:7px; color:var(--text3); }
+body.theme-light .propostas-kanban-wrap { background:linear-gradient(180deg, #d5e2f2, #cbd9ea) !important; }
+body.theme-light .propostas-kanban-col[data-status="aguardando_retorno"] { background:linear-gradient(180deg, #d8e7fb, #c9dcf8) !important; }
+body.theme-light .propostas-kanban-col[data-status="cliente_pediu_ajuste"] { background:linear-gradient(180deg, #f4e3c8, #ecd6b2) !important; }
+body.theme-light .propostas-kanban-col[data-status="sem_resposta"] { background:linear-gradient(180deg, #f5cfd8, #ead1e7) !important; }
+body.theme-light .proposta-kanban-card { background:linear-gradient(180deg, rgba(255,255,255,.80), rgba(241,246,252,.72)) !important; color:var(--text); }
+body.theme-light .proposta-kanban-desc { background:rgba(255,255,255,.42); border-color:rgba(65,96,145,.20); color:#27466f; }
+body.theme-light .proposta-kanban-status { background:rgba(255,255,255,.42); color:#27466f; }
+.notificacoes-internas-card { margin-bottom:20px; }
+.notificacoes-internas-list { display:grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap:10px; padding:16px; }
+.notificacao-interna-item { border:1px solid var(--border); border-left:4px solid var(--accent); border-radius:12px; background:rgba(255,255,255,.035); padding:12px; display:flex; gap:10px; align-items:flex-start; }
+.notificacao-interna-item.critica { border-left-color:var(--danger); background:rgba(255,89,101,.08); }
+.notificacao-interna-item.atencao { border-left-color:var(--warning); background:rgba(255,174,66,.08); }
+.notificacao-interna-item.info { border-left-color:var(--accent); }
+.notificacao-interna-icon { width:30px; height:30px; border-radius:10px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,.08); flex-shrink:0; color:var(--text); }
+.notificacao-interna-title { font-weight:900; color:var(--text); font-size:13px; margin-bottom:3px; }
+.notificacao-interna-meta { color:var(--text2); font-size:12px; line-height:1.4; }
+.notificacao-interna-actions { margin-top:8px; display:flex; gap:6px; flex-wrap:wrap; }
+body.theme-light .notificacao-interna-item { background:rgba(255,255,255,.42); }
+body.theme-light .notificacao-interna-item.critica { background:rgba(189,52,72,.12); }
+body.theme-light .notificacao-interna-item.atencao { background:rgba(185,104,14,.12); }
+.client-timeline { position:relative; gap:12px !important; }
+.client-timeline::before { content:''; position:absolute; left:16px; top:6px; bottom:6px; width:2px; background:linear-gradient(180deg, var(--accent), transparent); opacity:.35; }
+.client-timeline-item { position:relative; border-radius:14px !important; box-shadow:0 8px 18px rgba(0,0,0,.10); }
+.client-timeline-title { font-size:13.5px !important; }
+.client-timeline-date { font-weight:800; color:var(--muted-strong, var(--text3)) !important; }
+.timeline-order-note { display:flex; align-items:center; gap:8px; color:var(--text2); font-size:12px; background:var(--accent-light); border:1px solid rgba(13,102,232,.22); padding:9px 11px; border-radius:10px; margin:10px 0 12px; }
+
+
+/* AJUSTE FINAL KANBAN SOLICITACOES LARGURA */
+#solicitacoes-kanban.orcamento-kanban-board {
+  width: 100% !important;
+  grid-template-columns: repeat(4, minmax(260px, 1fr)) !important;
+  align-items: stretch;
+}
+#solicitacoes-kanban.orcamento-kanban-board .orcamento-kanban-col {
+  min-width: 0 !important;
+}
+#solicitacoes-kanban.orcamento-kanban-board .orcamento-kanban-body {
+  min-height: 240px;
+}
+@media (max-width: 1380px) {
+  #solicitacoes-kanban.orcamento-kanban-board {
+    grid-template-columns: repeat(2, minmax(260px, 1fr)) !important;
+  }
+}
+@media (max-width: 760px) {
+  #solicitacoes-kanban.orcamento-kanban-board {
+    grid-template-columns: 1fr !important;
+  }
+}
+#propostas-acompanhamento-kanban.propostas-kanban-board {
+  width: 100% !important;
+}
+
+/* AJUSTE FINAL DE ALINHAMENTO DOS KANBANS */
+#solicitacoes-kanban.orcamento-kanban-board {
+  display: grid !important;
+  width: 100% !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  align-items: stretch !important;
+  justify-items: stretch !important;
+}
+#solicitacoes-kanban.orcamento-kanban-board > .orcamento-kanban-col {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+}
+#propostas-acompanhamento-kanban.propostas-kanban-board {
+  display: grid !important;
+  width: 100% !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  align-items: stretch !important;
+  justify-items: stretch !important;
+}
+#propostas-acompanhamento-kanban.propostas-kanban-board > .propostas-kanban-col {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+}
+@media (max-width: 1380px) {
+  #solicitacoes-kanban.orcamento-kanban-board {
+    grid-template-columns: repeat(2, minmax(260px, 1fr)) !important;
+  }
+  #propostas-acompanhamento-kanban.propostas-kanban-board {
+    grid-template-columns: repeat(2, minmax(260px, 1fr)) !important;
+  }
+}
+@media (max-width: 760px) {
+  #solicitacoes-kanban.orcamento-kanban-board,
+  #propostas-acompanhamento-kanban.propostas-kanban-board {
+    grid-template-columns: 1fr !important;
+  }
+}
+
 </style>
 </head>
 <body class="auth-locked">
@@ -3226,11 +3814,7 @@ body.theme-light .sol-attachment-card { background:rgba(255,255,255,0.52); }
   </div>
   <nav class="nav quick-action-grid">
     <div class="nav-section">Ações Rápidas</div>
-    <button class="quick-action-card highlighted qa-orcamento" onclick="openModal('modalSolicitacao')" type="button">
-      <span class="quick-action-icon"><i class="fa-solid fa-clipboard-list"></i></span>
-      <span><strong>Solicitação</strong><small>Registrar pedido recebido</small></span>
-    </button>
-    <button class="quick-action-card qa-cliente" onclick="openModal('modalCliente')" type="button">
+<button class="quick-action-card qa-cliente" onclick="openModal('modalCliente')" type="button">
       <span class="quick-action-icon"><i class="fa-solid fa-user-plus"></i></span>
       <span><strong>Cliente</strong><small>Cadastrar novo</small></span>
     </button>
@@ -3618,6 +4202,14 @@ body.theme-light .sol-attachment-card { background:rgba(255,255,255,0.52); }
       </div>
       <div id="historico-overview" class="historico-overview"></div>
       <div id="lista-historico"></div>
+    </div>
+
+    <div class="card" style="margin-top:20px;margin-bottom:20px">
+      <div class="card-header" style="flex-wrap:wrap;gap:10px">
+        <div class="card-title"><i class="fa-solid fa-handshake-angle" style="color:var(--warning)"></i> Propostas em Acompanhamento</div>
+        <span id="propostas-acompanhamento-count" class="badge badge-gray">0</span>
+      </div>
+      <div id="dash-propostas-acompanhamento"></div>
     </div>
 
     <div class="card" style="margin-top:20px;margin-bottom:20px">
@@ -4193,10 +4785,22 @@ body.theme-light .sol-attachment-card { background:rgba(255,255,255,0.52); }
           </div>
           <div class="field-note">Preencha somente se já houver número interno do orçamento enviado. Pode deixar vazio.</div>
         </div>
+        <div id="concluir-status-wrap" class="form-group full proposta-status-card" style="display:none">
+          <label>Status inicial da proposta</label>
+          <select id="concluir-status-proposta" onchange="toggleStatusProposta()">
+            <option value="aguardando_retorno">Aguardando retorno do cliente</option>
+            <option value="cliente_pediu_ajuste">Cliente pediu ajuste</option>
+            <option value="aprovada">Aprovada</option>
+            <option value="recusada">Recusada</option>
+            <option value="sem_resposta">Sem resposta</option>
+            <option value="nao_acompanhar">Não preciso acompanhar esta proposta</option>
+          </select>
+          <div class="field-note">Esse status será usado no histórico e nas propostas enviadas para indicar o acompanhamento comercial.</div>
+        </div>
         <div class="form-group full"><label id="concluir-obs-label">Como foi o retorno?</label><textarea id="concluir-obs" placeholder="Descreva o resultado, o que foi acordado, próximos passos..."></textarea><div id="concluir-help" class="concluir-help" style="display:none"></div></div>
         <div class="form-group full" style="background:var(--accent-light);border:1px solid rgba(59,125,232,0.2);border-radius:var(--radius-sm);padding:12px">
           <label style="display:flex;align-items:center;gap:8px;text-transform:none;font-size:13.5px;color:var(--text);margin-bottom:8px">
-            <input type="checkbox" id="concluir-agendar-novo" style="width:auto" onchange="toggleNovoRetorno()"> Já agendar próximo retorno com este cliente
+            <input type="checkbox" id="concluir-agendar-novo" style="width:auto" onchange="toggleNovoRetorno()"><span id="concluir-retorno-label">Agendar retorno para acompanhar esta proposta</span>
           </label>
           <div id="concluir-novo-retorno-fields" style="display:none">
             <div class="form-grid" style="margin-bottom:8px">
@@ -4206,9 +4810,9 @@ body.theme-light .sol-attachment-card { background:rgba(255,255,255,0.52); }
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
               <span style="font-size:12px;color:var(--text3)">Calcular automaticamente:</span>
               <div class="quick-days">
+                <button type="button" class="quick-day-btn" onclick="calcRetorno('concluir-novo-data', 2)">+2 dias</button>
+                <button type="button" class="quick-day-btn" onclick="calcRetorno('concluir-novo-data', 3)">+3 dias</button>
                 <button type="button" class="quick-day-btn" onclick="calcRetorno('concluir-novo-data', 5)">+5 dias</button>
-                <button type="button" class="quick-day-btn" onclick="calcRetorno('concluir-novo-data', 10)">+10 dias</button>
-                <button type="button" class="quick-day-btn" onclick="calcRetorno('concluir-novo-data', 15)">+15 dias</button>
               </div>
             </div>
             <input type="text" id="concluir-novo-motivo" placeholder="Motivo do próximo retorno (opcional)">
@@ -4218,7 +4822,7 @@ body.theme-light .sol-attachment-card { background:rgba(255,255,255,0.52); }
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('modalConcluir')">Cancelar</button>
-      <button class="btn btn-success" onclick="confirmarConclusao()"><i class="fa-solid fa-check"></i> Confirmar Conclusão</button>
+      <button class="btn btn-success" id="concluir-confirm-btn" onclick="confirmarConclusao()"><i class="fa-solid fa-check"></i> Salvar proposta enviada</button>
     </div>
   </div>
 </div>
@@ -6224,8 +6828,8 @@ function configurarModalConclusao(tipo, item) {
   const icon = isOrcamento ? 'fa-file-invoice-dollar' : 'fa-circle-check';
 
   if (tipo === 'solicitacao_orcamento') {
-    title.innerHTML = '<i class="fa-solid fa-file-invoice-dollar" style="color:var(--success);margin-right:8px"></i>Marcar orçamento como feito';
-    label.textContent = 'Observação sobre o orçamento feito/enviado (opcional)';
+    title.innerHTML = '<i class="fa-solid fa-file-invoice-dollar" style="color:var(--success);margin-right:8px"></i>Registrar proposta enviada';
+    label.textContent = 'Observação sobre a proposta enviada (opcional)';
     obs.placeholder = 'Ex: cliente pediu retorno amanhã, faltou algum item, enviado conforme solicitado...';
     canalWrap.style.display = 'none';
     canal.value = item?.canal || 'whatsapp';
@@ -8034,7 +8638,7 @@ function renderHistorico() {
     const c = clientes.find(x=>x.id===ct.clienteId);
     const isLast = i===filtered.length-1;
     const edicoesList = (ct.edicoes||[]).map(e=>`<div class="edit-note"><i class="fa-solid fa-pen-to-square" style="margin-right:5px"></i><strong>Editado em ${fmtDate(e.em)}:</strong> ${e.motivo||'Sem motivo informado'}</div>`).join('');
-    const propostaBadge = contatoRepresentaProposta(ct) ? '<span class="badge badge-success" style="margin-left:5px"><i class="fa-solid fa-file-signature" style="margin-right:3px"></i>Proposta enviada</span>' : '';
+    const propostaBadge = contatoRepresentaProposta(ct) ? `<span class="badge badge-success" style="margin-left:5px"><i class="fa-solid fa-file-signature" style="margin-right:3px"></i>Proposta enviada</span>${ct.statusProposta?`<span class="badge ${statusPropostaBadge(ct.statusProposta)}" style="margin-left:5px">${statusPropostaLabel(ct.statusProposta)}</span>`:''}` : '';
     const numeros = contatoRepresentaProposta(ct) && (ct.numeroOrcamentoPecas || ct.numeroOrcamentoServico) ? `<div style="font-size:12px;color:var(--text2);margin-top:5px"><strong>Nº orçamento:</strong> ${ct.numeroOrcamentoPecas?`Peças ${ct.numeroOrcamentoPecas}`:''}${ct.numeroOrcamentoPecas&&ct.numeroOrcamentoServico?' • ':''}${ct.numeroOrcamentoServico?`Serviço ${ct.numeroOrcamentoServico}`:''}</div>` : '';
     return `<div class="history-item"><div style="display:flex;flex-direction:column;align-items:center"><div class="history-dot"></div>${!isLast?`<div style="flex:1;width:2px;background:var(--border);margin:4px 0"></div>`:''}</div><div class="history-content"><div class="history-header"><div style="display:flex;align-items:center;gap:8px"><div class="avatar ${c?avColor(c.id):'av-blue'}" style="width:28px;height:28px;font-size:11px">${c?initials(c.nome):'?'}</div><span class="history-client">${c?c.nome:'Cliente removido'}</span></div><div style="display:flex;align-items:center;gap:6px"><span class="history-date">${fmtDate(ct.data)}</span><button class="btn btn-warning btn-sm" title="Editar" onclick="editarContato(${ct.id})"><i class="fa-solid fa-pen"></i></button><button class="btn btn-danger btn-sm" title="Apagar" onclick="apagarContato(${ct.id})"><i class="fa-solid fa-trash"></i></button></div></div><div style="margin-bottom:6px"><span class="badge badge-gray"><i class="fa-solid ${canalIcon[ct.canal]||'fa-phone'}" style="margin-right:4px"></i>${ct.canal}</span>${ct.semResposta?'<span class="badge badge-danger" style="margin-left:5px"><i class="fa-solid fa-phone-slash" style="margin-right:3px"></i>Sem resposta</span>':''}${propostaBadge}${ct.editado?'<span class="badge badge-warning" style="margin-left:5px"><i class="fa-solid fa-pen" style="margin-right:3px"></i>Editado</span>':''}</div><div class="history-text">${ct.descricao}</div>${numeros}${ct.observacaoProposta?`<div class="edit-note" style="margin-top:6px"><i class="fa-solid fa-file-signature" style="margin-right:5px"></i>${ct.observacaoProposta}</div>`:''}${edicoesList}</div></div>`;
   }).join('');
@@ -8043,7 +8647,7 @@ function renderHistorico() {
   const propList = document.getElementById('dash-propostas-enviadas');
   if (propCount && propList) {
     propCount.textContent = propostas.length;
-    propList.innerHTML = propostas.length ? propostas.slice(0,12).map(p => `<div class="proposta-history-item"><div class="proposta-history-icon"><i class="fa-solid fa-file-signature"></i></div><div style="flex:1"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:3px"><strong>${p.nome}</strong><span style="font-size:12px;color:var(--text3)">${fmtDate(p.data)}</span></div>${p.empresa?`<div style="font-size:12px;color:var(--text3);margin-bottom:3px">${p.empresa}</div>`:''}<div style="font-size:12px;color:var(--text2);margin-bottom:4px"><span class="badge badge-info">${p.origem}</span>${p.canal?`<span class="badge badge-gray" style="margin-left:5px">${p.canal}</span>`:''}</div>${(p.pecas||p.servico)?`<div style="font-size:12.5px;color:var(--text2);margin-bottom:4px"><strong>Nº orçamento:</strong> ${p.pecas?`Peças ${p.pecas}`:''}${p.pecas&&p.servico?' • ':''}${p.servico?`Serviço ${p.servico}`:''}</div>`:''}${p.descricao?`<div style="font-size:12.5px;color:var(--text2)">${String(p.descricao).replace(/\n/g,'<br>')}</div>`:''}</div></div>`).join('') : `<div class="empty"><i class="fa-solid fa-file-signature"></i><p>Nenhuma proposta enviada registrada ainda.</p></div>`;
+    propList.innerHTML = propostas.length ? propostas.slice(0,12).map(p => `<div class="proposta-history-item"><div class="proposta-history-icon"><i class="fa-solid fa-file-signature"></i></div><div style="flex:1"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:3px"><strong>${p.nome}</strong><span style="font-size:12px;color:var(--text3)">${fmtDate(p.data)}</span></div>${p.empresa?`<div style="font-size:12px;color:var(--text3);margin-bottom:3px">${p.empresa}</div>`:''}<div style="font-size:12px;color:var(--text2);margin-bottom:4px"><span class="badge badge-info">${p.origem}</span>${p.status?`<span class="badge ${statusPropostaBadge(p.status)}" style="margin-left:5px">${statusPropostaLabel(p.status)}</span>`:''}${p.canal?`<span class="badge badge-gray" style="margin-left:5px">${p.canal}</span>`:''}</div>${(p.pecas||p.servico)?`<div style="font-size:12.5px;color:var(--text2);margin-bottom:4px"><strong>Nº orçamento:</strong> ${p.pecas?`Peças ${p.pecas}`:''}${p.pecas&&p.servico?' • ':''}${p.servico?`Serviço ${p.servico}`:''}</div>`:''}${p.descricao?`<div style="font-size:12.5px;color:var(--text2)">${String(p.descricao).replace(/\n/g,'<br>')}</div>`:''}</div></div>`).join('') : `<div class="empty"><i class="fa-solid fa-file-signature"></i><p>Nenhuma proposta enviada registrada ainda.</p></div>`;
   }
 
   function renderConcluidoItem(cc) {
@@ -8069,7 +8673,1257 @@ function renderHistorico() {
   document.getElementById('dash-concluidos-orcamento').innerHTML = concluidosOrcamento.length ? concluidosOrcamento.slice(0,10).map(renderConcluidoItem).join('') : `<div class="empty"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento recorrente concluído ainda</p></div>`;
 }
 
+
+
+/* ===== PATCH FINAL: REGISTRAR PROPOSTA ENVIADA / ACOMPANHAMENTO ===== */
+function statusPropostaLabel(status) {
+  return {
+    aguardando_retorno: 'Aguardando retorno do cliente',
+    cliente_pediu_ajuste: 'Cliente pediu ajuste',
+    aprovada: 'Aprovada',
+    recusada: 'Recusada',
+    sem_resposta: 'Sem resposta',
+    nao_acompanhar: 'Sem acompanhamento'
+  }[status || 'aguardando_retorno'] || 'Aguardando retorno do cliente';
+}
+
+function statusPropostaBadge(status) {
+  return {
+    aguardando_retorno: 'badge-info',
+    cliente_pediu_ajuste: 'badge-warning',
+    aprovada: 'badge-success',
+    recusada: 'badge-danger',
+    sem_resposta: 'badge-gray',
+    nao_acompanhar: 'badge-gray'
+  }[status || 'aguardando_retorno'] || 'badge-info';
+}
+
+function toggleStatusProposta() {
+  const status = document.getElementById('concluir-status-proposta')?.value || 'aguardando_retorno';
+  const checkbox = document.getElementById('concluir-agendar-novo');
+  const fields = document.getElementById('concluir-novo-retorno-fields');
+  if (status === 'nao_acompanhar') {
+    if (checkbox) checkbox.checked = false;
+    if (fields) fields.style.display = 'none';
+  } else {
+    if (checkbox && checkbox.checked && fields) fields.style.display = 'block';
+  }
+}
+
+function toggleNovoRetorno() {
+  const checked = document.getElementById('concluir-agendar-novo')?.checked || false;
+  const status = document.getElementById('concluir-status-proposta')?.value || '';
+  const fields = document.getElementById('concluir-novo-retorno-fields');
+  if (status === 'nao_acompanhar') {
+    const cb = document.getElementById('concluir-agendar-novo');
+    if (cb) cb.checked = false;
+    if (fields) fields.style.display = 'none';
+    notify('Este status não precisa de acompanhamento.', '#854f0b');
+    return;
+  }
+  if (fields) fields.style.display = checked ? 'block' : 'none';
+}
+
+function configurarModalConclusao(tipo, item) {
+  const title = document.getElementById('modal-concluir-title');
+  const resumo = document.getElementById('concluir-resumo');
+  const label = document.getElementById('concluir-obs-label');
+  const obs = document.getElementById('concluir-obs');
+  const canalWrap = document.getElementById('concluir-canal-wrap');
+  const canal = document.getElementById('concluir-canal');
+  const help = document.getElementById('concluir-help');
+  const budgetWrap = document.getElementById('concluir-orcamento-numeros');
+  const numPecas = document.getElementById('concluir-numero-pecas');
+  const numServico = document.getElementById('concluir-numero-servico');
+  const statusWrap = document.getElementById('concluir-status-wrap');
+  const status = document.getElementById('concluir-status-proposta');
+  const retornoLabel = document.getElementById('concluir-retorno-label');
+  const btn = document.getElementById('concluir-confirm-btn');
+
+  const cliente = item?.clienteId ? clientes.find(c=>c.id===item.clienteId) : null;
+  const nomeCliente = cliente ? cliente.nome : (item?.nome || item?.nomeAvulso || 'Cliente não vinculado');
+  const isProposta = tipo === 'orcamento' || tipo === 'solicitacao_orcamento';
+  const icon = isProposta ? 'fa-file-invoice-dollar' : 'fa-circle-check';
+
+  if (isProposta) {
+    const isSolicitacao = tipo === 'solicitacao_orcamento';
+    title.innerHTML = `<i class="fa-solid fa-file-invoice-dollar" style="color:var(--success);margin-right:8px"></i>Registrar proposta enviada`;
+    label.textContent = 'Observação sobre a proposta enviada (opcional)';
+    obs.placeholder = 'Ex: enviada conforme solicitado, cliente pediu retorno amanhã, faltou algum item, proposta enviada por e-mail/WhatsApp...';
+    if (canalWrap) canalWrap.style.display = 'none';
+    if (canal) canal.value = item?.canal || 'whatsapp';
+    if (budgetWrap) budgetWrap.style.display = 'block';
+    if (statusWrap) statusWrap.style.display = 'block';
+    if (status) status.value = item?.statusProposta || 'aguardando_retorno';
+    if (numPecas) numPecas.value = item?.numeroOrcamentoPecas || '';
+    if (numServico) numServico.value = item?.numeroOrcamentoServico || '';
+    if (retornoLabel) retornoLabel.textContent = 'Agendar retorno para acompanhar esta proposta';
+    if (btn) btn.innerHTML = '<i class="fa-solid fa-check"></i> Salvar proposta enviada';
+    if (help) {
+      help.style.display = 'block';
+      help.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:6px"></i>Ao salvar, a proposta será registrada no histórico, ficará classificada pelo status escolhido e, se houver cliente vinculado, será criado um contato automático.';
+    }
+    if (resumo) {
+      resumo.style.display = 'flex';
+      resumo.innerHTML = `<div class="concluir-summary-icon"><i class="fa-solid ${icon}"></i></div><div><div class="concluir-summary-title">${nomeCliente}</div><div class="concluir-summary-text">${isSolicitacao ? 'Solicitação de orçamento' : 'Orçamento recorrente'}<br>Produto/serviço: ${item?.produto || item?.obs || 'Não informado'}<br>${isSolicitacao ? `Prazo original: ${fmtDate(item?.prazo)}` : `Data do acompanhamento: ${fmtDate(item?.data)}`}</div></div>`;
+    }
+  } else {
+    title.innerHTML = '<i class="fa-solid fa-circle-check" style="color:var(--success);margin-right:8px"></i>Concluir retorno';
+    label.textContent = 'Como foi o retorno?';
+    obs.placeholder = 'Descreva o resultado, o que foi acordado, próximos passos...';
+    if (canalWrap) canalWrap.style.display = 'none';
+    if (budgetWrap) budgetWrap.style.display = 'none';
+    if (statusWrap) statusWrap.style.display = 'none';
+    if (numPecas) numPecas.value = '';
+    if (numServico) numServico.value = '';
+    if (retornoLabel) retornoLabel.textContent = 'Já agendar próximo retorno com este cliente';
+    if (btn) btn.innerHTML = '<i class="fa-solid fa-check"></i> Confirmar conclusão';
+    if (help) help.style.display = 'none';
+    if (resumo) { resumo.style.display = 'none'; resumo.innerHTML = ''; }
+  }
+}
+
+function abrirConcluir(id, tipo) {
+  let item = null;
+  if (tipo === 'orcamento') item = orcamentos.find(o=>o.id===id);
+  else if (tipo === 'solicitacao_orcamento') item = solicitacoesOrcamento.find(s=>s.id===id);
+  else item = agendamentos.find(a=>a.id===id);
+  if (!item) return;
+
+  document.getElementById('concluir-id').value = id;
+  document.getElementById('concluir-tipo').value = tipo;
+  document.getElementById('concluir-obs').value = '';
+  document.getElementById('concluir-numero-pecas').value = item?.numeroOrcamentoPecas || '';
+  document.getElementById('concluir-numero-servico').value = item?.numeroOrcamentoServico || '';
+
+  const isProposta = tipo === 'orcamento' || tipo === 'solicitacao_orcamento';
+  const cb = document.getElementById('concluir-agendar-novo');
+  const fields = document.getElementById('concluir-novo-retorno-fields');
+  if (cb) cb.checked = isProposta;
+  if (fields) fields.style.display = isProposta ? 'block' : 'none';
+  document.getElementById('concluir-novo-data').value = isProposta ? addDays(today(), 3) : '';
+  document.getElementById('concluir-novo-horario').value = '09:00';
+  document.getElementById('concluir-novo-motivo').value = isProposta ? 'Acompanhar proposta enviada' : '';
+  const st = document.getElementById('concluir-status-proposta');
+  if (st) st.value = item?.statusProposta || 'aguardando_retorno';
+
+  configurarModalConclusao(tipo, item);
+  openModal('modalConcluir');
+}
+
+function registrarContatoOrcamentoEnviado(clienteId, origem, texto, canal='whatsapp', extra={}) {
+  if (!clienteId) return false;
+  contatos.push({
+    id: Date.now() + Math.floor(Math.random()*1000),
+    clienteId,
+    data: today(),
+    canal,
+    descricao: texto,
+    semResposta: false,
+    editado: false,
+    edicoes: [],
+    origemOrcamento: origem,
+    propostaEnviada: true,
+    numeroOrcamentoPecas: extra.numeroOrcamentoPecas || '',
+    numeroOrcamentoServico: extra.numeroOrcamentoServico || '',
+    observacaoProposta: extra.observacaoProposta || '',
+    statusProposta: extra.statusProposta || 'aguardando_retorno'
+  });
+  return true;
+}
+
+function agendarProximoRetornoConclusao(clienteId, produto='') {
+  const check = document.getElementById('concluir-agendar-novo')?.checked || false;
+  const status = document.getElementById('concluir-status-proposta')?.value || '';
+  if (!check || status === 'nao_acompanhar') return false;
+  if (!clienteId) return false;
+  const data = document.getElementById('concluir-novo-data')?.value || '';
+  if (!data) {
+    notify('Proposta salva, mas o próximo retorno não foi agendado porque a data ficou vazia.', '#854f0b');
+    return false;
+  }
+  agendamentos.push({
+    id: Date.now() + Math.floor(Math.random()*1000),
+    clienteId,
+    data,
+    horario: document.getElementById('concluir-novo-horario')?.value || '09:00',
+    motivo: document.getElementById('concluir-novo-motivo')?.value.trim() || (produto ? `Acompanhar proposta enviada: ${produto}` : 'Acompanhar proposta enviada'),
+    prioridade: 'normal',
+    criadoEm: today()
+  });
+  return true;
+}
+
+function marcarSolicitacaoFeita(id, obsFinal='', canalContato='whatsapp', numerosOrcamento={}, opcoes={}) {
+  const sol = solicitacoesOrcamento.find(x => x.id === id);
+  if (!sol) return;
+  const dados = dadosSolicitacaoCliente(sol);
+  const statusProposta = opcoes.statusProposta || document.getElementById('concluir-status-proposta')?.value || 'aguardando_retorno';
+  concluidos.push({
+    id: Date.now(),
+    tipo: 'solicitacao_orcamento',
+    clienteId: sol.clienteId || null,
+    nomeAvulso: dados.nome,
+    empresaAvulsa: dados.empresa,
+    cnpjAvulso: sol.cnpj || '',
+    solicitanteAvulso: sol.solicitante || '',
+    produto: sol.produto || '',
+    telefoneAvulso: sol.telefone || '',
+    emailAvulso: sol.email || '',
+    anexos: [...(sol.anexos || [])],
+    numeroOrcamentoPecas: numerosOrcamento.pecas || '',
+    numeroOrcamentoServico: numerosOrcamento.servico || '',
+    dataOriginal: sol.prazo,
+    dataSolicitacao: sol.dataSolicitacao,
+    prioridade: sol.prioridade || 'normal',
+    canal: sol.canal || '',
+    motivo: sol.descricao,
+    obsConclusao: (obsFinal || '').trim() || sol.obs || '',
+    concluidoEm: today(),
+    statusProposta
+  });
+
+  const contatoRegistrado = registrarContatoOrcamentoEnviado(
+    sol.clienteId,
+    'solicitacao_orcamento',
+    `Proposta enviada a partir de uma solicitação registrada.\nProduto/serviço: ${sol.produto || 'Não informado'}\nStatus: ${statusPropostaLabel(statusProposta)}\nSolicitação original: ${sol.descricao || '—'}${obsFinal ? `\nObservação do envio: ${obsFinal}` : ''}`,
+    canalContato || sol.canal || 'whatsapp',
+    { numeroOrcamentoPecas: numerosOrcamento.pecas || '', numeroOrcamentoServico: numerosOrcamento.servico || '', observacaoProposta: obsFinal || '', statusProposta }
+  );
+
+  agendarProximoRetornoConclusao(sol.clienteId, sol.produto || '');
+  solicitacoesOrcamento = solicitacoesOrcamento.filter(s => s.id !== id);
+  save();
+  closeModal('modalConcluir');
+  renderSolicitacoesTabela(); renderDashboard(); renderHistorico(); renderAgenda(); renderClientes();
+  notify(contatoRegistrado ? '✓ Proposta enviada, contato registrado e acompanhamento atualizado!' : '✓ Proposta enviada registrada!', '#0d3d2a');
+}
+
+function confirmarConclusao() {
+  const id = +document.getElementById('concluir-id').value;
+  const tipo = document.getElementById('concluir-tipo').value;
+  const obsConclusao = document.getElementById('concluir-obs').value.trim();
+  const numeroPecas = document.getElementById('concluir-numero-pecas')?.value.trim() || '';
+  const numeroServico = document.getElementById('concluir-numero-servico')?.value.trim() || '';
+  const numerosOrcamento = { pecas: numeroPecas, servico: numeroServico };
+  const canalContato = document.getElementById('concluir-canal')?.value || 'whatsapp';
+  const statusProposta = document.getElementById('concluir-status-proposta')?.value || 'aguardando_retorno';
+
+  if (tipo === 'solicitacao_orcamento') {
+    const sol = solicitacoesOrcamento.find(s=>s.id===id);
+    marcarSolicitacaoFeita(id, obsConclusao, sol?.canal || canalContato, numerosOrcamento, { statusProposta });
+    return;
+  }
+
+  if (tipo === 'orcamento') {
+    const item = orcamentos.find(o=>o.id===id);
+    if (!item) return;
+    concluidos.push({
+      id: Date.now(), tipo:'orcamento', clienteId:item.clienteId, dataOriginal:item.data, motivo:item.obs,
+      obsConclusao, numeroOrcamentoPecas: numeroPecas, numeroOrcamentoServico: numeroServico,
+      concluidoEm: today(), statusProposta
+    });
+    registrarContatoOrcamentoEnviado(
+      item.clienteId,
+      'orcamento_recorrente',
+      `Proposta enviada a partir de orçamento recorrente.\nData do acompanhamento: ${fmtDate(item.data)}\nStatus: ${statusPropostaLabel(statusProposta)}${numeroPecas ? `\nNº orçamento de peças: ${numeroPecas}` : ''}${numeroServico ? `\nNº orçamento de serviço: ${numeroServico}` : ''}\nObservação original: ${item.obs || '—'}${obsConclusao ? `\nObservação do envio: ${obsConclusao}` : ''}`,
+      'whatsapp',
+      { numeroOrcamentoPecas: numeroPecas, numeroOrcamentoServico: numeroServico, observacaoProposta: obsConclusao, statusProposta }
+    );
+    agendarProximoRetornoConclusao(item.clienteId, item.obs || '');
+    if (item.repetir) {
+      orcamentos.push({ ...item, id: Date.now()+1, data: addDays(item.data, 30) });
+    }
+    orcamentos = orcamentos.filter(o=>o.id!==id);
+    save(); closeModal('modalConcluir');
+    renderAgenda(); renderDashboard(); renderOrcamentosTabela(); renderSolicitacoesTabela(); renderHistorico(); renderClientes();
+    notify('✓ Proposta enviada e acompanhamento atualizado!', '#0d3d2a');
+    return;
+  }
+
+  const item = agendamentos.find(a=>a.id===id);
+  if (item) {
+    concluidos.push({ id: Date.now(), tipo:'retorno', clienteId:item.clienteId, dataOriginal:item.data, motivo:item.motivo, obsConclusao, concluidoEm: today() });
+    agendamentos = agendamentos.filter(a=>a.id!==id);
+    if (document.getElementById('concluir-agendar-novo').checked) {
+      const novaData = document.getElementById('concluir-novo-data').value;
+      if (novaData) {
+        agendamentos.push({
+          id: Date.now()+1,
+          clienteId: item.clienteId,
+          data: novaData,
+          horario: document.getElementById('concluir-novo-horario').value || '09:00',
+          motivo: document.getElementById('concluir-novo-motivo').value.trim() || 'Retorno agendado',
+          prioridade: 'normal',
+          criadoEm: today()
+        });
+      } else {
+        notify('Conclusão salva, mas o próximo retorno não foi agendado (data vazia)','#854f0b');
+      }
+    }
+  }
+  save(); closeModal('modalConcluir');
+  renderAgenda(); renderDashboard(); renderOrcamentosTabela(); renderSolicitacoesTabela(); renderHistorico(); renderClientes();
+  notify('✓ Concluído e registrado no histórico!','#0d3d2a');
+}
+
+
+
+/* ===== PROPOSTAS EM ACOMPANHAMENTO ===== */
+function propostaPrecisaAcompanhamento(status) {
+  return !['aprovada','recusada','nao_acompanhar'].includes(status || 'aguardando_retorno');
+}
+
+function propostaStatusClasse(status) {
+  if (status === 'sem_resposta') return 'alerta';
+  if (status === 'cliente_pediu_ajuste') return 'ajuste';
+  return '';
+}
+
+function propostaSourceFromRef(ref) {
+  if (!ref) return null;
+  if (String(ref).startsWith('ct-')) {
+    const id = +String(ref).replace('ct-','');
+    const item = contatos.find(c => c.id === id);
+    return item ? { tipo:'contato', item, id } : null;
+  }
+  if (String(ref).startsWith('cc-')) {
+    const id = +String(ref).replace('cc-','');
+    const item = concluidos.find(c => c.id === id);
+    return item ? { tipo:'concluido', item, id } : null;
+  }
+  return null;
+}
+
+function propostaClienteNome(clienteId, fallback='Cliente não cadastrado') {
+  const c = clientes.find(x => x.id === clienteId);
+  return c ? c.nome : fallback;
+}
+
+function listaPropostasHistorico() {
+  const propostasContato = contatos.filter(contatoRepresentaProposta).map(ct => {
+    const c = clientes.find(x=>x.id===ct.clienteId);
+    return {
+      id: 'ct-'+ct.id,
+      ref: 'ct-'+ct.id,
+      sourceTipo: 'contato',
+      data: ct.data || today(),
+      clienteId: ct.clienteId || null,
+      nome: c?.nome || 'Cliente removido',
+      empresa: c?.empresa || '',
+      origem: ct.origemOrcamento ? 'Orçamento feito/enviado' : 'Contato registrado',
+      descricao: ct.observacaoProposta || ct.descricao || '',
+      canal: ct.canal || '',
+      pecas: ct.numeroOrcamentoPecas || '',
+      servico: ct.numeroOrcamentoServico || '',
+      status: ct.statusProposta || 'aguardando_retorno',
+      statusHistorico: ct.alteracoesStatusProposta || []
+    };
+  });
+  const propostasAvulsas = concluidos
+    .filter(cc => ['solicitacao_orcamento','orcamento'].includes(cc.tipo))
+    .filter(cc => !cc.clienteId || !contatos.some(ct => ct.origemOrcamento && ct.clienteId === cc.clienteId && ct.data === cc.concluidoEm))
+    .map(cc => {
+      const c = clientes.find(x=>x.id===cc.clienteId);
+      return {
+        id:'cc-'+cc.id,
+        ref:'cc-'+cc.id,
+        sourceTipo:'concluido',
+        data: cc.concluidoEm || today(),
+        clienteId: cc.clienteId || null,
+        nome: c?.nome || cc.nomeAvulso || 'Cliente não cadastrado',
+        empresa: c?.empresa || cc.empresaAvulsa || '',
+        origem: cc.tipo === 'orcamento' ? 'Orçamento recorrente concluído' : 'Solicitação concluída',
+        descricao: cc.obsConclusao || cc.motivo || cc.produto || '',
+        canal: cc.canal || '',
+        pecas: cc.numeroOrcamentoPecas || '',
+        servico: cc.numeroOrcamentoServico || '',
+        status: cc.statusProposta || 'aguardando_retorno',
+        statusHistorico: cc.alteracoesStatusProposta || []
+      };
+    });
+  return [...propostasContato, ...propostasAvulsas].sort((a,b)=>(b.data||'').localeCompare(a.data||''));
+}
+
+function listaPropostasEmAcompanhamento() {
+  return listaPropostasHistorico()
+    .filter(p => propostaPrecisaAcompanhamento(p.status))
+    .sort((a,b) => {
+      const peso = s => s === 'sem_resposta' ? 0 : s === 'cliente_pediu_ajuste' ? 1 : 2;
+      return peso(a.status) - peso(b.status) || (a.data || '').localeCompare(b.data || '');
+    });
+}
+
+function renderPropostaAcompanhamentoCard(p) {
+  const nums = (p.pecas || p.servico) ? `<div class="proposta-acompanhamento-meta"><strong>Nº orçamento:</strong> ${p.pecas?`Peças ${p.pecas}`:''}${p.pecas&&p.servico?' • ':''}${p.servico?`Serviço ${p.servico}`:''}</div>` : '';
+  const statusLog = p.statusHistorico?.length ? `<div class="proposta-status-log"><i class="fa-solid fa-clock-rotate-left"></i> Última atualização: ${fmtDate(p.statusHistorico[p.statusHistorico.length-1].em)} — ${statusPropostaLabel(p.statusHistorico[p.statusHistorico.length-1].para)}</div>` : '';
+  return `<div class="proposta-acompanhamento-card ${propostaStatusClasse(p.status)}">
+    <div class="proposta-acompanhamento-top">
+      <div>
+        <div class="proposta-acompanhamento-title">${p.nome}</div>
+        ${p.empresa?`<div class="proposta-acompanhamento-meta">${p.empresa}</div>`:''}
+      </div>
+      <span class="badge ${statusPropostaBadge(p.status)}">${statusPropostaLabel(p.status)}</span>
+    </div>
+    <div class="proposta-acompanhamento-meta"><strong>Enviada em:</strong> ${fmtDate(p.data)} • ${p.origem}</div>
+    ${nums}
+    ${p.descricao?`<div class="proposta-acompanhamento-desc">${String(p.descricao).replace(/\n/g,'<br>')}</div>`:''}
+    ${statusLog}
+    <div class="proposta-acompanhamento-actions">
+      <button class="btn btn-primary btn-sm" onclick="abrirAtualizarStatusProposta('${p.ref}')"><i class="fa-solid fa-sliders"></i> Atualizar status</button>
+      ${p.clienteId?`<button class="btn btn-ghost btn-sm" onclick="registrarContatoFromProposta('${p.ref}')"><i class="fa-solid fa-phone"></i> Contato</button>`:''}
+      ${p.clienteId?`<button class="btn btn-warning btn-sm" onclick="agendarRetornoFromProposta('${p.ref}')"><i class="fa-regular fa-calendar-plus"></i> Retorno</button>`:''}
+      <button class="btn btn-success btn-sm" onclick="atualizarStatusPropostaRapido('${p.ref}','aprovada')"><i class="fa-solid fa-check"></i> Aprovada</button>
+      <button class="btn btn-danger btn-sm" onclick="atualizarStatusPropostaRapido('${p.ref}','recusada')"><i class="fa-solid fa-xmark"></i> Recusada</button>
+    </div>
+  </div>`;
+}
+
+function renderPropostasAcompanhamento() {
+  const lista = listaPropostasEmAcompanhamento();
+  const el = document.getElementById('dash-propostas-acompanhamento');
+  const count = document.getElementById('propostas-acompanhamento-count');
+  if (count) count.textContent = lista.length;
+  if (el) {
+    el.innerHTML = lista.length
+      ? `<div class="proposta-acompanhamento-list">${lista.map(renderPropostaAcompanhamentoCard).join('')}</div>`
+      : `<div class="empty"><i class="fa-solid fa-handshake-angle"></i><p>Nenhuma proposta em acompanhamento.</p><small>Propostas aprovadas, recusadas ou sem necessidade de acompanhamento saem desta lista.</small></div>`;
+  }
+  const overview = document.getElementById('historico-overview');
+  if (overview && !document.getElementById('historico-propostas-acompanhamento-card')) {
+    overview.insertAdjacentHTML('beforeend', `<div class="historico-overview-card" id="historico-propostas-acompanhamento-card"><span>Em acompanhamento</span><strong>${lista.length}</strong></div>`);
+  } else {
+    const card = document.querySelector('#historico-propostas-acompanhamento-card strong');
+    if (card) card.textContent = lista.length;
+  }
+}
+
+function abrirAtualizarStatusProposta(ref) {
+  const p = listaPropostasHistorico().find(x => x.ref === ref || x.id === ref);
+  if (!p) { notify('Proposta não encontrada.', '#7a1a1a'); return; }
+  document.getElementById('status-proposta-ref').value = p.ref;
+  document.getElementById('status-proposta-valor').value = p.status || 'aguardando_retorno';
+  document.getElementById('status-proposta-obs').value = '';
+  document.getElementById('status-proposta-resumo').innerHTML = `<strong>${p.nome}</strong><div>${p.empresa || 'Sem empresa'}<br>Enviada em ${fmtDate(p.data)} • ${p.origem}<br>Status atual: ${statusPropostaLabel(p.status)}</div>`;
+  openModal('modalStatusProposta');
+}
+
+function aplicarStatusProposta(ref, novoStatus, obs='') {
+  const src = propostaSourceFromRef(ref);
+  if (!src) { notify('Registro da proposta não encontrado.', '#7a1a1a'); return false; }
+  const item = src.item;
+  const anterior = item.statusProposta || 'aguardando_retorno';
+  item.statusProposta = novoStatus;
+  if (!item.alteracoesStatusProposta) item.alteracoesStatusProposta = [];
+  item.alteracoesStatusProposta.push({ em: today(), de: anterior, para: novoStatus, obs: obs || '' });
+
+  const clienteId = item.clienteId || null;
+  if (clienteId) {
+    contatos.push({
+      id: Date.now() + Math.floor(Math.random()*1000),
+      clienteId,
+      data: today(),
+      canal: 'sistema',
+      descricao: `Status da proposta atualizado: ${statusPropostaLabel(anterior)} → ${statusPropostaLabel(novoStatus)}${obs ? `\nObservação: ${obs}` : ''}`,
+      semResposta: false,
+      editado: false,
+      edicoes: []
+    });
+  }
+  save();
+  renderHistorico();
+  renderDashboard();
+  renderClientes();
+  return true;
+}
+
+function salvarStatusPropostaAcompanhamento() {
+  const ref = document.getElementById('status-proposta-ref')?.value || '';
+  const novoStatus = document.getElementById('status-proposta-valor')?.value || 'aguardando_retorno';
+  const obs = document.getElementById('status-proposta-obs')?.value.trim() || '';
+  if (aplicarStatusProposta(ref, novoStatus, obs)) {
+    closeModal('modalStatusProposta');
+    notify('✓ Status da proposta atualizado!', '#0d3d2a');
+  }
+}
+
+function atualizarStatusPropostaRapido(ref, status) {
+  const obs = status === 'aprovada' ? 'Marcada como aprovada pelo acompanhamento.' : status === 'recusada' ? 'Marcada como recusada pelo acompanhamento.' : '';
+  if (aplicarStatusProposta(ref, status, obs)) notify('✓ Status atualizado!', '#0d3d2a');
+}
+
+function registrarContatoFromProposta(ref) {
+  const p = listaPropostasHistorico().find(x => x.ref === ref || x.id === ref);
+  if (!p?.clienteId) { notify('Esta proposta não possui cliente vinculado.', '#854f0b'); return; }
+  openContatoFor(p.clienteId);
+  setTimeout(() => {
+    const desc = document.getElementById('ct-descricao');
+    if (desc) desc.value = `Acompanhamento da proposta enviada em ${fmtDate(p.data)}. Status atual: ${statusPropostaLabel(p.status)}.`;
+  }, 120);
+}
+
+function agendarRetornoFromProposta(ref) {
+  const p = listaPropostasHistorico().find(x => x.ref === ref || x.id === ref);
+  if (!p?.clienteId) { notify('Esta proposta não possui cliente vinculado.', '#854f0b'); return; }
+  openAgendamentoFor(p.clienteId);
+  setTimeout(() => {
+    const motivo = document.getElementById('ag-motivo');
+    const data = document.getElementById('ag-data');
+    if (motivo) motivo.value = `Acompanhar proposta enviada em ${fmtDate(p.data)} — ${statusPropostaLabel(p.status)}`;
+    if (data && !data.value) data.value = addDays(today(), 3);
+  }, 120);
+}
+
+const renderHistoricoBaseComAcompanhamento = renderHistorico;
+renderHistorico = function() {
+  renderHistoricoBaseComAcompanhamento();
+  renderPropostasAcompanhamento();
+};
+
+const criarAcoesDoDiaBaseComPropostas = criarAcoesDoDia;
+criarAcoesDoDia = function() {
+  const hoje = today();
+  const base = criarAcoesDoDiaBaseComPropostas();
+  const propostas = listaPropostasEmAcompanhamento().filter(p => {
+    if (p.status === 'sem_resposta' || p.status === 'cliente_pediu_ajuste') return true;
+    const retornos = agendamentos.filter(a => a.clienteId === p.clienteId && /proposta/i.test(a.motivo || '') && a.data <= hoje);
+    return retornos.length > 0;
+  }).slice(0, 6).map(p => ({
+    tipo: 'orcamento',
+    data: p.data,
+    prioridade: p.status === 'sem_resposta' ? 'urgente' : 'normal',
+    nome: p.nome,
+    titulo: p.status === 'sem_resposta' ? 'Proposta sem resposta' : p.status === 'cliente_pediu_ajuste' ? 'Proposta com ajuste solicitado' : 'Proposta em acompanhamento',
+    meta: `${p.empresa || 'Sem empresa'} • ${statusPropostaLabel(p.status)}`,
+    detalhe: p.descricao || 'Acompanhar proposta enviada.',
+    classe: p.status === 'sem_resposta' ? 'atrasado' : 'hoje',
+    score: p.status === 'sem_resposta' ? 0 : 1,
+    htmlAcoes: `<button class="btn btn-primary btn-sm" onclick="abrirAtualizarStatusProposta('${p.ref}')"><i class="fa-solid fa-sliders"></i> Status</button>${p.clienteId?`<button class="btn btn-ghost btn-sm" onclick="registrarContatoFromProposta('${p.ref}')"><i class="fa-solid fa-phone"></i> Contato</button>`:''}`
+  }));
+  return ordenarAcoesDoDia([...propostas, ...base]).slice(0, 10);
+};
+
 </script>
+
+<div class="modal-overlay" id="modalStatusProposta">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-header">
+      <h3><i class="fa-solid fa-sliders" style="color:var(--warning);margin-right:8px"></i>Atualizar status da proposta</h3>
+      <button onclick="closeModal('modalStatusProposta')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="status-proposta-ref">
+      <div id="status-proposta-resumo" class="proposta-status-summary"></div>
+      <div class="form-group">
+        <label>Status atual da proposta</label>
+        <select id="status-proposta-valor">
+          <option value="aguardando_retorno">Aguardando retorno do cliente</option>
+          <option value="cliente_pediu_ajuste">Cliente pediu ajuste</option>
+          <option value="aprovada">Aprovada</option>
+          <option value="recusada">Recusada</option>
+          <option value="sem_resposta">Sem resposta</option>
+          <option value="nao_acompanhar">Não preciso acompanhar esta proposta</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Observação da atualização</label>
+        <textarea id="status-proposta-obs" placeholder="Ex: cliente pediu revisão, aguardando aprovação do financeiro, proposta aprovada, cliente recusou por preço..."></textarea>
+      </div>
+      <div class="field-note">A alteração será registrada no histórico do cliente, quando houver cliente vinculado.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalStatusProposta')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarStatusPropostaAcompanhamento()"><i class="fa-solid fa-check"></i> Salvar status</button>
+    </div>
+  </div>
+</div>
+
+
+<script id="ajustes-kanban-propostas-historico-notificacoes">
+(function(){
+  function esc(v){ return String(v ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+  function safeStatus(status){ return status || 'aguardando_retorno'; }
+  function propostaKanbanCols(){
+    return [
+      {key:'aguardando_retorno', title:'Aguardando retorno', icon:'fa-clock', help:'Propostas enviadas aguardando resposta do cliente.'},
+      {key:'cliente_pediu_ajuste', title:'Ajuste solicitado', icon:'fa-pen-ruler', help:'Cliente pediu revisão, nova condição ou complemento.'},
+      {key:'sem_resposta', title:'Sem resposta', icon:'fa-comment-slash', help:'Propostas que exigem nova tentativa de contato.'}
+    ];
+  }
+  window.ensurePropostasAcompanhamentoKanbanUI = function(){
+    if (document.getElementById('propostas-acompanhamento-kanban-section')) return;
+    const fila = document.querySelector('#view-solicitacoes .orcamento-kanban-wrap');
+    if (!fila) return;
+    fila.insertAdjacentHTML('afterend', `
+      <div class="propostas-kanban-wrap" id="propostas-acompanhamento-kanban-section">
+        <div class="propostas-kanban-title-clean">
+          <div>
+            <h3><i class="fa-solid fa-handshake-angle" style="color:var(--accent)"></i> Propostas em Acompanhamento</h3>
+            <small>Acompanhe o pós-envio da proposta. Arraste os cards entre as colunas ou use as ações rápidas.</small>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="renderPropostasAcompanhamentoKanban()"><i class="fa-solid fa-rotate-right"></i> Atualizar</button>
+        </div>
+        <div class="propostas-kanban-board" id="propostas-acompanhamento-kanban"></div>
+      </div>`);
+  };
+
+  window.renderSolicitacoesKanban = function(){
+    const board = document.getElementById('solicitacoes-kanban');
+    const countEl = document.getElementById('solicitacao-count');
+    if (!board) return;
+    let lista = getSolicitacoesFiltradasBase();
+    const cols = [
+      {key:'nova', title:'Novas solicitações', icon:'fa-inbox', cls:'', list:lista.filter(s=>(s.etapa||'nova')==='nova')},
+      {key:'aguardando_info', title:'Aguardando informações', icon:'fa-circle-question', cls:'info', list:lista.filter(s=>s.etapa==='aguardando_info')},
+      {key:'aguardando_cotacao', title:'Aguardando cotação de peças', icon:'fa-gears', cls:'pecas', list:lista.filter(s=>s.etapa==='aguardando_cotacao')},
+      {key:'em_elaboracao', title:'Orçamento em elaboração', icon:'fa-file-pen', cls:'elaboracao', list:lista.filter(s=>s.etapa==='em_elaboracao')}
+    ];
+    const totalExibido = cols.reduce((acc,c)=>acc+c.list.length,0);
+    if (countEl) countEl.textContent = totalExibido;
+    board.innerHTML = cols.map(col => `
+      <div class="orcamento-kanban-col" data-etapa="${col.key}">
+        <div class="orcamento-kanban-head">
+          <div class="orcamento-kanban-title"><i class="fa-solid ${col.icon}" style="color:${col.key==='nova'?'var(--warning)':col.key==='aguardando_info'?'var(--accent)':col.key==='aguardando_cotacao'?'var(--purple)':'var(--cyan)'}"></i> ${col.title}</div>
+        </div>
+        <div class="orcamento-kanban-body" ondragover="allowDropSolicitacaoKanban(event)" ondragleave="leaveDropSolicitacaoKanban(event)" ondrop="dropSolicitacaoKanban(event,'${col.key}')">
+          ${col.list.length ? col.list.map(sol => cardKanbanSolicitacao(sol, col.cls)).join('') : `<div class="empty" style="padding:24px 10px"><i class="fa-solid ${col.icon}"></i><p>Nenhum item nesta etapa.</p></div>`}
+        </div>
+      </div>`).join('');
+  };
+
+  window.renderPropostaKanbanCard = function(p){
+    const status = safeStatus(p.status);
+    const classe = propostaStatusClasse(status);
+    const nums = (p.pecas || p.servico) ? `<div class="proposta-kanban-meta"><strong>Nº orçamento:</strong> ${p.pecas?`Peças ${esc(p.pecas)}`:''}${p.pecas&&p.servico?' • ':''}${p.servico?`Serviço ${esc(p.servico)}`:''}</div>` : '';
+    return `<div class="proposta-kanban-card ${classe}" draggable="true" data-proposta-ref="${esc(p.ref)}" ondblclick="abrirAtualizarStatusProposta('${esc(p.ref)}')" ondragstart="dragPropostaKanban(event,'${esc(p.ref)}')" ondragend="dragEndPropostaKanban(event)" title="Duplo clique para atualizar o status">
+      <div class="proposta-kanban-card-top">
+        <div style="min-width:0;flex:1">
+          <div class="proposta-kanban-title">${esc(p.nome)}</div>
+          ${p.empresa?`<div class="proposta-kanban-meta">${esc(p.empresa)}</div>`:''}
+        </div>
+        <span class="proposta-kanban-status">${statusPropostaLabel(status)}</span>
+      </div>
+      <div class="proposta-kanban-meta"><strong>Enviada em:</strong> ${fmtDate(p.data)} • ${esc(p.origem || 'Proposta enviada')}</div>
+      ${nums}
+      ${p.descricao?`<div class="proposta-kanban-desc">${esc(p.descricao)}</div>`:''}
+      <div class="proposta-kanban-actions">
+        <button class="btn btn-primary btn-sm" onclick="abrirAtualizarStatusProposta('${esc(p.ref)}'); event.stopPropagation();"><i class="fa-solid fa-sliders"></i> Status</button>
+        ${p.clienteId?`<button class="btn btn-ghost btn-sm" onclick="registrarContatoFromProposta('${esc(p.ref)}'); event.stopPropagation();"><i class="fa-solid fa-phone"></i> Contato</button><button class="btn btn-warning btn-sm" onclick="agendarRetornoFromProposta('${esc(p.ref)}'); event.stopPropagation();"><i class="fa-regular fa-calendar-plus"></i> Retorno</button>`:''}
+        <button class="btn btn-success btn-sm" onclick="atualizarStatusPropostaRapido('${esc(p.ref)}','aprovada'); event.stopPropagation();"><i class="fa-solid fa-check"></i> Aprovada</button>
+        <button class="btn btn-danger btn-sm" onclick="atualizarStatusPropostaRapido('${esc(p.ref)}','recusada'); event.stopPropagation();"><i class="fa-solid fa-xmark"></i> Recusada</button>
+      </div>
+    </div>`;
+  };
+
+  window.renderPropostasAcompanhamentoKanban = function(){
+    ensurePropostasAcompanhamentoKanbanUI();
+    const board = document.getElementById('propostas-acompanhamento-kanban');
+    if (!board || typeof listaPropostasEmAcompanhamento !== 'function') return;
+    const lista = listaPropostasEmAcompanhamento();
+    const cols = propostaKanbanCols();
+    board.innerHTML = cols.map(col => {
+      const itens = lista.filter(p => safeStatus(p.status) === col.key);
+      return `<div class="propostas-kanban-col" data-status="${col.key}">
+        <div class="propostas-kanban-head">
+          <div class="propostas-kanban-title"><i class="fa-solid ${col.icon}" style="color:${col.key==='sem_resposta'?'var(--danger)':col.key==='cliente_pediu_ajuste'?'var(--warning)':'var(--accent)'}"></i> ${col.title}</div>
+          <div class="propostas-kanban-subtitle">${col.help}</div>
+        </div>
+        <div class="propostas-kanban-body" ondragover="allowDropPropostaKanban(event)" ondragleave="leaveDropPropostaKanban(event)" ondrop="dropPropostaKanban(event,'${col.key}')">
+          ${itens.length ? itens.map(renderPropostaKanbanCard).join('') : `<div class="proposta-kanban-empty"><i class="fa-solid ${col.icon}"></i>Nenhuma proposta nesta etapa.</div>`}
+        </div>
+      </div>`;
+    }).join('');
+  };
+
+  window.dragPropostaKanban = function(ev, ref){ ev.dataTransfer.setData('text/proposta-ref', ref); ev.dataTransfer.effectAllowed = 'move'; ev.currentTarget.classList.add('dragging'); };
+  window.dragEndPropostaKanban = function(ev){ ev.currentTarget.classList.remove('dragging'); document.querySelectorAll('.propostas-kanban-body.drag-over').forEach(x=>x.classList.remove('drag-over')); };
+  window.allowDropPropostaKanban = function(ev){ ev.preventDefault(); ev.currentTarget.classList.add('drag-over'); };
+  window.leaveDropPropostaKanban = function(ev){ ev.currentTarget.classList.remove('drag-over'); };
+  window.dropPropostaKanban = function(ev, status){
+    ev.preventDefault();
+    ev.currentTarget.classList.remove('drag-over');
+    const ref = ev.dataTransfer.getData('text/proposta-ref');
+    if (!ref) return;
+    if (aplicarStatusProposta(ref, status, 'Movido no Kanban de Propostas em Acompanhamento.')) {
+      renderPropostasAcompanhamentoKanban();
+      notify('✓ Proposta movida para: ' + statusPropostaLabel(status), '#0d3d2a');
+    }
+  };
+
+  const renderSolicitacoesTabelaBaseAjuste = window.renderSolicitacoesTabela;
+  window.renderSolicitacoesTabela = function(){
+    renderSolicitacoesTabelaBaseAjuste();
+    renderPropostasAcompanhamentoKanban();
+  };
+
+  const renderPropostasAcompanhamentoBase = window.renderPropostasAcompanhamento;
+  window.renderPropostasAcompanhamento = function(){
+    if (typeof renderPropostasAcompanhamentoBase === 'function') renderPropostasAcompanhamentoBase();
+    renderPropostasAcompanhamentoKanban();
+  };
+
+  window.criarNotificacoesInternas = function(){
+    const hoje = today();
+    const itens = [];
+    const add = (nivel, titulo, meta, icon, actions='') => itens.push({nivel,titulo,meta,icon,actions});
+    solicitacoesOrcamento.forEach(s => {
+      const d = dadosSolicitacaoCliente(s);
+      if (s.prazo < hoje) add('critica', 'Solicitação atrasada', `${d.nome} • Prazo ${fmtDate(s.prazo)}`, 'fa-triangle-exclamation', `<button class="btn btn-danger btn-sm" onclick="irParaSolicitacaoEditar(${s.id})">Abrir</button>`);
+      else if (s.prazo === hoje) add('atencao', 'Solicitação para hoje', `${d.nome} • ${s.produto || 'Sem produto informado'}`, 'fa-bell', `<button class="btn btn-warning btn-sm" onclick="irParaSolicitacaoEditar(${s.id})">Abrir</button>`);
+      if (!s.clienteId) add('atencao', 'Solicitação sem cliente cadastrado', `${d.nome} • vincule ou cadastre o cliente`, 'fa-user-slash', `<button class="btn btn-ghost btn-sm" onclick="irParaSolicitacaoEditar(${s.id})">Vincular</button>`);
+    });
+    agendamentos.forEach(a => {
+      const c = clientes.find(x=>x.id===a.clienteId);
+      if (a.data < hoje) add('critica', 'Retorno atrasado', `${c?.nome || 'Cliente'} • ${fmtDate(a.data)} ${a.horario || ''}`, 'fa-calendar-xmark', `<button class="btn btn-danger btn-sm" onclick="editarAgendamento(${a.id})">Abrir</button>`);
+      else if (a.data === hoje) add('atencao', 'Retorno para hoje', `${c?.nome || 'Cliente'} • ${a.horario || 'Sem horário'}`, 'fa-calendar-day', `<button class="btn btn-warning btn-sm" onclick="editarAgendamento(${a.id})">Abrir</button>`);
+    });
+    orcamentos.forEach(o => {
+      const c = clientes.find(x=>x.id===o.clienteId);
+      if (o.data < hoje) add('critica', 'Orçamento recorrente atrasado', `${c?.nome || 'Cliente'} • ${fmtDate(o.data)}`, 'fa-file-circle-exclamation', `<button class="btn btn-danger btn-sm" onclick="editarOrcamento(${o.id})">Abrir</button>`);
+      else if (o.data === hoje) add('atencao', 'Orçamento recorrente para hoje', `${c?.nome || 'Cliente'} • ${o.horario || 'Sem horário'}`, 'fa-file-invoice-dollar', `<button class="btn btn-warning btn-sm" onclick="editarOrcamento(${o.id})">Abrir</button>`);
+    });
+    if (typeof listaPropostasEmAcompanhamento === 'function') {
+      listaPropostasEmAcompanhamento().forEach(p => {
+        if (p.status === 'sem_resposta') add('critica', 'Proposta sem resposta', `${p.nome} • enviada em ${fmtDate(p.data)}`, 'fa-comment-slash', `<button class="btn btn-primary btn-sm" onclick="abrirAtualizarStatusProposta('${p.ref}')">Status</button>`);
+        else if (p.status === 'cliente_pediu_ajuste') add('atencao', 'Proposta com ajuste solicitado', `${p.nome} • revise a proposta`, 'fa-pen-ruler', `<button class="btn btn-primary btn-sm" onclick="abrirAtualizarStatusProposta('${p.ref}')">Status</button>`);
+      });
+    }
+    const peso = {critica:0, atencao:1, info:2};
+    return itens.sort((a,b)=>peso[a.nivel]-peso[b.nivel]).slice(0, 12);
+  };
+
+  window.ensureNotificacoesInternasUI = function(){
+    if (document.getElementById('notificacoes-internas-card')) return;
+    const ref = document.getElementById('card-acoes-prioritarias');
+    if (!ref) return;
+    ref.insertAdjacentHTML('afterend', `<div class="card notificacoes-internas-card" id="notificacoes-internas-card">
+      <div class="card-header">
+        <div class="card-title"><i class="fa-solid fa-bell" style="color:var(--warning)"></i> Notificações internas</div>
+        <span id="notificacoes-internas-count" class="badge badge-gray">0</span>
+      </div>
+      <div id="notificacoes-internas-list"></div>
+    </div>`);
+  };
+
+  window.renderNotificacoesInternas = function(){
+    ensureNotificacoesInternasUI();
+    const el = document.getElementById('notificacoes-internas-list');
+    const count = document.getElementById('notificacoes-internas-count');
+    if (!el) return;
+    const itens = criarNotificacoesInternas();
+    if (count) count.textContent = itens.length;
+    el.innerHTML = itens.length ? `<div class="notificacoes-internas-list">${itens.map(n => `<div class="notificacao-interna-item ${n.nivel}">
+      <div class="notificacao-interna-icon"><i class="fa-solid ${n.icon}"></i></div>
+      <div style="flex:1;min-width:0"><div class="notificacao-interna-title">${esc(n.titulo)}</div><div class="notificacao-interna-meta">${esc(n.meta)}</div>${n.actions?`<div class="notificacao-interna-actions">${n.actions}</div>`:''}</div>
+    </div>`).join('')}</div>` : `<div class="empty"><i class="fa-solid fa-bell-slash"></i><p>Nenhuma notificação interna agora.</p><small>Quando houver atrasos, propostas sem resposta ou pendências para hoje, elas aparecerão aqui.</small></div>`;
+  };
+
+  const renderDashboardBaseNotificacoes = window.renderDashboard;
+  window.renderDashboard = function(){
+    renderDashboardBaseNotificacoes();
+    renderNotificacoesInternas();
+  };
+
+  const renderHistoricoCompletoClienteBaseLinhaTempo = window.renderHistoricoCompletoCliente;
+  window.renderHistoricoCompletoCliente = function(clienteId){
+    let html = renderHistoricoCompletoClienteBaseLinhaTempo(clienteId);
+    html = html.replace('Histórico completo do cliente', 'Linha do tempo do cliente');
+    html = html.replace('</div>\n    ' + '${renderResumoHistoricoCliente(clienteId)}', '</div>\n    ' + '${renderResumoHistoricoCliente(clienteId)}');
+    html = html.replace(/(<div class="client-history-section-title">[\s\S]*?<\/div>)/, `$1<div class="timeline-order-note"><i class="fa-solid fa-arrow-down-wide-short"></i> Visualização padrão: registros mais recentes em cima e registros antigos abaixo.</div>`);
+    return html;
+  };
+
+  const renderTimelineItemBase = window.renderTimelineItem;
+  window.renderTimelineItem = function(ev){
+    if (ev && ev.tipo === 'contato' && /Status da proposta atualizado/i.test(ev.desc || '')) {
+      ev = {...ev, tipo:'orcamento', icon:'fa-handshake-angle', title:'Atualização de status da proposta', badges:[...(ev.badges||[]), {text:'Proposta', className:'badge-purple', icon:'fa-file-signature'}]};
+    }
+    if (ev && ev.tipo === 'concluido' && /proposta|orçamento/i.test(ev.desc || ev.title || '')) {
+      ev = {...ev, icon:'fa-file-circle-check'};
+    }
+    return renderTimelineItemBase(ev);
+  };
+
+  // Inicialização leve se a aba já estiver aberta no carregamento.
+  setTimeout(() => {
+    if (document.getElementById('view-solicitacoes')?.classList.contains('active')) renderSolicitacoesTabela();
+    if (document.getElementById('view-dashboard')?.classList.contains('active')) renderNotificacoesInternas();
+  }, 250);
+})();
+</script>
+
+
+<style>
+/* AJUSTES FINAIS: RELATÓRIO COMERCIAL E SINO DE NOTIFICAÇÕES */
+.quick-action-card.qa-orcamento { display:none !important; }
+.notificacoes-internas-card { display:none !important; }
+.header-alerts-wrap { position:relative; flex-shrink:0; display:flex; align-items:center; }
+.header-alert-btn {
+  width:40px; height:40px; border-radius:12px; border:1px solid var(--border);
+  background:rgba(255,255,255,.045); color:var(--text); display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:.18s ease; position:relative;
+}
+.header-alert-btn:hover { transform:translateY(-1px); background:rgba(255,255,255,.08); border-color:rgba(90,167,255,.45); }
+.header-alert-btn.has-alerts { border-color:rgba(255,174,66,.45); box-shadow:0 0 0 1px rgba(255,174,66,.08) inset; }
+.header-alert-count {
+  position:absolute; top:-6px; right:-6px; min-width:18px; height:18px; padding:0 5px; border-radius:999px;
+  background:var(--danger); color:white; font-size:10px; font-weight:900; display:none; align-items:center; justify-content:center;
+  border:2px solid var(--bg);
+}
+.header-alert-btn.has-alerts .header-alert-count { display:flex; }
+.header-alert-dropdown {
+  position:absolute; top:calc(100% + 10px); right:0; width:min(420px, calc(100vw - 24px));
+  background:var(--surface); border:1px solid var(--border); border-radius:16px; box-shadow:0 22px 60px rgba(0,0,0,.42);
+  overflow:hidden; z-index:1200; display:none;
+}
+.header-alert-dropdown.open { display:block; animation:fadeIn .16s ease; }
+.header-alert-head { padding:14px 16px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; gap:12px; }
+.header-alert-title { font-weight:950; color:var(--text); font-size:13.5px; display:flex; align-items:center; gap:8px; }
+.header-alert-sub { color:var(--text3); font-size:11.5px; margin-top:2px; }
+.header-alert-list { max-height:420px; overflow:auto; padding:8px; }
+.header-alert-item { display:flex; gap:10px; padding:11px; border-radius:12px; border:1px solid transparent; background:rgba(255,255,255,.035); margin-bottom:8px; }
+.header-alert-item:last-child { margin-bottom:0; }
+.header-alert-item.critica { border-color:rgba(255,89,101,.25); background:rgba(255,89,101,.08); }
+.header-alert-item.atencao { border-color:rgba(255,174,66,.28); background:rgba(255,174,66,.08); }
+.header-alert-item.info { border-color:rgba(90,167,255,.22); background:rgba(90,167,255,.07); }
+.header-alert-icon { width:32px; height:32px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:rgba(255,255,255,.08); color:var(--text); }
+.header-alert-item.critica .header-alert-icon { color:var(--danger); }
+.header-alert-item.atencao .header-alert-icon { color:var(--warning); }
+.header-alert-item.info .header-alert-icon { color:var(--accent); }
+.header-alert-item-title { font-size:12.6px; font-weight:900; color:var(--text); line-height:1.25; }
+.header-alert-item-meta { font-size:11.7px; color:var(--text2); line-height:1.4; margin-top:3px; }
+.header-alert-actions { margin-top:8px; display:flex; flex-wrap:wrap; gap:6px; }
+.header-alert-actions .btn { padding:6px 9px; font-size:11px; min-height:0; }
+.header-alert-empty { padding:26px 18px; text-align:center; color:var(--text2); }
+.header-alert-empty i { font-size:28px; color:var(--success); margin-bottom:8px; }
+.monthly-report-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px; margin-top:12px; }
+.monthly-report-card { border:1px solid var(--border); border-radius:14px; background:rgba(255,255,255,.04); padding:12px; }
+.monthly-report-card span { display:block; font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:.4px; margin-bottom:4px; }
+.monthly-report-card strong { font-size:22px; color:var(--text); }
+body.theme-light .header-alert-btn, body.theme-light .header-alert-item, body.theme-light .monthly-report-card { background:rgba(255,255,255,.55); }
+@media (max-width: 900px) { .header-alert-dropdown { right:-70px; } }
+</style>
+<script>
+(function(){
+  const originalRenderDashboardComercial = window.renderDashboard;
+  const originalRenderConfiguracoesComercial = window.renderConfiguracoes;
+  const originalExportarExcelComercial = window.exportarExcel || (typeof exportarExcel === 'function' ? exportarExcel : null);
+  const originalExportarPdfComercial = window.exportarPdf || (typeof exportarPdf === 'function' ? exportarPdf : null);
+  const originalFecharAlarmeComercial = window.fecharAlarme || (typeof fecharAlarme === 'function' ? fecharAlarme : null);
+  const originalAdiarAlarmeComercial = window.adiarAlarme || (typeof adiarAlarme === 'function' ? adiarAlarme : null);
+
+  function safeCall(fn, fallback){ try { return fn(); } catch(e) { console.warn(e); return fallback; } }
+  function hojeISO(){ return (typeof today === 'function') ? today() : new Date().toISOString().slice(0,10); }
+  function horaAtual(){ return (typeof nowTime === 'function') ? nowTime() : new Date().toTimeString().slice(0,5); }
+  function labelStatus(status){ return (typeof statusPropostaLabel === 'function') ? statusPropostaLabel(status) : (status || 'Aguardando retorno'); }
+  function formatDateSafe(iso){ return (typeof fmtDate === 'function') ? fmtDate(iso) : (iso || ''); }
+  function clienteById(id){ return (Array.isArray(clientes) ? clientes.find(c=>c.id===id) : null); }
+  function escapeHtmlLocal(v){ return (typeof esc === 'function') ? esc(v) : String(v ?? '').replace(/[&<>"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch])); }
+  function normalizarStatusProposta(status){ return status || 'aguardando_retorno'; }
+  function ehPropostaAtiva(status){ return !['aprovada','recusada','nao_acompanhar'].includes(normalizarStatusProposta(status)); }
+  function diasEntre(a,b){ try { return Math.floor((new Date(b+'T00:00:00') - new Date(a+'T00:00:00'))/86400000); } catch(e) { return 0; } }
+
+  function propostasHistoricoSafe(){
+    if (typeof listaPropostasHistorico === 'function') return listaPropostasHistorico();
+    const props = [];
+    if (Array.isArray(contatos)) contatos.forEach(ct => {
+      const isProp = ct.origemOrcamento || ct.numeroOrcamentoPecas || ct.numeroOrcamentoServico || ct.statusProposta || ct.observacaoProposta;
+      if (!isProp) return;
+      const c = clienteById(ct.clienteId);
+      props.push({ref:'ct-'+ct.id, sourceTipo:'contato', data:ct.data || hojeISO(), clienteId:ct.clienteId, nome:c?.nome || 'Cliente', empresa:c?.empresa || '', origem:'Contato/proposta', descricao:ct.observacaoProposta || ct.descricao || '', pecas:ct.numeroOrcamentoPecas||'', servico:ct.numeroOrcamentoServico||'', status:ct.statusProposta || 'aguardando_retorno'});
+    });
+    if (Array.isArray(concluidos)) concluidos.forEach(cc => {
+      if (!['solicitacao_orcamento','orcamento'].includes(cc.tipo)) return;
+      const c = clienteById(cc.clienteId);
+      props.push({ref:'cc-'+cc.id, sourceTipo:'concluido', data:cc.concluidoEm || hojeISO(), clienteId:cc.clienteId, nome:c?.nome || cc.nomeAvulso || 'Cliente', empresa:c?.empresa || cc.empresaAvulsa || '', origem:cc.tipo === 'orcamento' ? 'Orçamento recorrente' : 'Solicitação', descricao:cc.obsConclusao || cc.motivo || '', pecas:cc.numeroOrcamentoPecas||'', servico:cc.numeroOrcamentoServico||'', status:cc.statusProposta || 'aguardando_retorno'});
+    });
+    return props.sort((a,b)=>(b.data||'').localeCompare(a.data||''));
+  }
+
+  function propostasAcompanhamentoSafe(){
+    if (typeof listaPropostasEmAcompanhamento === 'function') return listaPropostasEmAcompanhamento();
+    return propostasHistoricoSafe().filter(p => ehPropostaAtiva(p.status));
+  }
+
+  function montarNotificacoesComerciais(){
+    const hoje = hojeISO();
+    const itens = [];
+    const add = (nivel, titulo, meta, icon, actions='') => itens.push({nivel,titulo,meta,icon,actions});
+
+    if (Array.isArray(solicitacoesOrcamento)) solicitacoesOrcamento.forEach(s => {
+      const d = (typeof dadosSolicitacaoCliente === 'function') ? dadosSolicitacaoCliente(s) : {nome:s.nome || 'Cliente', produto:s.produto || ''};
+      if (s.prazo && s.prazo < hoje) add('critica', 'Solicitação atrasada', `${d.nome || 'Cliente'} • Prazo ${formatDateSafe(s.prazo)}`, 'fa-triangle-exclamation', `<button class="btn btn-danger btn-sm" onclick="irParaSolicitacaoEditar(${s.id}); fecharDropdownNotificacoes();">Abrir</button>`);
+      else if (s.prazo === hoje) add('atencao', 'Solicitação para hoje', `${d.nome || 'Cliente'} • ${s.produto || d.produto || 'Sem produto informado'}`, 'fa-clipboard-list', `<button class="btn btn-warning btn-sm" onclick="irParaSolicitacaoEditar(${s.id}); fecharDropdownNotificacoes();">Abrir</button>`);
+      if (!s.clienteId) add('info', 'Solicitação sem cliente vinculado', `${d.nome || 'Cliente'} • revise o cadastro/vínculo`, 'fa-user-slash', `<button class="btn btn-ghost btn-sm" onclick="irParaSolicitacaoEditar(${s.id}); fecharDropdownNotificacoes();">Vincular</button>`);
+    });
+
+    if (Array.isArray(agendamentos)) agendamentos.forEach(a => {
+      const c = clienteById(a.clienteId);
+      if (a.data && a.data < hoje) add('critica', 'Retorno atrasado', `${c?.nome || 'Cliente'} • ${formatDateSafe(a.data)} ${a.horario || ''}`, 'fa-calendar-xmark', `<button class="btn btn-danger btn-sm" onclick="editarAgendamento(${a.id}); fecharDropdownNotificacoes();">Abrir</button>`);
+      else if (a.data === hoje) add('atencao', 'Retorno para hoje', `${c?.nome || 'Cliente'} • ${a.horario || 'Sem horário'}`, 'fa-calendar-day', `<button class="btn btn-warning btn-sm" onclick="editarAgendamento(${a.id}); fecharDropdownNotificacoes();">Abrir</button>`);
+    });
+
+    if (Array.isArray(orcamentos)) orcamentos.forEach(o => {
+      const c = clienteById(o.clienteId);
+      if (o.data && o.data < hoje) add('critica', 'Orçamento recorrente atrasado', `${c?.nome || 'Cliente'} • ${formatDateSafe(o.data)}`, 'fa-file-circle-exclamation', `<button class="btn btn-danger btn-sm" onclick="editarOrcamento(${o.id}); fecharDropdownNotificacoes();">Abrir</button>`);
+      else if (o.data === hoje) add('atencao', 'Orçamento recorrente para hoje', `${c?.nome || 'Cliente'} • ${o.horario || 'Sem horário'}`, 'fa-file-invoice-dollar', `<button class="btn btn-warning btn-sm" onclick="editarOrcamento(${o.id}); fecharDropdownNotificacoes();">Abrir</button>`);
+    });
+
+    propostasAcompanhamentoSafe().forEach(p => {
+      const idade = p.data ? diasEntre(p.data, hoje) : 0;
+      if (p.status === 'cliente_pediu_ajuste') add('atencao', 'Proposta com ajuste solicitado', `${p.nome || 'Cliente'} • ${labelStatus(p.status)}`, 'fa-pen-ruler', `<button class="btn btn-primary btn-sm" onclick="abrirAtualizarStatusProposta('${p.ref}'); fecharDropdownNotificacoes();">Status</button>`);
+      else if (p.status === 'sem_resposta') add('critica', 'Proposta sem resposta', `${p.nome || 'Cliente'} • enviada em ${formatDateSafe(p.data)}`, 'fa-comment-slash', `<button class="btn btn-primary btn-sm" onclick="abrirAtualizarStatusProposta('${p.ref}'); fecharDropdownNotificacoes();">Status</button>`);
+      else if (idade >= 3) add('atencao', 'Proposta aguardando retorno', `${p.nome || 'Cliente'} • ${idade} dia(s) desde o envio`, 'fa-handshake-angle', `<button class="btn btn-primary btn-sm" onclick="abrirAtualizarStatusProposta('${p.ref}'); fecharDropdownNotificacoes();">Status</button>`);
+    });
+
+    const peso = {critica:0, atencao:1, info:2};
+    return itens.sort((a,b)=>(peso[a.nivel]??9)-(peso[b.nivel]??9)).slice(0, 20);
+  }
+
+  window.criarNotificacoesInternas = montarNotificacoesComerciais;
+
+  function ensureHeaderNotificacoes(){
+    if (document.getElementById('header-alerts-wrap')) return;
+    const header = document.querySelector('.topheader') || document.querySelector('.app-header') || document.querySelector('header');
+    if (!header) return;
+    const busca = header.querySelector('button[onclick="openGlobalSearch()"]');
+    const wrap = document.createElement('div');
+    wrap.className = 'header-alerts-wrap';
+    wrap.id = 'header-alerts-wrap';
+    wrap.innerHTML = `
+      <button class="header-alert-btn" id="header-alert-btn" type="button" title="Notificações internas" onclick="toggleDropdownNotificacoes(event)">
+        <i class="fa-solid fa-bell"></i><span class="header-alert-count" id="header-alert-count">0</span>
+      </button>
+      <div class="header-alert-dropdown" id="header-alert-dropdown">
+        <div class="header-alert-head">
+          <div><div class="header-alert-title"><i class="fa-solid fa-bell"></i> Notificações</div><div class="header-alert-sub">Alertas rápidos do fluxo comercial</div></div>
+          <span class="badge badge-gray" id="header-alert-pill">0</span>
+        </div>
+        <div class="header-alert-list" id="header-alert-list"></div>
+      </div>`;
+    if (busca) header.insertBefore(wrap, busca);
+    else header.appendChild(wrap);
+  }
+
+  window.fecharDropdownNotificacoes = function(){
+    document.getElementById('header-alert-dropdown')?.classList.remove('open');
+  };
+  window.toggleDropdownNotificacoes = function(ev){
+    ev?.stopPropagation?.();
+    ensureHeaderNotificacoes();
+    renderHeaderNotificacoes();
+    document.getElementById('header-alert-dropdown')?.classList.toggle('open');
+  };
+
+  function renderHeaderNotificacoes(){
+    ensureHeaderNotificacoes();
+    const itens = montarNotificacoesComerciais();
+    const btn = document.getElementById('header-alert-btn');
+    const count = document.getElementById('header-alert-count');
+    const pill = document.getElementById('header-alert-pill');
+    const list = document.getElementById('header-alert-list');
+    if (!btn || !list) return;
+    const total = itens.length;
+    btn.classList.toggle('has-alerts', total > 0);
+    if (count) count.textContent = total > 99 ? '99+' : String(total);
+    if (pill) pill.textContent = `${total} alerta${total === 1 ? '' : 's'}`;
+    list.innerHTML = total ? itens.slice(0, 10).map(n => `<div class="header-alert-item ${n.nivel}">
+      <div class="header-alert-icon"><i class="fa-solid ${n.icon}"></i></div>
+      <div style="flex:1;min-width:0"><div class="header-alert-item-title">${escapeHtmlLocal(n.titulo)}</div><div class="header-alert-item-meta">${escapeHtmlLocal(n.meta)}</div>${n.actions?`<div class="header-alert-actions">${n.actions}</div>`:''}</div>
+    </div>`).join('') : `<div class="header-alert-empty"><i class="fa-solid fa-circle-check"></i><p>Nenhuma notificação no momento.</p><small>Retornos, propostas e pendências importantes aparecem aqui.</small></div>`;
+  }
+  window.renderNotificacoesInternas = function(){
+    const card = document.getElementById('notificacoes-internas-card');
+    if (card) card.remove();
+    renderHeaderNotificacoes();
+  };
+  window.ensureNotificacoesInternasUI = function(){ ensureHeaderNotificacoes(); };
+
+  document.addEventListener('click', function(ev){
+    if (!ev.target.closest?.('#header-alerts-wrap')) fecharDropdownNotificacoes();
+  });
+
+  function resumoMensalComercial(range){
+    const [ini, fim] = range;
+    const filtra = (lista, campo) => Array.isArray(lista) ? lista.filter(item => (item[campo] || '') >= ini && (item[campo] || '') <= fim) : [];
+    const contatosMes = filtra(contatos, 'data');
+    const propostasMes = propostasHistoricoSafe().filter(p => (p.data || '') >= ini && (p.data || '') <= fim);
+    const propostasAtivas = propostasHistoricoSafe().filter(p => ehPropostaAtiva(p.status));
+    const propostasAprovadas = propostasMes.filter(p => p.status === 'aprovada').length;
+    const propostasRecusadas = propostasMes.filter(p => p.status === 'recusada').length;
+    const propostasSemResp = propostasAtivas.filter(p => p.status === 'sem_resposta').length;
+    const propostasAjuste = propostasAtivas.filter(p => p.status === 'cliente_pediu_ajuste').length;
+    const solicitacoesMes = filtra(solicitacoesOrcamento, 'prazo');
+    const solicitacoesAtrasadas = Array.isArray(solicitacoesOrcamento) ? solicitacoesOrcamento.filter(s => s.prazo && s.prazo < hojeISO()).length : 0;
+    const retornosMes = filtra(agendamentos, 'data');
+    const retornosAtrasados = Array.isArray(agendamentos) ? agendamentos.filter(a => a.data && a.data < hojeISO()).length : 0;
+    const recorrentesMes = filtra(orcamentos, 'data');
+    const concluidosMes = filtra(concluidos, 'concluidoEm');
+    const clientesCriadosMes = Array.isArray(clientes) ? clientes.filter(c => (c.criadoEm || c.dataCadastro || '') >= ini && (c.criadoEm || c.dataCadastro || '') <= fim).length : 0;
+    const contatosSemResposta = contatosMes.filter(c => c.semResposta).length;
+    const taxaAprovacao = propostasMes.length ? Math.round((propostasAprovadas / propostasMes.length) * 100) + '%' : '0%';
+    return {
+      periodo: `${formatDateSafe(ini)} a ${formatDateSafe(fim)}`,
+      contatos: contatosMes.length,
+      contatosSemResposta,
+      propostasEnviadas: propostasMes.length,
+      propostasAtivas: propostasAtivas.length,
+      propostasAprovadas,
+      propostasRecusadas,
+      propostasSemResp,
+      propostasAjuste,
+      taxaAprovacao,
+      solicitacoes: solicitacoesMes.length,
+      solicitacoesAtrasadas,
+      retornos: retornosMes.length,
+      retornosAtrasados,
+      recorrentes: recorrentesMes.length,
+      concluidos: concluidosMes.length,
+      clientesCriados: clientesCriadosMes
+    };
+  }
+
+  window.resumoMensalRows = function(range){
+    const r = resumoMensalComercial(range);
+    return [
+      ['Indicador','Valor'],
+      ['Período', r.periodo],
+      ['Clientes cadastrados no período', r.clientesCriados],
+      ['Clientes cadastrados total', Array.isArray(clientes) ? clientes.length : 0],
+      ['Contatos realizados', r.contatos],
+      ['Tentativas sem resposta', r.contatosSemResposta],
+      ['Solicitações recebidas/prazos no período', r.solicitacoes],
+      ['Solicitações atrasadas hoje', r.solicitacoesAtrasadas],
+      ['Propostas enviadas', r.propostasEnviadas],
+      ['Propostas em acompanhamento', r.propostasAtivas],
+      ['Propostas aguardando retorno sem resposta', r.propostasSemResp],
+      ['Propostas com ajuste solicitado', r.propostasAjuste],
+      ['Propostas aprovadas no período', r.propostasAprovadas],
+      ['Propostas recusadas no período', r.propostasRecusadas],
+      ['Taxa de aprovação sobre propostas do período', r.taxaAprovacao],
+      ['Retornos programados no período', r.retornos],
+      ['Retornos atrasados hoje', r.retornosAtrasados],
+      ['Orçamentos recorrentes no período', r.recorrentes],
+      ['Itens concluídos no período', r.concluidos]
+    ];
+  };
+
+  function propostasParaRows(lista){
+    return [['Data','Cliente','Empresa','Origem','Status','Nº Peças','Nº Serviço','Descrição'], ...lista.map(p => [formatDateSafe(p.data), p.nome || '—', p.empresa || '—', p.origem || '—', labelStatus(p.status), p.pecas || '—', p.servico || '—', p.descricao || '—'])];
+  }
+  function clientesAtivosRows(range){
+    const mapa = new Map();
+    const touch = (id) => { if (!id) return; mapa.set(id, (mapa.get(id) || 0) + 1); };
+    const [ini, fim] = range;
+    if (Array.isArray(contatos)) contatos.forEach(c => { if ((c.data||'') >= ini && (c.data||'') <= fim) touch(c.clienteId); });
+    propostasHistoricoSafe().forEach(p => { if ((p.data||'') >= ini && (p.data||'') <= fim) touch(p.clienteId); });
+    if (Array.isArray(agendamentos)) agendamentos.forEach(a => { if ((a.data||'') >= ini && (a.data||'') <= fim) touch(a.clienteId); });
+    const rows = [...mapa.entries()].map(([id, total]) => { const c = clienteById(id); return [c?.nome || 'Cliente removido', c?.empresa || '—', total, c?.telefone || '—', c?.email || '—']; }).sort((a,b)=>b[2]-a[2]).slice(0,25);
+    return [['Cliente','Empresa','Interações no período','Telefone','E-mail'], ...rows];
+  }
+  function pendenciasComerciaisRows(){
+    return [['Tipo','Cliente','Prazo/Data','Status','Observação'], ...montarNotificacoesComerciais().map(n => [n.titulo, String(n.meta).split('•')[0].trim(), String(n.meta).split('•').slice(1).join('•').trim(), n.nivel, n.meta])];
+  }
+  function relatorioMensalComercialSheets(range){
+    const r = (typeof rangeRelatorioMensal === 'function') ? rangeRelatorioMensal(range) : range;
+    return {
+      Info: typeof planilhaInfoRows === 'function' ? planilhaInfoRows('Relatório mensal comercial') : [['Campo','Valor'],['Tipo','Relatório mensal comercial']],
+      Resumo_Comercial: window.resumoMensalRows(r),
+      Propostas_Enviadas: propostasParaRows(propostasHistoricoSafe().filter(p => (p.data || '') >= r[0] && (p.data || '') <= r[1])),
+      Propostas_Acompanhamento: propostasParaRows(propostasAcompanhamentoSafe()),
+      Clientes_Ativos: clientesAtivosRows(r),
+      Pendencias: pendenciasComerciaisRows(),
+      Contatos: typeof contatosParaRows === 'function' ? contatosParaRows((contatos||[]).filter(c => (c.data||'') >= r[0] && (c.data||'') <= r[1])) : [['Sem dados']],
+      Solicitacoes: typeof solicitacoesParaRows === 'function' ? solicitacoesParaRows((solicitacoesOrcamento||[]).filter(s => (s.prazo||'') >= r[0] && (s.prazo||'') <= r[1])) : [['Sem dados']],
+      Retornos: typeof retornosParaRows === 'function' ? retornosParaRows((agendamentos||[]).filter(a => (a.data||'') >= r[0] && (a.data||'') <= r[1])) : [['Sem dados']],
+      Recorrentes: typeof orcamentosParaRows === 'function' ? orcamentosParaRows((orcamentos||[]).filter(o => (o.data||'') >= r[0] && (o.data||'') <= r[1])) : [['Sem dados']],
+      Concluidos: typeof concluidosParaRows === 'function' ? concluidosParaRows((concluidos||[]).filter(c => (c.concluidoEm||'') >= r[0] && (c.concluidoEm||'') <= r[1])) : [['Sem dados']]
+    };
+  }
+
+  function exportarExcelComercial(){
+    const tipo = document.getElementById('pdf-tipo')?.value;
+    if (tipo !== 'relatorio_mensal') return originalExportarExcelComercial ? originalExportarExcelComercial() : null;
+    const range = typeof pdfPeriodoRange === 'function' ? pdfPeriodoRange() : undefined;
+    if (range === undefined) return;
+    const sheets = relatorioMensalComercialSheets(range);
+    if (window.XLSX) {
+      const wb = XLSX.utils.book_new();
+      if (typeof aplicarMetadadosPlanilha === 'function') aplicarMetadadosPlanilha(wb, 'Relatório mensal comercial');
+      Object.entries(sheets).forEach(([name, rows]) => XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), name.slice(0,31)));
+      XLSX.writeFile(wb, `relatorio_mensal_comercial_${hojeISO()}.xlsx`);
+    } else if (typeof downloadCSV === 'function') {
+      const rows=[]; Object.entries(sheets).forEach(([name,data])=>{ rows.push([`===== ${name} =====`]); rows.push(...data); rows.push([]); });
+      downloadCSV(`relatorio_mensal_comercial_${hojeISO()}.csv`, rows);
+    }
+    if (typeof closeModal === 'function') closeModal('modalExportarPdf');
+    if (typeof notify === 'function') notify('✓ Relatório mensal comercial exportado!', '#0d3d2a');
+  }
+
+  function exportarPdfComercial(){
+    const tipo = document.getElementById('pdf-tipo')?.value;
+    if (tipo !== 'relatorio_mensal') return originalExportarPdfComercial ? originalExportarPdfComercial() : null;
+    const range = typeof pdfPeriodoRange === 'function' ? pdfPeriodoRange() : undefined;
+    if (range === undefined) return;
+    const r = (typeof rangeRelatorioMensal === 'function') ? rangeRelatorioMensal(range) : range;
+    const resumo = resumoMensalComercial(r);
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({orientation:'landscape', unit:'mm', format:'a4'});
+    if (typeof pdfHeader === 'function') pdfHeader(doc, `Relatório Mensal Comercial (${resumo.periodo})`);
+    else doc.text(`Relatório Mensal Comercial (${resumo.periodo})`, 14, 18);
+    let y = 28;
+    doc.autoTable({
+      head:[['Indicador','Valor','Leitura comercial']],
+      body:[
+        ['Propostas enviadas', resumo.propostasEnviadas, 'Volume gerado no período'],
+        ['Propostas em acompanhamento', resumo.propostasAtivas, 'Pendências comerciais abertas'],
+        ['Aprovadas / Recusadas', `${resumo.propostasAprovadas} / ${resumo.propostasRecusadas}`, `Taxa de aprovação: ${resumo.taxaAprovacao}`],
+        ['Ajustes / Sem resposta', `${resumo.propostasAjuste} / ${resumo.propostasSemResp}`, 'Demandam follow-up'],
+        ['Solicitações no período', resumo.solicitacoes, `${resumo.solicitacoesAtrasadas} atrasada(s) hoje`],
+        ['Retornos programados', resumo.retornos, `${resumo.retornosAtrasados} atrasado(s) hoje`],
+        ['Contatos realizados', resumo.contatos, `${resumo.contatosSemResposta} sem resposta`],
+        ['Recorrentes / Concluídos', `${resumo.recorrentes} / ${resumo.concluidos}`, 'Rotina operacional do mês']
+      ],
+      startY:y, theme:'grid', headStyles:{fillColor:[37,99,199]}, styles:{fontSize:8.5}
+    });
+    y = doc.lastAutoTable.finalY + 7;
+    const props = propostasHistoricoSafe().filter(p => (p.data||'') >= r[0] && (p.data||'') <= r[1]).slice(0,30);
+    if (props.length) {
+      doc.autoTable({ head:[['Data','Cliente','Status','Origem','Nº orçamento','Observação']], body:props.map(p => [formatDateSafe(p.data), p.nome || '—', labelStatus(p.status), p.origem || '—', [p.pecas?`P: ${p.pecas}`:'', p.servico?`S: ${p.servico}`:''].filter(Boolean).join(' • ') || '—', p.descricao || '—']), startY:y, theme:'striped', headStyles:{fillColor:[34,199,138]}, styles:{fontSize:7.2}, columnStyles:{5:{cellWidth:95}} });
+      y = doc.lastAutoTable.finalY + 7;
+    }
+    const acomp = propostasAcompanhamentoSafe().slice(0,25);
+    if (acomp.length) {
+      doc.autoTable({ head:[['Cliente','Status atual','Enviada em','Ação recomendada']], body:acomp.map(p => [p.nome || '—', labelStatus(p.status), formatDateSafe(p.data), p.status === 'cliente_pediu_ajuste' ? 'Revisar proposta' : p.status === 'sem_resposta' ? 'Cobrar retorno' : 'Acompanhar follow-up']), startY:y, theme:'striped', headStyles:{fillColor:[245,166,35]}, styles:{fontSize:7.5} });
+    }
+    if (typeof pdfFooter === 'function') pdfFooter(doc);
+    doc.save(`relatorio_mensal_comercial_${hojeISO()}.pdf`);
+    if (typeof closeModal === 'function') closeModal('modalExportarPdf');
+    if (typeof notify === 'function') notify('✓ Relatório mensal comercial em PDF gerado!', '#0d3d2a');
+  }
+
+  try { window.exportarExcel = exportarExcel = exportarExcelComercial; } catch(e) { window.exportarExcel = exportarExcelComercial; }
+  try { window.exportarPdf = exportarPdf = exportarPdfComercial; } catch(e) { window.exportarPdf = exportarPdfComercial; }
+
+  function atualizarTextoRelatorio(){
+    const opt = document.querySelector('#pdf-tipo option[value="relatorio_mensal"]');
+    if (opt) opt.textContent = 'Relatório Mensal Comercial';
+    document.querySelectorAll('button').forEach(btn => {
+      if (/Relatório mensal/i.test(btn.textContent || '')) btn.innerHTML = '<i class="fa-solid fa-chart-line"></i> Relatório mensal comercial';
+    });
+  }
+
+  let filaAlarmesComerciais = [];
+  function alarmeJaTratado(key){ return Array.isArray(alarmedIds) && alarmedIds.includes(key); }
+  function itemSonecado(key){ return snoozedUntil && snoozedUntil[key] && snoozedUntil[key] > Date.now(); }
+  function registrarAlarmeTratado(key){ if (!Array.isArray(alarmedIds)) return; if (!alarmedIds.includes(key)) { alarmedIds.push(key); if (typeof save === 'function') save(); } }
+  function tocarAlarmeComercial(al){
+    if (typeof alarmAtivo !== 'undefined' && alarmAtivo) { filaAlarmesComerciais.push(al); return; }
+    try {
+      alarmAtivo = { tipo:al.tipo, item:al.item, _adExtra:true, _adKey:al.key };
+      const c = al.clienteId ? clienteById(al.clienteId) : null;
+      const box = document.getElementById('alarmBox');
+      const icon = document.getElementById('alarmIcon');
+      const title = document.getElementById('alarmTitle');
+      const client = document.getElementById('alarmClient');
+      const note = document.getElementById('alarmNote');
+      if (box) box.classList.toggle('orcamento', al.tipo !== 'retorno');
+      if (icon) icon.innerHTML = `<i class="fa-solid ${al.icon}"></i>`;
+      if (title) title.textContent = al.titulo;
+      if (client) client.textContent = c ? c.nome + (c.empresa ? ' — ' + c.empresa : '') : (al.cliente || 'Agenda Dinâmica');
+      if (note) note.textContent = al.obs || 'Sem observação registrada.';
+      document.getElementById('alarmOverlay')?.classList.add('open');
+      if (typeof beep === 'function') beep();
+      if (typeof enviarPushNotificacao === 'function') enviarPushNotificacao(al.pushTitulo || al.titulo, `${c?.nome || al.cliente || 'Agenda'} — ${al.obs || ''}`);
+      if (typeof alarmSoundInterval !== 'undefined') { if (alarmSoundInterval) clearInterval(alarmSoundInterval); alarmSoundInterval = setInterval(() => { if (typeof beep === 'function') beep(); }, 4000); }
+      registrarAlarmeTratado(al.key);
+    } catch(e) { console.warn('Falha ao disparar alarme comercial', e); }
+  }
+  function dispararFilaAlarmeComercial(){ if (filaAlarmesComerciais.length && !(typeof alarmAtivo !== 'undefined' && alarmAtivo)) tocarAlarmeComercial(filaAlarmesComerciais.shift()); }
+  function checkAlarmsComerciais(){
+    const hoje = hojeISO(), agora = horaAtual();
+    const novos = [];
+    if (Array.isArray(solicitacoesOrcamento)) solicitacoesOrcamento.forEach(s => {
+      const horario = s.horarioAlarme || s.horario || '09:00';
+      const key = `s${s.id}-${hoje}`;
+      if (s.prazo === hoje && horario <= agora && !alarmeJaTratado(key) && !itemSonecado(key)) {
+        const d = (typeof dadosSolicitacaoCliente === 'function') ? dadosSolicitacaoCliente(s) : {nome:s.nome || 'Cliente'};
+        novos.push({tipo:'solicitacao', item:s, key, clienteId:s.clienteId, cliente:d.nome, icon:'fa-clipboard-list', titulo:'Prazo de solicitação chegou!', pushTitulo:'📋 Solicitação para hoje', obs:`${d.nome || 'Cliente'} — ${s.produto || 'Sem produto informado'}. ${s.descricao || ''}`});
+      }
+    });
+    propostasAcompanhamentoSafe().forEach(p => {
+      if (!['sem_resposta','cliente_pediu_ajuste'].includes(p.status)) return;
+      const key = `p${String(p.ref).replace(/[^a-zA-Z0-9_-]/g,'')}-${hoje}`;
+      if ('09:00' <= agora && !alarmeJaTratado(key) && !itemSonecado(key)) {
+        novos.push({tipo:'proposta', item:p, key, clienteId:p.clienteId, cliente:p.nome, icon:p.status === 'cliente_pediu_ajuste' ? 'fa-pen-ruler' : 'fa-comment-slash', titulo:p.status === 'cliente_pediu_ajuste' ? 'Proposta com ajuste solicitado!' : 'Proposta sem resposta!', pushTitulo:'🤝 Proposta precisa de atenção', obs:`${p.nome || 'Cliente'} — ${labelStatus(p.status)}. Enviada em ${formatDateSafe(p.data)}.`});
+      }
+    });
+    novos.forEach(al => { if (!filaAlarmesComerciais.find(x=>x.key===al.key)) filaAlarmesComerciais.push(al); });
+    dispararFilaAlarmeComercial();
+  }
+
+  window.fecharAlarme = function(){
+    if (originalFecharAlarmeComercial) originalFecharAlarmeComercial();
+    else {
+      document.getElementById('alarmOverlay')?.classList.remove('open');
+      if (typeof alarmSoundInterval !== 'undefined' && alarmSoundInterval) { clearInterval(alarmSoundInterval); alarmSoundInterval = null; }
+      try { alarmAtivo = null; } catch(e) {}
+    }
+    setTimeout(dispararFilaAlarmeComercial, 650);
+  };
+  window.adiarAlarme = function(){
+    try {
+      if (typeof alarmAtivo !== 'undefined' && alarmAtivo && alarmAtivo._adExtra && alarmAtivo._adKey) {
+        const key = alarmAtivo._adKey;
+        if (Array.isArray(alarmedIds)) alarmedIds = alarmedIds.filter(k=>k!==key);
+        if (typeof snoozedUntil !== 'undefined') snoozedUntil[key] = Date.now() + 10*60*1000;
+        if (typeof save === 'function') save();
+        if (typeof notify === 'function') notify('Alarme adiado por 10 minutos.', '#1e4a8a');
+        window.fecharAlarme();
+        return;
+      }
+    } catch(e) {}
+    if (originalAdiarAlarmeComercial) return originalAdiarAlarmeComercial();
+  };
+  try { fecharAlarme = window.fecharAlarme; adiarAlarme = window.adiarAlarme; } catch(e) {}
+
+  window.renderDashboard = function(){
+    if (originalRenderDashboardComercial) originalRenderDashboardComercial();
+    window.renderNotificacoesInternas();
+  };
+  window.renderConfiguracoes = function(){
+    if (originalRenderConfiguracoesComercial) originalRenderConfiguracoesComercial();
+    renderMiniResumoMensalComercial();
+  };
+  try { renderDashboard = window.renderDashboard; renderConfiguracoes = window.renderConfiguracoes; } catch(e) {}
+  function renderMiniResumoMensalComercial(){
+    const settings = document.querySelector('#view-configuracoes .settings-card .settings-card-body');
+    if (!settings || document.getElementById('mini-relatorio-comercial')) return;
+    const mes = hojeISO().slice(0,7);
+    const r = resumoMensalComercial([mes+'-01', mes+'-31']);
+    settings.insertAdjacentHTML('beforeend', `<div id="mini-relatorio-comercial" class="monthly-report-grid">
+      <div class="monthly-report-card"><span>Propostas enviadas</span><strong>${r.propostasEnviadas}</strong></div>
+      <div class="monthly-report-card"><span>Em acompanhamento</span><strong>${r.propostasAtivas}</strong></div>
+      <div class="monthly-report-card"><span>Aprovação</span><strong>${r.taxaAprovacao}</strong></div>
+      <div class="monthly-report-card"><span>Pendências críticas</span><strong>${montarNotificacoesComerciais().filter(x=>x.nivel==='critica').length}</strong></div>
+    </div>`);
+  }
+
+  function initAjustesComerciais(){
+    ensureHeaderNotificacoes();
+    atualizarTextoRelatorio();
+    window.renderNotificacoesInternas();
+    const card = document.getElementById('notificacoes-internas-card');
+    if (card) card.remove();
+    setInterval(renderHeaderNotificacoes, 30000);
+    setInterval(checkAlarmsComerciais, 15000);
+    setTimeout(checkAlarmsComerciais, 1200);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initAjustesComerciais);
+  else initAjustesComerciais();
+})();
+</script>
+
 <button class="floating-config-btn" type="button" onclick="showView('configuracoes')" title="Configurações, backup e exportações">
   <i class="fa-solid fa-gear"></i><span>Configurações</span>
 </button>
