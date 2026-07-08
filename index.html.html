@@ -4669,7 +4669,7 @@ body.theme-light .notificacao-interna-item.atencao { background:rgba(185,104,14,
               <div class="attach-drop" onclick="document.getElementById('sol-arquivos-input').click()">
                 <i class="fa-solid fa-file-arrow-up" style="font-size:18px;margin-bottom:6px;display:block"></i>
                 Clique para anexar fotos ou PDF da solicitação
-                <small>Os anexos ficam salvos na solicitação e podem ser visualizados ao reabrir o registro.</small>
+                <small>Os anexos são enviados ao Supabase Storage e continuam disponíveis ao reabrir a solicitação.</small>
               </div>
               <input type="file" id="sol-arquivos-input" accept="image/*,application/pdf" multiple style="display:none" onchange="handleSolicitacaoArquivoUpload(event)">
               <div id="sol-arquivos-list" class="sol-attachment-list"></div>
@@ -4974,6 +4974,10 @@ body.theme-light .notificacao-interna-item.atencao { background:rgba(185,104,14,
 const SUPABASE_URL = 'https://sdbqqsfgfnqtofdbagdk.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkYnFxc2ZnZm5xdG9mZGJhZ2RrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxODQ2NzcsImV4cCI6MjA5Nzc2MDY3N30.imy_ZBDoFYBoufpM_384rZUq0dpQsiDWjpL6HvQpf58';
 const SUPABASE_TABLE = 'agenda_dinamica_storage';
+const SUPABASE_ANEXOS_BUCKET = 'agenda-dinamica-anexos';
+const SUPABASE_ANEXOS_SIGNED_URL_SECONDS = 60 * 60;
+const SUPABASE_ANEXOS_MAX_MB_SOLICITACAO = 15;
+const SUPABASE_ANEXOS_MAX_MB_CLIENTE = 15;
 
 const SUPABASE_CONFIGURADO =
   SUPABASE_URL.startsWith('https://') &&
@@ -5123,6 +5127,148 @@ let editClienteId = null;
 let appTheme = 'dark';
 let appLoaded = false;
 let saveTimer = null;
+
+// ===== SUPABASE STORAGE / ANEXOS =====
+function storageAtivo() {
+  return Boolean(supabaseClient && SUPABASE_CONFIGURADO && SUPABASE_ANEXOS_BUCKET);
+}
+
+function sanitizarNomeArquivoStorage(nome) {
+  const base = (nome || 'arquivo').toString()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9._-]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 90);
+  return base || 'arquivo';
+}
+
+function extArquivo(nome, tipo='') {
+  const n = (nome || '').toLowerCase();
+  const ext = n.includes('.') ? n.split('.').pop() : '';
+  if (ext) return ext;
+  if ((tipo || '').includes('pdf')) return 'pdf';
+  if ((tipo || '').includes('png')) return 'png';
+  if ((tipo || '').includes('jpeg') || (tipo || '').includes('jpg')) return 'jpg';
+  if ((tipo || '').includes('webp')) return 'webp';
+  return 'bin';
+}
+
+function montarPathAnexoStorage(file, contexto='solicitacoes') {
+  const userPart = sanitizarNomeArquivoStorage(usuarioLogado?.id || usuarioLogado?.email || 'usuario');
+  const dataPart = new Date().toISOString().slice(0, 10);
+  const nome = sanitizarNomeArquivoStorage(file?.name || `arquivo.${extArquivo('', file?.type || '')}`);
+  const random = Math.random().toString(36).slice(2, 8);
+  return `${contexto}/${userPart}/${dataPart}/${Date.now()}-${random}-${nome}`;
+}
+
+async function arquivoParaDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => resolve(e.target.result);
+    reader.onerror = () => reject(reader.error || new Error('Falha ao ler arquivo.'));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function dataUrlParaBlob(dataUrl) {
+  const res = await fetch(dataUrl);
+  return await res.blob();
+}
+
+async function uploadArquivoSupabaseStorage(file, contexto='solicitacoes') {
+  if (!storageAtivo()) throw new Error('Supabase Storage não configurado.');
+  const path = montarPathAnexoStorage(file, contexto);
+  const { error } = await supabaseClient.storage
+    .from(SUPABASE_ANEXOS_BUCKET)
+    .upload(path, file, {
+      cacheControl: '3600',
+      upsert: false,
+      contentType: file.type || 'application/octet-stream'
+    });
+  if (error) throw error;
+  const { data: publicData } = supabaseClient.storage.from(SUPABASE_ANEXOS_BUCKET).getPublicUrl(path);
+  return {
+    name: file.name,
+    size: file.size,
+    type: file.type || 'application/octet-stream',
+    storage: 'supabase',
+    bucket: SUPABASE_ANEXOS_BUCKET,
+    path,
+    url: publicData?.publicUrl || '',
+    addedEm: today(),
+    uploadedAt: new Date().toISOString()
+  };
+}
+
+async function criarAnexoLocalFallback(file) {
+  return {
+    name: file.name,
+    size: file.size,
+    type: file.type || 'application/octet-stream',
+    data: await arquivoParaDataUrl(file),
+    storage: 'local_base64',
+    addedEm: today()
+  };
+}
+
+async function criarAnexoDeArquivo(file, contexto='solicitacoes') {
+  try {
+    return await uploadArquivoSupabaseStorage(file, contexto);
+  } catch (error) {
+    console.warn('Falha ao enviar anexo para o Supabase Storage:', error);
+    notify(`Storage indisponível para "${file.name}". Salvando temporariamente no formato antigo.`, '#6a4a00');
+    return await criarAnexoLocalFallback(file);
+  }
+}
+
+async function migrarAnexoBase64ParaStorage(anexo, contexto='solicitacoes') {
+  if (!anexo || anexo.storage === 'supabase' || anexo.path || !anexo.data || !String(anexo.data).startsWith('data:')) return anexo;
+  if (!storageAtivo()) return anexo;
+  try {
+    const blob = await dataUrlParaBlob(anexo.data);
+    const file = new File([blob], anexo.name || `anexo.${extArquivo(anexo.name, anexo.type || blob.type)}`, { type: anexo.type || blob.type || 'application/octet-stream' });
+    const enviado = await uploadArquivoSupabaseStorage(file, contexto);
+    return { ...enviado, migratedFromBase64: true, addedEm: anexo.addedEm || enviado.addedEm };
+  } catch (error) {
+    console.warn('Não foi possível migrar anexo base64 para Storage:', error);
+    return anexo;
+  }
+}
+
+async function prepararAnexosParaSalvar(anexos, contexto='solicitacoes') {
+  const lista = Array.isArray(anexos) ? anexos : [];
+  const resultado = [];
+  for (const anexo of lista) {
+    resultado.push(await migrarAnexoBase64ParaStorage(anexo, contexto));
+  }
+  return resultado;
+}
+
+async function obterUrlAnexo(anexo) {
+  if (!anexo) return '';
+  if (anexo.data) return anexo.data;
+  if (anexo.signedUrl && anexo.signedUrlExpiresAt && Date.now() < anexo.signedUrlExpiresAt) return anexo.signedUrl;
+  if (anexo.storage === 'supabase' && anexo.path && supabaseClient) {
+    try {
+      const { data, error } = await supabaseClient.storage
+        .from(anexo.bucket || SUPABASE_ANEXOS_BUCKET)
+        .createSignedUrl(anexo.path, SUPABASE_ANEXOS_SIGNED_URL_SECONDS);
+      if (!error && data?.signedUrl) {
+        anexo.signedUrl = data.signedUrl;
+        anexo.signedUrlExpiresAt = Date.now() + ((SUPABASE_ANEXOS_SIGNED_URL_SECONDS - 60) * 1000);
+        return data.signedUrl;
+      }
+    } catch (error) {
+      console.warn('Não foi possível criar URL assinada do anexo:', error);
+    }
+  }
+  return anexo.url || anexo.src || '';
+}
+
+function anexoEstaNoStorage(anexo) {
+  return anexo?.storage === 'supabase' || Boolean(anexo?.path);
+}
 
 const avColors = ['av-blue','av-green','av-purple','av-coral','av-amber'];
 function avColor(id) { return avColors[id % avColors.length]; }
@@ -5454,7 +5600,7 @@ function calcRetorno(inputId, dias, clienteSelectId) {
 }
 
 // ===== CLIENTES =====
-function salvarCliente() {
+async function salvarCliente() {
   const nome = valorMaiusculo('c-nome');
   if (!nome) { notify('Informe o nome do cliente','#7a1a1a'); return; }
   const finalVal = document.querySelector('input[name="c-final"]:checked')?.value || 'nao';
@@ -5478,7 +5624,7 @@ function salvarCliente() {
     equipamentos: valorMaiusculo('c-equipamentos'),
     obsImportante: valorMaiusculo('c-obs-importante'),
     obs: valorMaiusculo('c-obs'),
-    anexos: [...pdfsTempCliente]
+    anexos: await prepararAnexosParaSalvar([...pdfsTempCliente], 'clientes')
   };
   let clienteSalvoId = editClienteId;
   let fluxoSolicitacaoId = null;
@@ -5560,26 +5706,46 @@ function editarCliente(id) {
   closePanel();
 }
 
-// ===== ANEXOS PDF =====
-function handlePdfUpload(event) {
+// ===== ANEXOS / SUPABASE STORAGE =====
+async function handlePdfUpload(event) {
   const files = Array.from(event.target.files || []);
-  files.forEach(file => {
-    if (file.type !== 'application/pdf') { notify('Apenas arquivos PDF são aceitos','#7a1a1a'); return; }
-    if (file.size > 4*1024*1024) { notify(`"${file.name}" é maior que 4MB e não pôde ser anexado`,'#7a1a1a'); return; }
-    const reader = new FileReader();
-    reader.onload = e => {
-      pdfsTempCliente.push({ name: file.name, size: file.size, data: e.target.result, addedEm: today() });
+  const input = event.target;
+  input.disabled = true;
+  for (const file of files) {
+    if (file.type !== 'application/pdf') { notify('Apenas arquivos PDF são aceitos','#7a1a1a'); continue; }
+    if (file.size > SUPABASE_ANEXOS_MAX_MB_CLIENTE * 1024 * 1024) { notify(`"${file.name}" é maior que ${SUPABASE_ANEXOS_MAX_MB_CLIENTE}MB e não pôde ser anexado`,'#7a1a1a'); continue; }
+    try {
+      notify(`Enviando "${file.name}" para o Storage...`, '#0f3a6e');
+      const anexo = await criarAnexoDeArquivo(file, 'clientes');
+      pdfsTempCliente.push(anexo);
       renderPdfList();
-    };
-    reader.readAsDataURL(file);
-  });
-  event.target.value = '';
+    } catch (error) {
+      console.error('Erro ao anexar PDF:', error);
+      notify(`Não foi possível anexar "${file.name}".`, '#7a1a1a');
+    }
+  }
+  input.disabled = false;
+  input.value = '';
 }
 function removePdf(i) { pdfsTempCliente.splice(i,1); renderPdfList(); }
 function formatBytes(bytes) {
+  bytes = Number(bytes || 0);
   if (bytes < 1024) return bytes + ' B';
   if (bytes < 1024*1024) return (bytes/1024).toFixed(0) + ' KB';
   return (bytes/(1024*1024)).toFixed(1) + ' MB';
+}
+async function abrirPdfCliente(i) {
+  const p = pdfsTempCliente[i];
+  const url = await obterUrlAnexo(p);
+  if (!url) { notify('Arquivo sem URL disponível. Reanexe ou verifique o Storage.', '#7a1a1a'); return; }
+  window.open(url, '_blank');
+}
+async function abrirPdfClientePeloRegistro(clienteId, i) {
+  const c = clientes.find(x => x.id === clienteId);
+  const p = c?.anexos?.[i];
+  const url = await obterUrlAnexo(p);
+  if (!url) { notify('Arquivo sem URL disponível. Reanexe ou verifique o Storage.', '#7a1a1a'); return; }
+  window.open(url, '_blank');
 }
 function renderPdfList() {
   const el = document.getElementById('c-pdf-list');
@@ -5588,11 +5754,11 @@ function renderPdfList() {
     <i class="fa-solid fa-file-pdf"></i>
     <span class="attach-name">${p.name}</span>
     <span class="attach-size">${formatBytes(p.size)}</span>
-    <button class="btn btn-ghost btn-sm" onclick="window.open('${p.data}','_blank')" title="Abrir"><i class="fa-solid fa-eye"></i></button>
+    <span class="badge ${anexoEstaNoStorage(p) ? 'badge-success' : 'badge-warning'}" style="font-size:10px">${anexoEstaNoStorage(p) ? 'Storage' : 'Local'}</span>
+    <button class="btn btn-ghost btn-sm" onclick="abrirPdfCliente(${i})" title="Abrir"><i class="fa-solid fa-eye"></i></button>
     <button class="btn btn-danger btn-sm" onclick="removePdf(${i})" title="Remover"><i class="fa-solid fa-trash"></i></button>
   </div>`).join('');
 }
-
 
 function arquivoIcone(anexo) {
   const type = (anexo?.type || '').toLowerCase();
@@ -5600,29 +5766,35 @@ function arquivoIcone(anexo) {
   if (type.startsWith('image/')) return 'fa-file-image';
   return 'fa-file';
 }
-function handleSolicitacaoArquivoUpload(event) {
+async function handleSolicitacaoArquivoUpload(event) {
   const files = Array.from(event.target.files || []);
-  files.forEach(file => {
+  const input = event.target;
+  input.disabled = true;
+  for (const file of files) {
     const tipoOk = file.type === 'application/pdf' || file.type.startsWith('image/');
-    if (!tipoOk) { notify('Apenas imagens e PDF são aceitos na solicitação','#7a1a1a'); return; }
-    if (file.size > 5*1024*1024) { notify(`"${file.name}" é maior que 5MB e não pôde ser anexado`,'#7a1a1a'); return; }
-    if (arquivosTempSolicitacao.length >= 10) { notify('Limite de 10 arquivos por solicitação','#7a1a1a'); return; }
-    const reader = new FileReader();
-    reader.onload = e => {
-      arquivosTempSolicitacao.push({ name: file.name, size: file.size, type: file.type, data: e.target.result, addedEm: today() });
+    if (!tipoOk) { notify('Apenas imagens e PDF são aceitos na solicitação','#7a1a1a'); continue; }
+    if (file.size > SUPABASE_ANEXOS_MAX_MB_SOLICITACAO * 1024 * 1024) { notify(`"${file.name}" é maior que ${SUPABASE_ANEXOS_MAX_MB_SOLICITACAO}MB e não pôde ser anexado`,'#7a1a1a'); continue; }
+    if (arquivosTempSolicitacao.length >= 10) { notify('Limite de 10 arquivos por solicitação','#7a1a1a'); continue; }
+    try {
+      notify(`Enviando "${file.name}" para o Storage...`, '#0f3a6e');
+      const anexo = await criarAnexoDeArquivo(file, 'solicitacoes');
+      arquivosTempSolicitacao.push(anexo);
       renderSolicitacaoArquivoList();
-    };
-    reader.readAsDataURL(file);
-  });
-  event.target.value = '';
+    } catch (error) {
+      console.error('Erro ao anexar arquivo da solicitação:', error);
+      notify(`Não foi possível anexar "${file.name}".`, '#7a1a1a');
+    }
+  }
+  input.disabled = false;
+  input.value = '';
 }
 function removeSolicitacaoArquivo(i) { arquivosTempSolicitacao.splice(i,1); renderSolicitacaoArquivoList(); }
 function getSolicitacaoArquivoSrc(anexo) {
-  return anexo?.data || anexo?.url || anexo?.src || '';
+  return anexo?.data || anexo?.signedUrl || anexo?.url || anexo?.src || '';
 }
-function abrirPreviewSolicitacaoArquivo(i) {
+async function abrirPreviewSolicitacaoArquivo(i) {
   const anexo = arquivosTempSolicitacao[i];
-  const src = getSolicitacaoArquivoSrc(anexo);
+  const src = await obterUrlAnexo(anexo);
   const content = document.getElementById('preview-anexo-content');
   const title = document.getElementById('preview-anexo-title');
   const download = document.getElementById('preview-anexo-download');
@@ -5631,7 +5803,7 @@ function abrirPreviewSolicitacaoArquivo(i) {
   if (title) title.innerHTML = `<i class="fa-solid ${arquivoIcone(anexo)}" style="color:var(--accent);margin-right:8px"></i>${nome}`;
   if (download) { download.href = src || '#'; download.download = nome; download.style.display = src ? 'inline-flex' : 'none'; }
   if (!src) {
-    content.innerHTML = `<div class="anexo-preview-empty"><i class="fa-solid fa-triangle-exclamation" style="font-size:28px;margin-bottom:10px;display:block"></i>Arquivo sem dados de visualização salvos. Reanexe o arquivo para visualizar.</div>`;
+    content.innerHTML = `<div class="anexo-preview-empty"><i class="fa-solid fa-triangle-exclamation" style="font-size:28px;margin-bottom:10px;display:block"></i>Arquivo sem dados de visualização. Verifique o bucket do Supabase Storage ou reanexe o arquivo.</div>`;
   } else if ((anexo.type || '').startsWith('image/')) {
     content.innerHTML = `<img src="${src}" alt="${nome}">`;
   } else if ((anexo.type || '').includes('pdf') || nome.toLowerCase().endsWith('.pdf')) {
@@ -5640,6 +5812,23 @@ function abrirPreviewSolicitacaoArquivo(i) {
     content.innerHTML = `<div class="anexo-preview-empty"><i class="fa-solid ${arquivoIcone(anexo)}" style="font-size:28px;margin-bottom:10px;display:block"></i>Pré-visualização indisponível para este tipo de arquivo.<br>Use o botão de baixar para abrir no computador.</div>`;
   }
   openModal('modalPreviewAnexoSolicitacao');
+}
+async function hidratarAnexosSolicitacaoList() {
+  const lista = arquivosTempSolicitacao || [];
+  for (let i = 0; i < lista.length; i++) {
+    const p = lista[i];
+    const src = await obterUrlAnexo(p);
+    const download = document.getElementById(`sol-attach-download-${i}`);
+    const thumb = document.getElementById(`sol-attach-thumb-${i}`);
+    const status = document.getElementById(`sol-attach-status-${i}`);
+    if (download && src) {
+      download.href = src;
+      download.download = p.name || 'anexo';
+      download.style.display = 'inline-flex';
+    }
+    if (status) status.textContent = src ? (anexoEstaNoStorage(p) ? 'Storage • disponível' : 'Local • disponível') : 'sem prévia';
+    if (thumb && (p.type || '').startsWith('image/') && src) thumb.innerHTML = `<img src="${src}" alt="${p.name || 'anexo'}">`;
+  }
 }
 function renderSolicitacaoArquivoList() {
   const el = document.getElementById('sol-arquivos-list');
@@ -5652,16 +5841,18 @@ function renderSolicitacaoArquivoList() {
     const src = getSolicitacaoArquivoSrc(p);
     const isImg = (p.type || '').startsWith('image/') && src;
     return `<div class="sol-attachment-card">
-      <div class="sol-attachment-thumb">${isImg ? `<img src="${src}" alt="${p.name}">` : `<i class="fa-solid ${arquivoIcone(p)}"></i>`}</div>
-      <div class="sol-attachment-info"><strong title="${p.name}">${p.name}</strong><small>${formatBytes(p.size || 0)}${src ? ' • disponível para visualização' : ' • sem prévia salva'}</small></div>
+      <div class="sol-attachment-thumb" id="sol-attach-thumb-${i}">${isImg ? `<img src="${src}" alt="${p.name}">` : `<i class="fa-solid ${arquivoIcone(p)}"></i>`}</div>
+      <div class="sol-attachment-info"><strong title="${p.name}">${p.name}</strong><small>${formatBytes(p.size || 0)} • <span id="sol-attach-status-${i}">${anexoEstaNoStorage(p) ? 'Storage' : (src ? 'Local' : 'sem prévia')}</span></small></div>
       <div class="sol-attachment-actions">
         <button class="btn btn-ghost btn-sm" onclick="abrirPreviewSolicitacaoArquivo(${i})" title="Visualizar"><i class="fa-solid fa-eye"></i></button>
-        ${src ? `<a class="btn btn-ghost btn-sm" href="${src}" download="${p.name}" title="Baixar"><i class="fa-solid fa-download"></i></a>` : ''}
+        <a id="sol-attach-download-${i}" class="btn btn-ghost btn-sm" href="${src || '#'}" download="${p.name}" title="Baixar" style="${src ? '' : 'display:none'}"><i class="fa-solid fa-download"></i></a>
         <button class="btn btn-danger btn-sm" onclick="removeSolicitacaoArquivo(${i})" title="Remover"><i class="fa-solid fa-trash"></i></button>
       </div>
     </div>`;
   }).join('');
+  hidratarAnexosSolicitacaoList();
 }
+
 
 function popularFiltrosClientes() {
   const cidadeSel = document.getElementById('filtro-cidade');
@@ -5831,7 +6022,7 @@ function abrirDetalhe(id) {
     </div>
     ${c.obs?`<div style="background:var(--warning-bg);border:1px solid rgba(245,166,35,0.2);border-radius:var(--radius-sm);padding:10px;margin-bottom:16px;font-size:12.5px;color:var(--warning)"><i class="fa-solid fa-note-sticky" style="margin-right:6px"></i>${c.obs}</div>`:''}
     ${c.equipamentos?`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;margin-bottom:16px;font-size:12.5px;color:var(--text2)"><div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px"><i class="fa-solid fa-toolbox" style="margin-right:5px"></i>Equipamentos</div>${c.equipamentos}</div>`:''}
-    ${c.anexos&&c.anexos.length?`<div style="margin-bottom:16px"><div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px"><i class="fa-solid fa-paperclip" style="margin-right:5px"></i>Anexos (${c.anexos.length})</div>${c.anexos.map(p=>`<div class="attach-item"><i class="fa-solid fa-file-pdf"></i><span class="attach-name">${p.name}</span><span class="attach-size">${formatBytes(p.size)}</span><button class="btn btn-ghost btn-sm" onclick="window.open('${p.data}','_blank')"><i class="fa-solid fa-eye"></i></button></div>`).join('')}</div>`:''}
+    ${c.anexos&&c.anexos.length?`<div style="margin-bottom:16px"><div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px"><i class="fa-solid fa-paperclip" style="margin-right:5px"></i>Anexos (${c.anexos.length})</div>${c.anexos.map((p,i)=>`<div class="attach-item"><i class="fa-solid fa-file-pdf"></i><span class="attach-name">${p.name}</span><span class="attach-size">${formatBytes(p.size)}</span><span class="badge ${anexoEstaNoStorage(p) ? 'badge-success' : 'badge-warning'}" style="font-size:10px">${anexoEstaNoStorage(p) ? 'Storage' : 'Local'}</span><button class="btn btn-ghost btn-sm" onclick="abrirPdfClientePeloRegistro(${c.id}, ${i})"><i class="fa-solid fa-eye"></i></button></div>`).join('')}</div>`:''}
     <div class="quick-actions-client">
       <button class="btn btn-primary btn-sm" onclick="openContatoFor(${c.id})"><i class="fa-solid fa-plus"></i> Registrar contato</button>
       <button class="btn btn-ghost btn-sm" onclick="openAgendamentoFor(${c.id})"><i class="fa-regular fa-calendar-plus"></i> Agendar retorno</button>
@@ -6239,7 +6430,7 @@ function criarOrcamentoRecorrenteFromSolicitacao(id) {
   }, 80);
 }
 
-function salvarSolicitacaoOrcamento() {
+async function salvarSolicitacaoOrcamento() {
   const clienteId = +document.getElementById('sol-cliente').value || null;
   const cliente = clienteId ? clientes.find(c => c.id === clienteId) : null;
   const nome = toUpperBR(document.getElementById('sol-nome').value || (cliente ? cliente.nome : ''));
@@ -6272,7 +6463,7 @@ function salvarSolicitacaoOrcamento() {
     etapa: document.getElementById('sol-etapa')?.value || 'nova',
     descricao,
     obs: toUpperBR(document.getElementById('sol-obs').value),
-    anexos: [...arquivosTempSolicitacao],
+    anexos: await prepararAnexosParaSalvar([...arquivosTempSolicitacao], 'solicitacoes'),
     atualizadoEm: today()
   };
 
@@ -8476,7 +8667,7 @@ function prepararContatoAposCliente(clienteId, texto='') {
   }, 100);
 }
 
-function salvarCliente() {
+async function salvarCliente() {
   const nome = valorMaiusculo('c-nome');
   if (!nome) { notify('Informe o nome do cliente','#7a1a1a'); return; }
   const abrirContatoDepois = editClienteId === null && (document.getElementById('c-registrar-contato')?.checked || false);
@@ -8501,7 +8692,7 @@ function salvarCliente() {
     equipamentos: valorMaiusculo('c-equipamentos'),
     obsImportante: valorMaiusculo('c-obs-importante'),
     obs: valorMaiusculo('c-obs'),
-    anexos: [...pdfsTempCliente]
+    anexos: await prepararAnexosParaSalvar([...pdfsTempCliente], 'clientes')
   };
   let clienteSalvoId = editClienteId;
   let fluxoSolicitacaoId = null;
