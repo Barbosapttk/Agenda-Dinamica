@@ -10118,5 +10118,1005 @@ body.theme-light .header-alert-btn, body.theme-light .header-alert-item, body.th
 <button class="floating-config-btn" type="button" onclick="showView('configuracoes')" title="Configurações, backup e exportações">
   <i class="fa-solid fa-gear"></i><span>Configurações</span>
 </button>
+
+<script id="pacote-final-producao-agenda-dinamica">
+(function(){
+  'use strict';
+  const STORAGE_KEY = 'agendaDinamicaAlarmSettingsV2';
+  const defaultAlarmSettings = {
+    retornos: true,
+    recorrentes: true,
+    solicitacoesHoje: true,
+    propostasSemResposta: true,
+    propostasAjuste: true,
+    som: true,
+    push: true,
+    sonecaMinutos: 10,
+    horaComercial: '09:00'
+  };
+  function esc(v){ return String(v ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+  function onlyDigits(v){ return String(v || '').replace(/\D/g,''); }
+  function norm(v){
+    return String(v || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
+  }
+  function todaySafe(){ return (typeof today === 'function') ? today() : new Date().toISOString().slice(0,10); }
+  function fmtSafe(d){ return (typeof fmtDate === 'function') ? fmtDate(d) : (d || '—'); }
+  function dateAddISO(iso, days){
+    const d = new Date((iso || todaySafe()) + 'T00:00:00');
+    d.setDate(d.getDate() + days);
+    return d.toISOString().slice(0,10);
+  }
+  function monthRangeFromISO(iso){
+    const base = new Date((iso || todaySafe()) + 'T00:00:00');
+    const y = base.getFullYear();
+    const m = base.getMonth();
+    const ini = new Date(y,m,1).toISOString().slice(0,10);
+    const fim = new Date(y,m+1,0).toISOString().slice(0,10);
+    return [ini,fim];
+  }
+  function previousMonthRange(range){
+    const base = new Date((range?.[0] || todaySafe()) + 'T00:00:00');
+    base.setMonth(base.getMonth()-1);
+    return monthRangeFromISO(base.toISOString().slice(0,10));
+  }
+  function between(v, r){ return (v || '') >= r[0] && (v || '') <= r[1]; }
+  function loadAlarmSettings(){
+    try { return { ...defaultAlarmSettings, ...(JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') || {}) }; }
+    catch(e){ return { ...defaultAlarmSettings }; }
+  }
+  function saveAlarmSettings(settings){ localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...defaultAlarmSettings, ...settings })); }
+  window.getAlarmSettings = loadAlarmSettings;
+
+  /* 1. Paleta modo claro da Nova Solicitação */
+  const style = document.createElement('style');
+  style.id = 'pacote-final-producao-css';
+  style.textContent = `
+/* PALETA NOVA SOLICITACAO / MODO CLARO */
+body.theme-light #modalSolicitacao .modal-solicitacao-landscape{
+  background:
+    radial-gradient(circle at 16% 0%, rgba(20,184,166,.22), transparent 31%),
+    radial-gradient(circle at 86% 8%, rgba(124,92,255,.20), transparent 34%),
+    linear-gradient(145deg, #f8fbff 0%, #edf5ff 48%, #f8f5ff 100%) !important;
+  border:1px solid rgba(37,99,199,.24) !important;
+  box-shadow:0 26px 80px rgba(32,56,94,.24), inset 0 1px 0 rgba(255,255,255,.92) !important;
+}
+body.theme-light #modalSolicitacao .sol-modal-header{
+  background:linear-gradient(90deg, rgba(37,99,199,.16), rgba(20,184,166,.13), rgba(124,92,255,.13)) !important;
+  border-bottom:1px solid rgba(37,99,199,.18) !important;
+}
+body.theme-light #modalSolicitacao .sol-modal-subtitle{ color:#44607f !important; }
+body.theme-light #modalSolicitacao .sol-form-section{
+  position:relative; overflow:hidden; background:rgba(255,255,255,.70) !important;
+  border:1px solid rgba(65,96,145,.20) !important; box-shadow:0 14px 34px rgba(39,67,111,.09), inset 0 1px 0 rgba(255,255,255,.75) !important;
+}
+body.theme-light #modalSolicitacao .sol-form-section::before{ content:''; position:absolute; inset:0 auto 0 0; width:4px; border-radius:14px 0 0 14px; background:linear-gradient(180deg,#14b8a6,#2563c7); }
+body.theme-light #modalSolicitacao .sol-client-section{ background:linear-gradient(145deg, rgba(20,184,166,.16), rgba(255,255,255,.72)) !important; }
+body.theme-light #modalSolicitacao .sol-request-section{ background:linear-gradient(145deg, rgba(124,92,255,.13), rgba(255,255,255,.74)) !important; }
+body.theme-light #modalSolicitacao .sol-request-section::before{ background:linear-gradient(180deg,#7c5cff,#2563c7); }
+body.theme-light #modalSolicitacao .sol-description-highlight{ background:linear-gradient(145deg, rgba(245,166,35,.18), rgba(255,255,255,.76)) !important; border-color:rgba(185,104,14,.22) !important; }
+body.theme-light #modalSolicitacao .sol-description-highlight textarea{ background:rgba(255,255,255,.84) !important; border-color:rgba(185,104,14,.22) !important; }
+body.theme-light #modalSolicitacao .sol-attachments-box{ background:linear-gradient(145deg, rgba(8,126,163,.14), rgba(255,255,255,.70)) !important; border-color:rgba(8,126,163,.20) !important; }
+body.theme-light #modalSolicitacao .sol-obs-box{ background:linear-gradient(145deg, rgba(124,92,255,.11), rgba(255,255,255,.68)) !important; border-color:rgba(124,92,255,.18) !important; }
+body.theme-light #modalSolicitacao input,
+body.theme-light #modalSolicitacao select,
+body.theme-light #modalSolicitacao textarea{ background:#ffffff !important; border-color:rgba(65,96,145,.24) !important; color:#14213d !important; }
+body.theme-light #modalSolicitacao input:focus,
+body.theme-light #modalSolicitacao select:focus,
+body.theme-light #modalSolicitacao textarea:focus{ border-color:#14b8a6 !important; box-shadow:0 0 0 3px rgba(20,184,166,.16) !important; }
+body.theme-light #modalSolicitacao .attach-drop{ background:rgba(8,126,163,.10) !important; border-color:rgba(8,126,163,.34) !important; color:#17476b !important; }
+body.theme-light #modalSolicitacao .sol-modal-footer{ background:linear-gradient(90deg, rgba(37,99,199,.09), rgba(124,92,255,.08)) !important; border-top:1px solid rgba(37,99,199,.16) !important; }
+
+/* REFINO PROFISSIONAL DOS KANBANS */
+#view-solicitacoes .orcamento-kanban-wrap,
+#view-solicitacoes .propostas-kanban-wrap{
+  border-radius:18px !important; border:1px solid rgba(93,154,255,.18) !important; box-shadow:0 18px 44px rgba(0,0,0,.14) !important;
+  margin-bottom:18px !important; overflow:hidden !important;
+}
+#view-solicitacoes .orcamento-kanban-board{ grid-template-columns:repeat(4,minmax(0,1fr)) !important; align-items:stretch !important; }
+#view-solicitacoes .propostas-kanban-board{ grid-template-columns:repeat(4,minmax(0,1fr)) !important; align-items:stretch !important; }
+#view-solicitacoes .orcamento-kanban-col,
+#view-solicitacoes .propostas-kanban-col{ min-width:0 !important; width:100% !important; max-width:none !important; min-height:320px !important; border-radius:16px !important; }
+#view-solicitacoes .orcamento-kanban-head,
+#view-solicitacoes .propostas-kanban-head{ min-height:62px !important; }
+.kanban-title-row{ display:flex; align-items:center; justify-content:space-between; gap:8px; width:100%; }
+.kanban-count-pill{ min-width:28px; height:24px; padding:0 8px; border-radius:999px; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:900; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.14); color:var(--text); }
+body.theme-light .kanban-count-pill{ background:rgba(255,255,255,.72); border-color:rgba(65,96,145,.18); color:#1c3355; }
+#view-solicitacoes .orcamento-kanban-body,
+#view-solicitacoes .propostas-kanban-body{ min-height:260px !important; }
+.proposta-kanban-empty{ min-height:116px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; color:var(--text3); font-size:12.5px; text-align:center; padding:18px; background:rgba(255,255,255,.025); border-radius:12px; border:1px dashed rgba(255,255,255,.10); }
+.propostas-kanban-col[data-status="concluidos"]{ border-color:rgba(34,197,94,.34) !important; }
+.propostas-kanban-col[data-status="concluidos"] .propostas-kanban-head{ background:linear-gradient(90deg, rgba(34,197,94,.18), rgba(34,197,94,.04)) !important; }
+.proposta-kanban-card.concluida{ border-left-color:var(--success) !important; background:linear-gradient(180deg, rgba(34,197,94,.11), rgba(255,255,255,.035)) !important; }
+body.theme-light .proposta-kanban-card.concluida{ background:linear-gradient(180deg, rgba(34,197,94,.16), rgba(255,255,255,.82)) !important; }
+@media(max-width:1380px){ #view-solicitacoes .orcamento-kanban-board, #view-solicitacoes .propostas-kanban-board{ grid-template-columns:repeat(2,minmax(260px,1fr)) !important; } }
+@media(max-width:760px){ #view-solicitacoes .orcamento-kanban-board, #view-solicitacoes .propostas-kanban-board{ grid-template-columns:1fr !important; } }
+
+/* DUPLICIDADE INTELIGENTE */
+.duplicate-item.enhanced{ display:flex; justify-content:space-between; gap:10px; align-items:flex-start; padding:10px; border-radius:12px; border:1px solid rgba(245,166,35,.24); background:rgba(245,166,35,.08); margin-top:8px; }
+.duplicate-score{ display:inline-flex; align-items:center; gap:5px; margin-top:6px; font-size:11px; font-weight:900; color:var(--warning); background:rgba(245,166,35,.13); border:1px solid rgba(245,166,35,.24); border-radius:999px; padding:4px 8px; }
+.duplicate-actions{ display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
+
+/* FICHA DO CLIENTE - RESUMO E LINHA DO TEMPO */
+.client-commercial-summary{ margin:14px 0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.client-summary-card{ border:1px solid var(--border); border-radius:14px; padding:11px; background:linear-gradient(145deg, rgba(13,102,232,.10), rgba(255,255,255,.025)); }
+.client-summary-card span{ display:block; font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:.55px; font-weight:800; }
+.client-summary-card strong{ display:block; margin-top:4px; font-size:19px; color:var(--text); }
+.client-timeline-enhanced{ margin-top:16px; border-top:1px solid var(--border); padding-top:14px; }
+.client-timeline-enhanced-title{ font-weight:900; display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; }
+.client-timeline-list{ display:flex; flex-direction:column; gap:9px; }
+.client-timeline-entry{ display:flex; gap:10px; align-items:flex-start; border:1px solid var(--border); border-radius:13px; padding:10px; background:rgba(255,255,255,.035); }
+.client-timeline-entry-icon{ width:30px; height:30px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex:0 0 auto; background:var(--accent-light); color:var(--accent); }
+.client-timeline-entry-title{ font-weight:900; font-size:13px; color:var(--text); }
+.client-timeline-entry-date{ font-size:11.5px; color:var(--text3); margin-top:2px; }
+.client-timeline-entry-text{ font-size:12.3px; color:var(--text2); line-height:1.42; margin-top:4px; white-space:pre-wrap; }
+body.theme-light .client-summary-card, body.theme-light .client-timeline-entry{ background:rgba(255,255,255,.70) !important; }
+
+/* CONFIGURACOES DE ALARME E REVISAO FINAL */
+.alarm-settings-grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-top:10px; }
+.alarm-setting-line{ display:flex; align-items:center; justify-content:space-between; gap:10px; border:1px solid var(--border); border-radius:12px; padding:10px 11px; background:rgba(255,255,255,.035); }
+.alarm-setting-line span{ font-weight:800; font-size:12.5px; }
+.alarm-setting-line small{ display:block; color:var(--text3); font-weight:500; margin-top:2px; }
+.alarm-setting-line input[type="number"], .alarm-setting-line input[type="time"]{ max-width:112px; }
+.production-check-list{ display:flex; flex-direction:column; gap:8px; margin-top:10px; }
+.production-check-item{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 10px; border-radius:11px; border:1px solid var(--border); background:rgba(255,255,255,.035); font-size:12.5px; }
+.production-check-item.ok i{ color:var(--success); } .production-check-item.warn i{ color:var(--warning); }
+@media(max-width:760px){ .alarm-settings-grid,.client-commercial-summary{ grid-template-columns:1fr; } }
+`;
+  document.head.appendChild(style);
+
+  /* 2 e 3. Kanbans refinados + contadores */
+  function propostaStatusClasseFinal(status){
+    if (['aprovada','recusada','nao_acompanhar'].includes(status || '')) return 'concluida';
+    if (status === 'sem_resposta') return 'alerta';
+    if (status === 'cliente_pediu_ajuste') return 'ajuste';
+    return '';
+  }
+  function propostaPrecisaAcompanhamentoFinal(status){ return !['aprovada','recusada','nao_acompanhar'].includes(status || 'aguardando_retorno'); }
+  window.propostaPrecisaAcompanhamento = propostaPrecisaAcompanhamentoFinal;
+  window.propostaStatusClasse = propostaStatusClasseFinal;
+
+  window.propostaKanbanCols = function(){
+    return [
+      {key:'aguardando_retorno', title:'Aguardando retorno', icon:'fa-clock', help:'Propostas enviadas aguardando resposta do cliente.'},
+      {key:'cliente_pediu_ajuste', title:'Ajuste solicitado', icon:'fa-pen-ruler', help:'Cliente pediu revisão, nova condição ou complemento.'},
+      {key:'sem_resposta', title:'Sem resposta', icon:'fa-comment-slash', help:'Propostas que exigem nova tentativa de contato.'},
+      {key:'concluidos', title:'Concluídos', icon:'fa-circle-check', help:'Propostas aprovadas, recusadas ou encerradas.'}
+    ];
+  };
+
+  function propostasTodas(){
+    if (typeof listaPropostasHistorico === 'function') return listaPropostasHistorico();
+    return [];
+  }
+  window.listaPropostasEmAcompanhamento = function(){
+    return propostasTodas().filter(p => propostaPrecisaAcompanhamentoFinal(p.status)).sort((a,b)=>{
+      const peso = s => s === 'sem_resposta' ? 0 : s === 'cliente_pediu_ajuste' ? 1 : 2;
+      return peso(a.status)-peso(b.status) || (a.data||'').localeCompare(b.data||'');
+    });
+  };
+
+  window.renderPropostaKanbanCard = function(p){
+    const status = p.status || 'aguardando_retorno';
+    const classe = propostaStatusClasseFinal(status);
+    const nums = (p.pecas || p.servico) ? `<div class="proposta-kanban-meta"><strong>Nº orçamento:</strong> ${p.pecas?`Peças ${esc(p.pecas)}`:''}${p.pecas&&p.servico?' • ':''}${p.servico?`Serviço ${esc(p.servico)}`:''}</div>` : '';
+    return `<div class="proposta-kanban-card ${classe}" draggable="true" data-proposta-ref="${esc(p.ref)}" ondblclick="abrirAtualizarStatusProposta('${esc(p.ref)}')" ondragstart="dragPropostaKanban(event,'${esc(p.ref)}')" ondragend="dragEndPropostaKanban(event)" title="Duplo clique para atualizar o status">
+      <div class="proposta-kanban-card-top"><div style="min-width:0;flex:1"><div class="proposta-kanban-title">${esc(p.nome)}</div>${p.empresa?`<div class="proposta-kanban-meta">${esc(p.empresa)}</div>`:''}</div><span class="proposta-kanban-status">${statusPropostaLabel(status)}</span></div>
+      <div class="proposta-kanban-meta"><strong>Enviada em:</strong> ${fmtSafe(p.data)} • ${esc(p.origem || 'Proposta enviada')}</div>
+      ${nums}${p.descricao?`<div class="proposta-kanban-desc">${esc(p.descricao)}</div>`:''}
+      <div class="proposta-kanban-actions">
+        <button class="btn btn-primary btn-sm" onclick="abrirAtualizarStatusProposta('${esc(p.ref)}'); event.stopPropagation();"><i class="fa-solid fa-sliders"></i> Status</button>
+        ${p.clienteId?`<button class="btn btn-ghost btn-sm" onclick="registrarContatoFromProposta('${esc(p.ref)}'); event.stopPropagation();"><i class="fa-solid fa-phone"></i> Contato</button><button class="btn btn-warning btn-sm" onclick="agendarRetornoFromProposta('${esc(p.ref)}'); event.stopPropagation();"><i class="fa-regular fa-calendar-plus"></i> Retorno</button>`:''}
+        ${!['aprovada','recusada','nao_acompanhar'].includes(status)?`<button class="btn btn-success btn-sm" onclick="atualizarStatusPropostaRapido('${esc(p.ref)}','aprovada'); event.stopPropagation();"><i class="fa-solid fa-check"></i> Aprovada</button><button class="btn btn-danger btn-sm" onclick="atualizarStatusPropostaRapido('${esc(p.ref)}','recusada'); event.stopPropagation();"><i class="fa-solid fa-xmark"></i> Recusada</button>`:''}
+      </div>
+    </div>`;
+  };
+
+  window.renderSolicitacoesKanban = function(){
+    const board = document.getElementById('solicitacoes-kanban');
+    const countEl = document.getElementById('solicitacao-count');
+    if (!board) return;
+    const lista = (typeof getSolicitacoesFiltradasBase === 'function') ? getSolicitacoesFiltradasBase() : (solicitacoesOrcamento || []);
+    const cols = [
+      {key:'nova', title:'Novas solicitações', icon:'fa-inbox', cls:'', list:lista.filter(s=>(s.etapa||'nova')==='nova')},
+      {key:'aguardando_info', title:'Aguardando informações', icon:'fa-circle-question', cls:'info', list:lista.filter(s=>s.etapa==='aguardando_info')},
+      {key:'aguardando_cotacao', title:'Aguardando cotação de peças', icon:'fa-gears', cls:'pecas', list:lista.filter(s=>s.etapa==='aguardando_cotacao')},
+      {key:'em_elaboracao', title:'Orçamento em elaboração', icon:'fa-file-pen', cls:'elaboracao', list:lista.filter(s=>s.etapa==='em_elaboracao')}
+    ];
+    if (countEl) countEl.textContent = cols.reduce((a,c)=>a+c.list.length,0);
+    board.innerHTML = cols.map(col => `<div class="orcamento-kanban-col" data-etapa="${col.key}">
+      <div class="orcamento-kanban-head"><div class="orcamento-kanban-title kanban-title-row"><span><i class="fa-solid ${col.icon}" style="color:${col.key==='nova'?'var(--warning)':col.key==='aguardando_info'?'var(--accent)':col.key==='aguardando_cotacao'?'var(--purple)':'var(--cyan)'}"></i> ${col.title}</span><span class="kanban-count-pill">${col.list.length}</span></div></div>
+      <div class="orcamento-kanban-body" ondragover="allowDropSolicitacaoKanban(event)" ondragleave="leaveDropSolicitacaoKanban(event)" ondrop="dropSolicitacaoKanban(event,'${col.key}')">
+        ${col.list.length ? col.list.map(sol => cardKanbanSolicitacao(sol, col.cls)).join('') : `<div class="empty" style="padding:24px 10px"><i class="fa-solid ${col.icon}"></i><p>Nenhum item nesta etapa.</p></div>`}
+      </div></div>`).join('');
+  };
+
+  window.ensurePropostasAcompanhamentoKanbanUI = function(){
+    if (document.getElementById('propostas-acompanhamento-kanban-section')) return;
+    const fila = document.querySelector('#view-solicitacoes .orcamento-kanban-wrap');
+    if (!fila) return;
+    fila.insertAdjacentHTML('afterend', `<div class="propostas-kanban-wrap" id="propostas-acompanhamento-kanban-section">
+      <div class="propostas-kanban-title-clean"><div><h3><i class="fa-solid fa-handshake-angle" style="color:var(--accent)"></i> Propostas em Acompanhamento</h3><small>Arraste os cards entre as etapas. A coluna Concluídos reúne propostas aprovadas, recusadas ou encerradas.</small></div><button class="btn btn-ghost btn-sm" onclick="renderPropostasAcompanhamentoKanban()"><i class="fa-solid fa-rotate-right"></i> Atualizar</button></div>
+      <div class="propostas-kanban-board" id="propostas-acompanhamento-kanban"></div>
+    </div>`);
+  };
+
+  window.renderPropostasAcompanhamentoKanban = function(){
+    ensurePropostasAcompanhamentoKanbanUI();
+    const board = document.getElementById('propostas-acompanhamento-kanban');
+    if (!board) return;
+    const todas = propostasTodas();
+    const cols = window.propostaKanbanCols();
+    board.innerHTML = cols.map(col => {
+      const itens = col.key === 'concluidos'
+        ? todas.filter(p => ['aprovada','recusada','nao_acompanhar'].includes(p.status || ''))
+        : todas.filter(p => (p.status || 'aguardando_retorno') === col.key);
+      const cor = col.key==='sem_resposta'?'var(--danger)':col.key==='cliente_pediu_ajuste'?'var(--warning)':col.key==='concluidos'?'var(--success)':'var(--accent)';
+      return `<div class="propostas-kanban-col" data-status="${col.key}">
+        <div class="propostas-kanban-head"><div class="propostas-kanban-title kanban-title-row"><span><i class="fa-solid ${col.icon}" style="color:${cor}"></i> ${col.title}</span><span class="kanban-count-pill">${itens.length}</span></div><div class="propostas-kanban-subtitle">${col.help}</div></div>
+        <div class="propostas-kanban-body" ondragover="allowDropPropostaKanban(event)" ondragleave="leaveDropPropostaKanban(event)" ondrop="dropPropostaKanban(event,'${col.key}')">
+          ${itens.length ? itens.map(renderPropostaKanbanCard).join('') : `<div class="proposta-kanban-empty"><i class="fa-solid ${col.icon}"></i>Nenhuma proposta nesta etapa.</div>`}
+        </div>
+      </div>`;
+    }).join('');
+    const count = document.getElementById('propostas-acompanhamento-count');
+    if (count) count.textContent = listaPropostasEmAcompanhamento().length;
+  };
+  window.dragPropostaKanban = function(ev, ref){ ev.dataTransfer.setData('text/proposta-ref', ref); ev.dataTransfer.effectAllowed='move'; ev.currentTarget.classList.add('dragging'); };
+  window.dragEndPropostaKanban = function(ev){ ev.currentTarget.classList.remove('dragging'); document.querySelectorAll('.propostas-kanban-body.drag-over').forEach(x=>x.classList.remove('drag-over')); };
+  window.allowDropPropostaKanban = function(ev){ ev.preventDefault(); ev.currentTarget.classList.add('drag-over'); };
+  window.leaveDropPropostaKanban = function(ev){ ev.currentTarget.classList.remove('drag-over'); };
+  window.dropPropostaKanban = function(ev, status){
+    ev.preventDefault(); ev.currentTarget.classList.remove('drag-over');
+    const ref = ev.dataTransfer.getData('text/proposta-ref');
+    if (!ref) return;
+    const statusFinal = status === 'concluidos' ? 'nao_acompanhar' : status;
+    if (typeof aplicarStatusProposta === 'function' && aplicarStatusProposta(ref, statusFinal, status === 'concluidos' ? 'Movido para Concluídos no Kanban de Propostas.' : 'Movido no Kanban de Propostas em Acompanhamento.')) {
+      renderPropostasAcompanhamentoKanban();
+      if (typeof notify === 'function') notify('✓ Proposta movida para: ' + (status === 'concluidos' ? 'Concluídos' : statusPropostaLabel(statusFinal)), '#0d3d2a');
+    }
+  };
+  const baseAplicarStatusProposta = window.aplicarStatusProposta;
+  window.aplicarStatusProposta = function(ref, novoStatus, obs=''){
+    const ok = baseAplicarStatusProposta ? baseAplicarStatusProposta(ref, novoStatus, obs) : false;
+    if (ok) setTimeout(()=>{ try{ renderPropostasAcompanhamentoKanban(); renderSolicitacoesKanban(); renderHeaderNotificationsSafe(); }catch(e){} }, 30);
+    return ok;
+  };
+  const baseRenderSolicitacoesTabela = window.renderSolicitacoesTabela;
+  window.renderSolicitacoesTabela = function(){
+    if (typeof renderSolicitacoesResumo === 'function') renderSolicitacoesResumo();
+    renderSolicitacoesKanban();
+    renderPropostasAcompanhamentoKanban();
+  };
+
+  /* 4. Cliente duplicado inteligente */
+  window.scoreClienteDuplicado = function(c, campos){
+    let score = 0; const motivos = [];
+    const cnpjA = onlyDigits(campos.cnpj), cnpjB = onlyDigits(c.cnpj);
+    const telA = onlyDigits(campos.telefone), telB = onlyDigits(c.telefone);
+    const emailA = norm(campos.email), emailB = norm(c.email);
+    const nomeA = norm(campos.nome), nomeB = norm(c.nome);
+    const empresaA = norm(campos.empresa), empresaB = norm(c.empresa);
+    if (cnpjA && cnpjB && cnpjA === cnpjB){ score += 100; motivos.push('CNPJ igual'); }
+    if (telA && telB && (telA === telB || (telA.length >= 8 && telB.endsWith(telA.slice(-8))))){ score += 55; motivos.push('telefone igual/parecido'); }
+    if (emailA && emailB && emailA === emailB){ score += 55; motivos.push('e-mail igual'); }
+    if (nomeA && nomeB){
+      if (nomeA === nomeB){ score += 45; motivos.push('nome igual'); }
+      else if (nomeA.length >= 4 && (nomeB.includes(nomeA) || nomeA.includes(nomeB))){ score += 24; motivos.push('nome parecido'); }
+    }
+    if (empresaA && empresaB){
+      if (empresaA === empresaB){ score += 35; motivos.push('razão social igual'); }
+      else if (empresaA.length >= 5 && (empresaB.includes(empresaA) || empresaA.includes(empresaB))){ score += 18; motivos.push('razão social parecida'); }
+    }
+    return { score, motivos };
+  };
+  window.buscarClientesParecidosSolicitacao = function(){
+    const campos = (typeof camposSolicitacaoAtual === 'function') ? camposSolicitacaoAtual() : {
+      nome: document.getElementById('sol-nome')?.value || '', empresa: document.getElementById('sol-empresa')?.value || '', cnpj: document.getElementById('sol-cnpj')?.value || '', telefone: document.getElementById('sol-telefone')?.value || '', email: document.getElementById('sol-email')?.value || ''
+    };
+    return (clientes || []).map(c => ({ c, ...scoreClienteDuplicado(c, campos) })).filter(x => x.score >= 22).sort((a,b)=>b.score-a.score).slice(0,5);
+  };
+  window.ignorarDuplicidadeSolicitacao = function(){
+    const modal = document.getElementById('modalSolicitacao');
+    if (modal) modal.dataset.ignorarDuplicidade = '1';
+    const box = document.getElementById('sol-duplicidade-alerta');
+    if (box) { box.classList.add('open'); box.innerHTML = '<div class="duplicate-alert-title"><i class="fa-solid fa-circle-check" style="margin-right:5px"></i>Duplicidade ignorada nesta gravação</div><div class="field-note">O sistema permitirá cadastrar/salvar esta solicitação sem vincular ao cliente sugerido.</div>'; }
+  };
+  window.renderDuplicidadeSolicitacao = function(){
+    const box = document.getElementById('sol-duplicidade-alerta'); if (!box) return;
+    const lista = buscarClientesParecidosSolicitacao();
+    if (!lista.length){ box.classList.remove('open'); box.innerHTML=''; return; }
+    box.classList.add('open');
+    box.innerHTML = `<div class="duplicate-alert-title"><i class="fa-solid fa-triangle-exclamation" style="margin-right:5px"></i>Possível cliente já cadastrado</div>` + lista.map(({c,motivos,score}) => `<div class="duplicate-item enhanced"><div><strong>${esc(c.nome || 'Cliente')}</strong><div style="font-size:11.5px;color:var(--text3)">${esc([c.empresa,c.cnpj,c.telefone,c.email].filter(Boolean).join(' • '))}</div><div class="duplicate-score"><i class="fa-solid fa-fingerprint"></i> compatibilidade ${score}</div><div style="font-size:11px;color:var(--warning);margin-top:5px">${esc(motivos.join(', '))}</div></div><div class="duplicate-actions"><button class="btn btn-warning btn-sm" type="button" onclick="usarClienteExistenteSolicitacao(${c.id})"><i class="fa-solid fa-link"></i> Usar cliente</button><button class="btn btn-ghost btn-sm" type="button" onclick="abrirDetalhe(${c.id})"><i class="fa-solid fa-eye"></i> Ver</button><button class="btn btn-ghost btn-sm" type="button" onclick="ignorarDuplicidadeSolicitacao()">Cadastrar mesmo assim</button></div></div>`).join('');
+  };
+  const baseSalvarSolicitacao = window.salvarSolicitacaoOrcamento;
+  window.salvarSolicitacaoOrcamento = async function(){
+    const modal = document.getElementById('modalSolicitacao');
+    const clienteId = +(document.getElementById('sol-cliente')?.value || 0);
+    const editId = modal?.dataset.editId;
+    const ignorar = modal?.dataset.ignorarDuplicidade === '1';
+    const forte = buscarClientesParecidosSolicitacao().find(x => x.score >= 55);
+    if (!clienteId && !editId && !ignorar && forte) {
+      renderDuplicidadeSolicitacao();
+      if (typeof notify === 'function') notify('Possível cliente já cadastrado encontrado. Vincule o cliente ou confirme cadastrar mesmo assim.', '#854f0b');
+      const ok = confirm(`Possível cliente já cadastrado: ${forte.c.nome || 'Cliente'}\nMotivos: ${forte.motivos.join(', ')}\n\nDeseja salvar mesmo assim sem vincular?`);
+      if (!ok) return;
+      if (modal) modal.dataset.ignorarDuplicidade = '1';
+    }
+    const result = await baseSalvarSolicitacao.apply(this, arguments);
+    if (modal) delete modal.dataset.ignorarDuplicidade;
+    return result;
+  };
+
+  /* 6. Ficha do cliente com resumo comercial e linha do tempo recente primeiro */
+  function clientTimelineItems(clienteId){
+    const arr = [];
+    (solicitacoesOrcamento || []).filter(s=>s.clienteId===clienteId).forEach(s=>arr.push({data:s.dataSolicitacao||s.criadoEm||s.prazo||todaySafe(), icon:'fa-clipboard-list', title:'Solicitação aberta', text:`${s.produto || 'Produto/serviço não informado'}\n${s.descricao || ''}`}));
+    propostasTodas().filter(p=>p.clienteId===clienteId).forEach(p=>arr.push({data:p.data||todaySafe(), icon:'fa-file-signature', title:'Proposta enviada — '+statusPropostaLabel(p.status||'aguardando_retorno'), text:`${p.origem || ''}${p.pecas||p.servico?`\nNº orçamento: ${p.pecas?`Peças ${p.pecas}`:''}${p.pecas&&p.servico?' • ':''}${p.servico?`Serviço ${p.servico}`:''}`:''}\n${p.descricao || ''}`}));
+    (agendamentos || []).filter(a=>a.clienteId===clienteId).forEach(a=>arr.push({data:a.data||todaySafe(), icon:'fa-calendar-day', title:'Retorno programado', text:`${a.horario || 'Sem horário'} — ${a.motivo || 'Retorno agendado'}`}));
+    (contatos || []).filter(c=>c.clienteId===clienteId).forEach(c=>arr.push({data:c.data||todaySafe(), icon:c.semResposta?'fa-phone-slash':'fa-phone', title:c.semResposta?'Tentativa sem resposta':'Contato registrado', text:c.descricao || ''}));
+    (concluidos || []).filter(c=>c.clienteId===clienteId).forEach(c=>arr.push({data:c.concluidoEm||c.dataOriginal||todaySafe(), icon:'fa-circle-check', title:c.tipo==='retorno'?'Retorno concluído':c.tipo==='orcamento'?'Recorrente concluído':'Solicitação concluída', text:c.obsConclusao || c.motivo || ''}));
+    return arr.sort((a,b)=>(b.data||'').localeCompare(a.data||''));
+  }
+  const baseAbrirDetalhe = window.abrirDetalhe;
+  window.abrirDetalhe = function(id){
+    if (baseAbrirDetalhe) baseAbrirDetalhe(id);
+    setTimeout(()=>{
+      const c = (clientes || []).find(x=>x.id===id); const content = document.getElementById('detalhe-content');
+      if (!c || !content) return;
+      content.querySelectorAll('.client-commercial-summary,.client-timeline-enhanced').forEach(el=>el.remove());
+      const propostas = propostasTodas().filter(p=>p.clienteId===id);
+      const propostasAtivas = propostas.filter(p=>propostaPrecisaAcompanhamentoFinal(p.status));
+      const abertas = (solicitacoesOrcamento || []).filter(s=>s.clienteId===id).length;
+      const contatosCliente = (contatos || []).filter(ct=>ct.clienteId===id).length;
+      const proximo = (agendamentos || []).filter(a=>a.clienteId===id && (a.data || '') >= todaySafe()).sort((a,b)=>(a.data||'').localeCompare(b.data||'') || (a.horario||'').localeCompare(b.horario||''))[0];
+      const resumo = `<div class="client-commercial-summary"><div class="client-summary-card"><span>Solicitações abertas</span><strong>${abertas}</strong></div><div class="client-summary-card"><span>Propostas enviadas</span><strong>${propostas.length}</strong></div><div class="client-summary-card"><span>Em acompanhamento</span><strong>${propostasAtivas.length}</strong></div><div class="client-summary-card"><span>Próximo retorno</span><strong style="font-size:13px">${proximo?`${fmtSafe(proximo.data)} ${proximo.horario||''}`:'—'}</strong></div></div>`;
+      const timeline = clientTimelineItems(id).slice(0,24);
+      const timelineHtml = `<div class="client-timeline-enhanced"><div class="client-timeline-enhanced-title"><span><i class="fa-solid fa-timeline" style="color:var(--accent);margin-right:6px"></i>Linha do tempo comercial</span><small style="color:var(--text3)">Mais recentes em cima</small></div><div class="client-timeline-list">${timeline.length?timeline.map(it=>`<div class="client-timeline-entry"><div class="client-timeline-entry-icon"><i class="fa-solid ${it.icon}"></i></div><div><div class="client-timeline-entry-title">${esc(it.title)}</div><div class="client-timeline-entry-date">${fmtSafe(it.data)}</div>${it.text?`<div class="client-timeline-entry-text">${esc(it.text).slice(0,650)}</div>`:''}</div></div>`).join(''):`<div class="empty"><i class="fa-solid fa-timeline"></i><p>Nenhuma movimentação comercial ainda.</p></div>`}</div></div>`;
+      const headerBlock = content.children[0];
+      if (headerBlock) headerBlock.insertAdjacentHTML('afterend', resumo + timelineHtml);
+      else content.insertAdjacentHTML('afterbegin', resumo + timelineHtml);
+    }, 20);
+  };
+
+  /* 7. Configurações de alarmes/notificações */
+  window.ensureAlarmSettingsUI = function(){
+    const grid = document.querySelector('#view-configuracoes .settings-grid');
+    if (!grid || document.getElementById('alarm-settings-card')) return;
+    grid.insertAdjacentHTML('beforeend', `<div class="card settings-card" id="alarm-settings-card"><div class="card-header"><div class="card-title"><i class="fa-solid fa-bell" style="color:var(--warning)"></i> Alarmes e notificações</div></div><div class="settings-card-body"><p>Defina quais alertas comerciais devem aparecer e como o alarme deve se comportar.</p><div class="alarm-settings-grid" id="alarm-settings-grid"></div><div class="settings-actions" style="margin-top:12px"><button class="btn btn-primary" onclick="salvarConfiguracoesAlarmes()"><i class="fa-solid fa-floppy-disk"></i> Salvar configurações</button><button class="btn btn-ghost" onclick="testarAlarmeConfigurado()"><i class="fa-solid fa-volume-high"></i> Testar alarme</button></div></div></div>
+      <div class="card settings-card" id="production-check-card"><div class="card-header"><div class="card-title"><i class="fa-solid fa-shield-check" style="color:var(--success)"></i> Revisão final de produção</div></div><div class="settings-card-body"><p>Checklist rápido para validar pontos críticos antes do uso diário.</p><div class="production-check-list" id="production-check-list"></div><div class="settings-actions" style="margin-top:12px"><button class="btn btn-success" onclick="rodarRevisaoProducao()"><i class="fa-solid fa-list-check"></i> Rodar revisão</button></div></div></div>`);
+    renderAlarmSettingsUI(); rodarRevisaoProducao();
+  };
+  window.renderAlarmSettingsUI = function(){
+    const s = loadAlarmSettings(); const el = document.getElementById('alarm-settings-grid'); if (!el) return;
+    const chk = (key, title, small) => `<label class="alarm-setting-line"><span>${title}<small>${small}</small></span><input type="checkbox" id="alarm-${key}" ${s[key]?'checked':''}></label>`;
+    el.innerHTML = [
+      chk('retornos','Retornos agendados','Alarme para retornos do dia.'),
+      chk('recorrentes','Orçamentos recorrentes','Alarme para recorrentes vencendo.'),
+      chk('solicitacoesHoje','Solicitações para hoje','Prazo de orçamento chegando hoje.'),
+      chk('propostasSemResposta','Propostas sem resposta','Cobrança de follow-up comercial.'),
+      chk('propostasAjuste','Propostas com ajuste','Lembrete para revisar proposta.'),
+      chk('som','Som do alarme','Tocar alerta sonoro no navegador.'),
+      chk('push','Push do navegador','Usar notificação do navegador quando permitido.'),
+      `<label class="alarm-setting-line"><span>Soneca padrão<small>Minutos para adiar alarme.</small></span><input type="number" id="alarm-sonecaMinutos" min="5" max="120" value="${Number(s.sonecaMinutos)||10}"></label>`,
+      `<label class="alarm-setting-line"><span>Hora comercial<small>Horário padrão para alertas comerciais.</small></span><input type="time" id="alarm-horaComercial" value="${esc(s.horaComercial||'09:00')}"></label>`
+    ].join('');
+  };
+  window.salvarConfiguracoesAlarmes = function(){
+    const get = id => document.getElementById('alarm-'+id);
+    saveAlarmSettings({
+      retornos: !!get('retornos')?.checked, recorrentes: !!get('recorrentes')?.checked, solicitacoesHoje: !!get('solicitacoesHoje')?.checked,
+      propostasSemResposta: !!get('propostasSemResposta')?.checked, propostasAjuste: !!get('propostasAjuste')?.checked, som: !!get('som')?.checked, push: !!get('push')?.checked,
+      sonecaMinutos: Math.max(5, Math.min(120, Number(get('sonecaMinutos')?.value || 10))), horaComercial: get('horaComercial')?.value || '09:00'
+    });
+    if (typeof notify === 'function') notify('✓ Configurações de alarmes salvas!', '#0d3d2a');
+    renderHeaderNotificationsSafe();
+  };
+  window.testarAlarmeConfigurado = function(){
+    const s = loadAlarmSettings();
+    if (s.som && typeof beep === 'function') beep();
+    if (typeof notify === 'function') notify('Teste de alarme executado. Se o navegador permitir, o som/notificação foi disparado.', '#1e4a8a');
+    if (s.push && typeof enviarPushNotificacao === 'function') enviarPushNotificacao('Teste de alarme', 'Agenda Dinâmica — alerta configurado com sucesso.');
+  };
+  const baseCheckAlarms = window.checkAlarms;
+  window.checkAlarms = function(){
+    const s = loadAlarmSettings();
+    if (s.retornos || s.recorrentes) return baseCheckAlarms ? baseCheckAlarms.apply(this, arguments) : undefined;
+  };
+  const baseBeep = window.beep;
+  window.beep = function(){ if (loadAlarmSettings().som && baseBeep) return baseBeep.apply(this, arguments); };
+
+  /* Sino/lista rápida sem card grande no painel */
+  function notificacoesHeader(){
+    const s = loadAlarmSettings(); const hoje = todaySafe(); const itens=[];
+    const add = (nivel,titulo,meta,icon,acao='') => itens.push({nivel,titulo,meta,icon,acao});
+    (solicitacoesOrcamento||[]).forEach(sol=>{ const d=typeof dadosSolicitacaoCliente==='function'?dadosSolicitacaoCliente(sol):{nome:sol.nome}; if ((sol.prazo||'')<hoje) add('critica','Solicitação atrasada',`${d.nome||'Cliente'} • ${fmtSafe(sol.prazo)}`,'fa-triangle-exclamation',`irParaSolicitacaoEditar(${sol.id})`); else if (s.solicitacoesHoje && sol.prazo===hoje) add('atencao','Solicitação para hoje',`${d.nome||'Cliente'} • ${sol.produto||'Sem produto'}`,'fa-clipboard-list',`irParaSolicitacaoEditar(${sol.id})`); if(!sol.clienteId) add('atencao','Sem cliente vinculado',`${d.nome||'Cliente'} • cadastrar/vincular`,'fa-user-slash',`irParaSolicitacaoEditar(${sol.id})`); });
+    (agendamentos||[]).forEach(a=>{ const c=(clientes||[]).find(x=>x.id===a.clienteId); if((a.data||'')<hoje) add('critica','Retorno atrasado',`${c?.nome||'Cliente'} • ${fmtSafe(a.data)}`,'fa-calendar-xmark',`editarAgendamento(${a.id})`); else if(s.retornos && a.data===hoje) add('atencao','Retorno para hoje',`${c?.nome||'Cliente'} • ${a.horario||''}`,'fa-calendar-day',`editarAgendamento(${a.id})`); });
+    (orcamentos||[]).forEach(o=>{ const c=(clientes||[]).find(x=>x.id===o.clienteId); if((o.data||'')<hoje) add('critica','Recorrente atrasado',`${c?.nome||'Cliente'} • ${fmtSafe(o.data)}`,'fa-file-circle-exclamation',`editarOrcamento(${o.id})`); else if(s.recorrentes && o.data===hoje) add('atencao','Recorrente para hoje',`${c?.nome||'Cliente'} • ${o.horario||''}`,'fa-file-invoice-dollar',`editarOrcamento(${o.id})`); });
+    listaPropostasEmAcompanhamento().forEach(p=>{ if(s.propostasSemResposta && p.status==='sem_resposta') add('critica','Proposta sem resposta',`${p.nome} • ${fmtSafe(p.data)}`,'fa-comment-slash',`abrirAtualizarStatusProposta('${p.ref}')`); if(s.propostasAjuste && p.status==='cliente_pediu_ajuste') add('atencao','Proposta com ajuste',`${p.nome} • revisar proposta`,'fa-pen-ruler',`abrirAtualizarStatusProposta('${p.ref}')`); });
+    const peso={critica:0,atencao:1,info:2}; return itens.sort((a,b)=>peso[a.nivel]-peso[b.nivel]).slice(0,12);
+  }
+  window.criarNotificacoesInternas = notificacoesHeader;
+  window.ensureNotificacoesInternasUI = function(){ document.getElementById('notificacoes-internas-card')?.remove(); };
+  window.renderNotificacoesInternas = function(){ document.getElementById('notificacoes-internas-card')?.remove(); renderHeaderNotificationsSafe(); };
+  function renderHeaderNotificationsSafe(){
+    const btn = document.getElementById('header-notifications-btn') || document.getElementById('notificationBellBtn') || document.querySelector('.header-notifications-btn');
+    const list = document.getElementById('header-notifications-list') || document.getElementById('notificationBellList');
+    const count = document.getElementById('header-notifications-count') || document.getElementById('notificationBellCount');
+    const itens = notificacoesHeader();
+    if (count) { count.textContent = itens.length; count.style.display = itens.length ? 'inline-flex' : 'none'; }
+    if (list) list.innerHTML = itens.length ? itens.map(n=>`<button class="notification-popover-item ${n.nivel}" onclick="${n.acao || ''}; document.querySelector('.notification-popover.open')?.classList.remove('open')"><i class="fa-solid ${n.icon}"></i><span><strong>${esc(n.titulo)}</strong><small>${esc(n.meta)}</small></span></button>`).join('') : `<div class="notification-popover-empty"><i class="fa-solid fa-circle-check"></i><span>Nenhuma notificação pendente.</span></div>`;
+  }
+  window.renderHeaderNotificationsSafe = renderHeaderNotificationsSafe;
+
+  /* 8. Relatório com comparativo mensal */
+  function propsSafe(){ return propostasTodas(); }
+  function resumoPeriodo(range){
+    const props = propsSafe().filter(p=>between(p.data,range));
+    const ativas = propsSafe().filter(p=>propostaPrecisaAcompanhamentoFinal(p.status));
+    const contatosMes = (contatos||[]).filter(c=>between(c.data,range));
+    const solicitacoesMes = (solicitacoesOrcamento||[]).filter(s=>between(s.prazo||s.dataSolicitacao,range));
+    const retornosMes = (agendamentos||[]).filter(a=>between(a.data,range));
+    const concluidosMes = (concluidos||[]).filter(c=>between(c.concluidoEm,range));
+    const aprovadas = props.filter(p=>p.status==='aprovada').length;
+    const recusadas = props.filter(p=>p.status==='recusada').length;
+    return { periodo:`${fmtSafe(range[0])} a ${fmtSafe(range[1])}`, contatos:contatosMes.length, semResposta:contatosMes.filter(c=>c.semResposta).length, propostas:props.length, ativas:ativas.length, aprovadas, recusadas, taxa:props.length?Math.round((aprovadas/props.length)*100):0, ajustes:ativas.filter(p=>p.status==='cliente_pediu_ajuste').length, semRespProp:ativas.filter(p=>p.status==='sem_resposta').length, solicitacoes:solicitacoesMes.length, retornos:retornosMes.length, concluidos:concluidosMes.length, clientes:(clientes||[]).filter(c=>between(c.criadoEm||c.dataCadastro,range)).length };
+  }
+  function variacao(a,b){ const diff=(Number(a)||0)-(Number(b)||0); return diff===0?'0':(diff>0?`+${diff}`:`${diff}`); }
+  window.resumoMensalRows = function(range){
+    const r = range && range[0] ? range : monthRangeFromISO(todaySafe());
+    const atual = resumoPeriodo(r), ant = resumoPeriodo(previousMonthRange(r));
+    return [['Indicador','Mês atual','Mês anterior','Variação'],['Período',atual.periodo,ant.periodo,'—'],['Clientes cadastrados',atual.clientes,ant.clientes,variacao(atual.clientes,ant.clientes)],['Contatos realizados',atual.contatos,ant.contatos,variacao(atual.contatos,ant.contatos)],['Tentativas sem resposta',atual.semResposta,ant.semResposta,variacao(atual.semResposta,ant.semResposta)],['Solicitações recebidas/prazos',atual.solicitacoes,ant.solicitacoes,variacao(atual.solicitacoes,ant.solicitacoes)],['Propostas enviadas',atual.propostas,ant.propostas,variacao(atual.propostas,ant.propostas)],['Propostas em acompanhamento',atual.ativas,ant.ativas,variacao(atual.ativas,ant.ativas)],['Propostas aprovadas',atual.aprovadas,ant.aprovadas,variacao(atual.aprovadas,ant.aprovadas)],['Propostas recusadas',atual.recusadas,ant.recusadas,variacao(atual.recusadas,ant.recusadas)],['Taxa de aprovação',atual.taxa+'%',ant.taxa+'%',(atual.taxa-ant.taxa)+' p.p.'],['Propostas com ajuste solicitado',atual.ajustes,ant.ajustes,variacao(atual.ajustes,ant.ajustes)],['Propostas sem resposta',atual.semRespProp,ant.semRespProp,variacao(atual.semRespProp,ant.semRespProp)],['Retornos programados',atual.retornos,ant.retornos,variacao(atual.retornos,ant.retornos)],['Concluídos registrados',atual.concluidos,ant.concluidos,variacao(atual.concluidos,ant.concluidos)]];
+  };
+  window.relatorioMensalComparativoRows = function(range){ return window.resumoMensalRows(range); };
+
+  /* 9. Revisão final de produção */
+  window.rodarRevisaoProducao = function(){
+    const el = document.getElementById('production-check-list'); if(!el) return;
+    const checks = [
+      {ok: !!window.supabase, label:'Cliente Supabase carregado'},
+      {ok: Array.isArray(clientes) && Array.isArray(contatos) && Array.isArray(solicitacoesOrcamento), label:'Estruturas principais de dados carregadas'},
+      {ok: !!document.getElementById('solicitacoes-kanban') && !!document.getElementById('propostas-acompanhamento-kanban-section'), label:'Kanbans de solicitações e propostas disponíveis'},
+      {ok: typeof prepararAnexosParaSalvar === 'function', label:'Rotina de anexos/Storage disponível'},
+      {ok: typeof save === 'function', label:'Rotina de salvamento disponível'},
+      {ok: typeof renderHeaderNotificationsSafe === 'function', label:'Sino de notificações operacional'},
+      {ok: !!localStorage.getItem(STORAGE_KEY), label:'Preferências de alarmes configuradas'}
+    ];
+    el.innerHTML = checks.map(c=>`<div class="production-check-item ${c.ok?'ok':'warn'}"><span><i class="fa-solid ${c.ok?'fa-circle-check':'fa-triangle-exclamation'}"></i> ${esc(c.label)}</span><strong>${c.ok?'OK':'Verificar'}</strong></div>`).join('');
+  };
+
+  const baseShowView = window.showView;
+  window.showView = function(view){
+    const r = baseShowView ? baseShowView.apply(this, arguments) : undefined;
+    setTimeout(()=>{ if(view==='solicitacoes'){ renderSolicitacoesTabela(); } if(view==='configuracoes'){ ensureAlarmSettingsUI(); } renderHeaderNotificationsSafe(); }, 50);
+    return r;
+  };
+  const baseRenderDashboard = window.renderDashboard;
+  window.renderDashboard = function(){
+    const r = baseRenderDashboard ? baseRenderDashboard.apply(this, arguments) : undefined;
+    document.getElementById('notificacoes-internas-card')?.remove();
+    renderHeaderNotificationsSafe();
+    return r;
+  };
+
+  document.addEventListener('DOMContentLoaded', ()=>{
+    if (!localStorage.getItem(STORAGE_KEY)) saveAlarmSettings(defaultAlarmSettings);
+    setTimeout(()=>{ try{ renderSolicitacoesTabela(); ensureAlarmSettingsUI(); renderHeaderNotificationsSafe(); }catch(e){ console.warn('Ajustes finais não inicializados:', e); } }, 400);
+  });
+})();
+</script>
+
+
+<script id="ajustes-finais-alarmes-relatorio-comparativo">
+(function(){
+  'use strict';
+  function alarmCfg(){ return (typeof window.getAlarmSettings === 'function') ? window.getAlarmSettings() : {retornos:true,recorrentes:true,sonecaMinutos:10,som:true,push:true}; }
+  function hoje(){ return (typeof today === 'function') ? today() : new Date().toISOString().slice(0,10); }
+  function hora(){ return (typeof nowTime === 'function') ? nowTime() : new Date().toTimeString().slice(0,5); }
+  const originalDisparar = typeof dispararProximoAlarme === 'function' ? dispararProximoAlarme : null;
+  window.checkAlarms = function(){
+    const cfg = alarmCfg();
+    const nowISO = hoje();
+    const nowT = hora();
+    const nowMs = Date.now();
+    if (cfg.retornos && Array.isArray(agendamentos)) {
+      agendamentos.filter(a => {
+        const key = 'r'+a.id;
+        if (alarmedIds.includes(key)) return false;
+        if (snoozedUntil[key] && snoozedUntil[key] > nowMs) return false;
+        return a.data === nowISO && (a.horario || '09:00') <= nowT;
+      }).forEach(a => { if (!alarmQueue.find(q=>q.tipo==='retorno' && q.item.id===a.id)) alarmQueue.push({tipo:'retorno', item:a}); });
+    }
+    if (cfg.recorrentes && Array.isArray(orcamentos)) {
+      orcamentos.filter(o => {
+        const key = 'o'+o.id;
+        if (alarmedIds.includes(key)) return false;
+        if (snoozedUntil[key] && snoozedUntil[key] > nowMs) return false;
+        return o.data === nowISO && (o.horario || '09:00') <= nowT;
+      }).forEach(o => { if (!alarmQueue.find(q=>q.tipo==='orcamento' && q.item.id===o.id)) alarmQueue.push({tipo:'orcamento', item:o}); });
+    }
+    if (!alarmAtivo && alarmQueue.length && originalDisparar) originalDisparar();
+  };
+
+  const originalAdiar = window.adiarAlarme;
+  window.adiarAlarme = function(){
+    const cfg = alarmCfg();
+    const oldSetTimeout = window.setTimeout;
+    try { return originalAdiar ? originalAdiar.apply(this, arguments) : undefined; }
+    finally {
+      if (typeof notify === 'function') notify(`Alarme adiado. Soneca configurada: ${Number(cfg.sonecaMinutos)||10} minutos.`, '#1e4a8a');
+    }
+  };
+
+  const originalExportarPdfComparativo = window.exportarPdf;
+  window.exportarPdf = function(){
+    const tipo = document.getElementById('pdf-tipo')?.value;
+    if (tipo !== 'relatorio_mensal') return originalExportarPdfComparativo ? originalExportarPdfComparativo.apply(this, arguments) : undefined;
+    try {
+      const range = typeof pdfPeriodoRange === 'function' ? pdfPeriodoRange() : undefined;
+      if (range === undefined) return;
+      const r = typeof rangeRelatorioMensal === 'function' ? rangeRelatorioMensal(range) : range;
+      const rows = typeof window.resumoMensalRows === 'function' ? window.resumoMensalRows(r) : [];
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({orientation:'landscape', unit:'mm', format:'a4'});
+      if (typeof pdfHeader === 'function') pdfHeader(doc, 'Relatório Mensal Comercial — Comparativo');
+      else doc.text('Relatório Mensal Comercial — Comparativo', 14, 18);
+      doc.autoTable({
+        head: [rows[0] || ['Indicador','Mês atual','Mês anterior','Variação']],
+        body: rows.slice(1),
+        startY: 28,
+        theme: 'grid',
+        headStyles: { fillColor: [37,99,199] },
+        styles: { fontSize: 8.2, cellPadding: 2.2 },
+        columnStyles: { 0:{cellWidth:70}, 1:{cellWidth:54}, 2:{cellWidth:54}, 3:{cellWidth:38} }
+      });
+      let y = doc.lastAutoTable.finalY + 8;
+      const props = (typeof listaPropostasHistorico === 'function' ? listaPropostasHistorico() : []).filter(p => (p.data||'') >= r[0] && (p.data||'') <= r[1]).slice(0, 24);
+      if (props.length) {
+        doc.autoTable({
+          head: [['Data','Cliente','Status','Origem','Nº orçamento']],
+          body: props.map(p => [typeof fmtDate==='function'?fmtDate(p.data):p.data, p.nome || '—', typeof statusPropostaLabel==='function'?statusPropostaLabel(p.status):p.status, p.origem || '—', [p.pecas?`P: ${p.pecas}`:'', p.servico?`S: ${p.servico}`:''].filter(Boolean).join(' • ') || '—']),
+          startY: y,
+          theme: 'striped',
+          headStyles: { fillColor: [34,197,94] },
+          styles: { fontSize: 7.3 }
+        });
+      }
+      if (typeof pdfFooter === 'function') pdfFooter(doc);
+      doc.save(`relatorio_mensal_comercial_comparativo_${hoje()}.pdf`);
+      if (typeof closeModal === 'function') closeModal('modalExportarPdf');
+      if (typeof notify === 'function') notify('✓ Relatório mensal comparativo em PDF gerado!', '#0d3d2a');
+    } catch(e) {
+      console.warn('Falha no PDF comparativo, usando exportação anterior', e);
+      return originalExportarPdfComparativo ? originalExportarPdfComparativo.apply(this, arguments) : undefined;
+    }
+  };
+})();
+</script>
+
+<script>
+(function(){
+  'use strict';
+
+  function escFinal(v){ return String(v ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+  function normFinal(v){ return String(v || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim(); }
+  function todayFinal(){ return (typeof today === 'function') ? today() : new Date().toISOString().slice(0,10); }
+  function fmtFinal(d){ return (typeof fmtDate === 'function') ? fmtDate(d) : (d || '—'); }
+  function addDaysFinal(iso, days){ if (typeof addDays === 'function') return addDays(iso, days); const d=new Date((iso||todayFinal())+'T00:00:00'); d.setDate(d.getDate()+days); return d.toISOString().slice(0,10); }
+  function clienteFinal(id){ return (clientes || []).find(c => c.id === id) || null; }
+  function clienteNomeFinal(id, fallback){ const c=clienteFinal(id); return c?.nome || fallback || 'Cliente não cadastrado'; }
+  function statusLabelFinal(st){ if (typeof statusPropostaLabel === 'function') return statusPropostaLabel(st); return ({aguardando_retorno:'Aguardando retorno',cliente_pediu_ajuste:'Cliente pediu ajuste',aprovada:'Aprovada',recusada:'Recusada',sem_resposta:'Sem resposta',nao_acompanhar:'Sem acompanhamento',excluida:'Excluída'}[st||'aguardando_retorno'] || 'Aguardando retorno'); }
+  function statusBadgeFinal(st){ if (typeof statusPropostaBadge === 'function') return statusPropostaBadge(st); return ({aguardando_retorno:'badge-info',cliente_pediu_ajuste:'badge-warning',aprovada:'badge-success',recusada:'badge-danger',sem_resposta:'badge-gray',nao_acompanhar:'badge-gray',excluida:'badge-danger'}[st||'aguardando_retorno'] || 'badge-info'); }
+
+  const style = document.createElement('style');
+  style.id = 'historico-final-compacto-css';
+  style.textContent = `
+/* SIDEBAR ATE O FINAL DA PAGINA */
+@media (min-width:761px){
+  .body-row{ align-items:stretch !important; min-height:calc(100vh - 76px) !important; }
+  .sidebar{ height:auto !important; min-height:calc(100vh - 76px) !important; align-self:stretch !important; }
+}
+@media (min-width:761px) and (max-width:1180px){
+  .body-row{ min-height:calc(100vh - 66px) !important; }
+  .sidebar{ height:auto !important; min-height:calc(100vh - 66px) !important; align-self:stretch !important; }
+}
+
+/* HISTORICO COMERCIAL REESTRUTURADO */
+.historico-shell{ display:flex; flex-direction:column; gap:16px; }
+.historico-hero{ background:linear-gradient(135deg, rgba(13,102,232,.22), rgba(20,184,166,.10), rgba(124,92,255,.12)); border:1px solid rgba(93,154,255,.22); border-radius:18px; padding:18px 20px; display:flex; justify-content:space-between; gap:18px; align-items:flex-start; box-shadow:0 18px 44px rgba(0,0,0,.12); }
+.historico-hero h2{ margin:0; font-size:23px; letter-spacing:-.4px; color:var(--text); }
+.historico-hero p{ margin:6px 0 0; color:var(--text2); font-size:13px; line-height:1.45; max-width:760px; }
+.historico-pill{ display:inline-flex; align-items:center; gap:7px; padding:8px 11px; border-radius:999px; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.06); color:var(--text2); font-size:12px; font-weight:800; white-space:nowrap; }
+.historico-summary-grid{ display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:10px; }
+.historico-summary-card{ border:1px solid var(--border); background:linear-gradient(145deg, rgba(255,255,255,.055), rgba(255,255,255,.018)); border-radius:15px; padding:13px; min-height:76px; }
+.historico-summary-card span{ display:block; color:var(--text3); font-size:10.5px; text-transform:uppercase; letter-spacing:.65px; font-weight:900; }
+.historico-summary-card strong{ display:block; margin-top:6px; font-size:24px; color:var(--text); line-height:1; }
+.historico-summary-card small{ display:block; margin-top:5px; color:var(--text3); font-size:11px; }
+.historico-filtros-card{ border:1px solid var(--border); border-radius:18px; background:var(--surface); overflow:hidden; }
+.historico-filtros-head{ padding:13px 16px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; gap:12px; align-items:center; }
+.historico-filtros-head strong{ display:flex; align-items:center; gap:8px; color:var(--text); }
+.historico-filter-grid{ padding:14px 16px; display:grid; grid-template-columns:1.4fr .8fr .8fr .8fr 1fr; gap:10px; align-items:end; }
+.historico-filter-grid label{ display:flex; flex-direction:column; gap:5px; font-size:11px; text-transform:uppercase; letter-spacing:.6px; color:var(--text3); font-weight:900; }
+.historico-filter-grid input,.historico-filter-grid select{ min-height:38px; }
+.historico-custom-range{ display:none; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+.historico-custom-range.open{ display:grid; }
+.historico-quickbar{ padding:0 16px 14px; display:flex; gap:8px; flex-wrap:wrap; }
+.historico-tabbar{ display:flex; gap:8px; flex-wrap:wrap; padding:14px 16px; border-top:1px solid var(--border); background:rgba(255,255,255,.025); }
+.historico-tab-btn{ border:1px solid var(--border); background:var(--surface2); color:var(--text2); padding:8px 12px; border-radius:999px; font-size:12px; font-weight:850; cursor:pointer; display:inline-flex; align-items:center; gap:7px; }
+.historico-tab-btn.active{ background:var(--accent-light); color:var(--accent); border-color:rgba(93,154,255,.35); }
+.historico-content-card{ border:1px solid var(--border); border-radius:18px; background:var(--surface); overflow:hidden; }
+.historico-content-head{ padding:14px 16px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; gap:12px; align-items:center; }
+.historico-content-title{ font-weight:950; color:var(--text); display:flex; align-items:center; gap:8px; }
+.historico-content-sub{ color:var(--text3); font-size:12px; margin-top:3px; }
+.historico-timeline{ padding:14px 16px 18px; display:flex; flex-direction:column; gap:9px; }
+.hist-event-card{ border:1px solid var(--border); border-radius:14px; background:rgba(255,255,255,.035); overflow:hidden; border-left:4px solid var(--hist-color, var(--accent)); }
+.hist-event-main{ padding:10px 12px; display:grid; grid-template-columns:34px minmax(0,1fr) auto; gap:10px; align-items:start; }
+.hist-event-icon{ width:32px; height:32px; border-radius:11px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,.08); color:var(--hist-color, var(--accent)); border:1px solid rgba(255,255,255,.10); }
+.hist-event-title{ font-size:13.5px; font-weight:950; color:var(--text); display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.hist-event-meta{ color:var(--text3); font-size:11.8px; margin-top:3px; line-height:1.35; }
+.hist-event-preview{ color:var(--text2); font-size:12.35px; line-height:1.35; margin-top:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; }
+.hist-event-actions{ display:flex; align-items:center; justify-content:flex-end; gap:6px; flex-wrap:wrap; }
+.hist-event-details{ display:none; padding:0 12px 12px 56px; color:var(--text2); font-size:12.5px; line-height:1.45; white-space:pre-wrap; }
+.hist-event-card.open .hist-event-details{ display:block; }
+.hist-event-card[data-tipo="proposta"]{ --hist-color:var(--success); }
+.hist-event-card[data-tipo="status_proposta"]{ --hist-color:var(--purple); }
+.hist-event-card[data-tipo="solicitacao"]{ --hist-color:var(--warning); }
+.hist-event-card[data-tipo="contato"]{ --hist-color:var(--accent); }
+.hist-event-card[data-tipo="retorno"]{ --hist-color:var(--cyan); }
+.hist-event-card[data-tipo="recorrente"]{ --hist-color:var(--purple); }
+.hist-event-card[data-tipo="cliente"]{ --hist-color:var(--success); }
+.hist-empty{ padding:28px 16px; text-align:center; color:var(--text3); }
+.hist-empty i{ display:block; font-size:32px; margin-bottom:10px; opacity:.55; }
+.hist-cliente-resumo{ padding:14px 16px; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; border-bottom:1px solid var(--border); background:rgba(255,255,255,.025); }
+.hist-cliente-resumo .historico-summary-card{ min-height:68px; }
+.hist-compact-embed{ margin-top:14px; border:1px solid var(--border); border-radius:16px; overflow:hidden; background:var(--surface); }
+.hist-compact-embed .historico-content-head{ background:rgba(255,255,255,.025); }
+.hist-compact-embed .historico-timeline{ max-height:560px; overflow:auto; }
+.proposta-kanban-actions .btn-danger.btn-delete-proposta,
+.orcamento-card-mini-actions .btn-delete-solicitacao{ border-color:rgba(240,82,82,.35) !important; }
+body.theme-light .historico-hero{ background:linear-gradient(135deg, rgba(37,99,199,.14), rgba(20,184,166,.12), rgba(124,92,255,.10)); }
+body.theme-light .historico-summary-card,
+body.theme-light .hist-event-card{ background:rgba(255,255,255,.74); }
+body.theme-light .hist-event-icon{ background:rgba(37,99,199,.08); border-color:rgba(37,99,199,.10); }
+@media(max-width:1280px){ .historico-summary-grid{ grid-template-columns:repeat(3,minmax(0,1fr)); } .historico-filter-grid{ grid-template-columns:1fr 1fr; } }
+@media(max-width:760px){ .historico-hero{ flex-direction:column; } .historico-summary-grid,.hist-cliente-resumo{ grid-template-columns:repeat(2,minmax(0,1fr)); } .historico-filter-grid{ grid-template-columns:1fr; } .hist-event-main{ grid-template-columns:30px minmax(0,1fr); } .hist-event-actions{ grid-column:1/-1; justify-content:flex-start; padding-left:40px; } .hist-event-details{ padding-left:52px; } }
+`;
+  document.head.appendChild(style);
+
+  const baseStatusPropostaLabelFinal = typeof statusPropostaLabel === 'function' ? statusPropostaLabel : null;
+  window.statusPropostaLabel = function(status){
+    if (status === 'excluida') return 'Excluída';
+    return baseStatusPropostaLabelFinal ? baseStatusPropostaLabelFinal(status) : statusLabelFinal(status);
+  };
+  const baseStatusPropostaBadgeFinal = typeof statusPropostaBadge === 'function' ? statusPropostaBadge : null;
+  window.statusPropostaBadge = function(status){
+    if (status === 'excluida') return 'badge-danger';
+    return baseStatusPropostaBadgeFinal ? baseStatusPropostaBadgeFinal(status) : statusBadgeFinal(status);
+  };
+
+  const baseListaPropostasHistoricoFinal = typeof listaPropostasHistorico === 'function' ? listaPropostasHistorico : null;
+  window.listaPropostasHistorico = function(){
+    const lista = baseListaPropostasHistoricoFinal ? baseListaPropostasHistoricoFinal() : [];
+    return lista.filter(p => (p.status || '') !== 'excluida');
+  };
+  window.propostaPrecisaAcompanhamento = function(status){ return !['aprovada','recusada','nao_acompanhar','excluida'].includes(status || 'aguardando_retorno'); };
+  window.listaPropostasEmAcompanhamento = function(){
+    return listaPropostasHistorico()
+      .filter(p => propostaPrecisaAcompanhamento(p.status))
+      .sort((a,b)=>{
+        const peso = s => s === 'sem_resposta' ? 0 : s === 'cliente_pediu_ajuste' ? 1 : 2;
+        return peso(a.status) - peso(b.status) || (a.data || '').localeCompare(b.data || '');
+      });
+  };
+
+  window.excluirSolicitacaoOrcamento = function(id){
+    const sol = (solicitacoesOrcamento || []).find(s => s.id === id);
+    if (!sol) { if (typeof notify === 'function') notify('Solicitação não encontrada.', '#7a1a1a'); return; }
+    const nome = (typeof dadosSolicitacaoCliente === 'function' ? dadosSolicitacaoCliente(sol).nome : sol.nome) || 'esta solicitação';
+    if (!confirm(`Excluir a solicitação de orçamento de ${nome}?\n\nEsta ação remove o card da Fila de Orçamentos.`)) return;
+    solicitacoesOrcamento = (solicitacoesOrcamento || []).filter(s => s.id !== id);
+    if (typeof save === 'function') save();
+    if (typeof renderSolicitacoesTabela === 'function') renderSolicitacoesTabela();
+    if (typeof renderDashboard === 'function') renderDashboard();
+    if (typeof renderHistorico === 'function') renderHistorico();
+    if (typeof notify === 'function') notify('Solicitação excluída.', '#7a1a1a');
+  };
+
+  function sourcePropostaFinal(ref){
+    if (typeof propostaSourceFromRef === 'function') return propostaSourceFromRef(ref);
+    const r = String(ref || '');
+    if (r.startsWith('ct-')) { const id=+r.replace('ct-',''); const item=(contatos||[]).find(c=>c.id===id); return item ? {tipo:'contato', item, id} : null; }
+    if (r.startsWith('cc-')) { const id=+r.replace('cc-',''); const item=(concluidos||[]).find(c=>c.id===id); return item ? {tipo:'concluido', item, id} : null; }
+    return null;
+  }
+  window.excluirPropostaAcompanhamento = function(ref){
+    const p = (typeof listaPropostasHistorico === 'function' ? listaPropostasHistorico() : []).find(x => x.ref === ref || x.id === ref);
+    if (!p) { if (typeof notify === 'function') notify('Proposta não encontrada.', '#7a1a1a'); return; }
+    if (!confirm(`Excluir/remover do acompanhamento a proposta de ${p.nome}?\n\nEla deixará de aparecer no Kanban e no histórico de propostas.`)) return;
+    const src = sourcePropostaFinal(ref);
+    if (!src) { if (typeof notify === 'function') notify('Registro original da proposta não encontrado.', '#7a1a1a'); return; }
+    src.item.statusProposta = 'excluida';
+    src.item.excluidaAcompanhamento = true;
+    if (!src.item.alteracoesStatusProposta) src.item.alteracoesStatusProposta = [];
+    src.item.alteracoesStatusProposta.push({ em: todayFinal(), de: p.status || 'aguardando_retorno', para: 'excluida', obs: 'Proposta removida manualmente do acompanhamento.' });
+    if (typeof save === 'function') save();
+    if (typeof renderPropostasAcompanhamentoKanban === 'function') renderPropostasAcompanhamentoKanban();
+    if (typeof renderSolicitacoesTabela === 'function') renderSolicitacoesTabela();
+    if (typeof renderHistorico === 'function') renderHistorico();
+    if (typeof renderDashboard === 'function') renderDashboard();
+    if (typeof notify === 'function') notify('Proposta removida do acompanhamento.', '#7a1a1a');
+  };
+
+  const baseCardSolicitacaoFinal = typeof cardKanbanSolicitacao === 'function' ? cardKanbanSolicitacao : null;
+  window.cardKanbanSolicitacao = function(sol, classeExtra){
+    let html = baseCardSolicitacaoFinal ? baseCardSolicitacaoFinal(sol, classeExtra) : '';
+    if (html && !sol._concluida && !html.includes('excluirSolicitacaoOrcamento')) {
+      const btn = `<button class="btn btn-danger btn-sm btn-icon-mini btn-delete-solicitacao" title="Excluir solicitação" onclick="excluirSolicitacaoOrcamento(${sol.id}); event.stopPropagation();"><i class="fa-solid fa-trash"></i></button>`;
+      html = html.replace('</div>\n    </div>\n    <div class="orcamento-card-meta">', `${btn}\n      </div>\n    </div>\n    <div class="orcamento-card-meta">`);
+    }
+    return html;
+  };
+
+  const baseRenderPropostaCardFinal = typeof renderPropostaKanbanCard === 'function' ? renderPropostaKanbanCard : null;
+  window.renderPropostaKanbanCard = function(p){
+    let html = baseRenderPropostaCardFinal ? baseRenderPropostaCardFinal(p) : '';
+    if (html && !html.includes('excluirPropostaAcompanhamento')) {
+      const ref = escFinal(p.ref);
+      const btn = `<button class="btn btn-danger btn-sm btn-delete-proposta" onclick="excluirPropostaAcompanhamento('${ref}'); event.stopPropagation();"><i class="fa-solid fa-trash"></i> Excluir</button>`;
+      html = html.replace('</div>\n    </div>', `${btn}\n      </div>\n    </div>`);
+    }
+    return html;
+  };
+
+  const baseRenderPropostasKanbanFinal = typeof renderPropostasAcompanhamentoKanban === 'function' ? renderPropostasAcompanhamentoKanban : null;
+  window.renderPropostasAcompanhamentoKanban = function(){
+    if (baseRenderPropostasKanbanFinal) baseRenderPropostasKanbanFinal();
+    const count = document.getElementById('propostas-acompanhamento-count');
+    if (count) count.textContent = listaPropostasEmAcompanhamento().length;
+  };
+
+  const histState = { aba:'geral' };
+  window.setHistoricoAba = function(aba){ histState.aba = aba || 'geral'; renderHistorico(); };
+  window.setHistoricoPeriodo = function(periodo){ const el=document.getElementById('hist-periodo'); if(el) el.value=periodo; toggleHistoricoRange(); renderHistorico(); };
+  window.limparFiltrosHistoricoComercial = function(){
+    ['hist-busca','hist-tipo','hist-status','hist-cliente','hist-data-ini','hist-data-fim'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+    const p=document.getElementById('hist-periodo'); if(p) p.value='30';
+    toggleHistoricoRange(); renderHistorico();
+  };
+  window.toggleHistoricoRange = function(){ const wrap=document.getElementById('hist-custom-range'); const periodo=document.getElementById('hist-periodo')?.value || '30'; if(wrap) wrap.classList.toggle('open', periodo==='custom'); };
+
+  function periodRangeHist(){
+    const periodo = document.getElementById('hist-periodo')?.value || '30';
+    const hoje = todayFinal();
+    if (periodo === 'todos') return null;
+    if (periodo === 'hoje') return [hoje, hoje];
+    if (periodo === '7') return [addDaysFinal(hoje, -6), hoje];
+    if (periodo === '30') return [addDaysFinal(hoje, -29), hoje];
+    if (periodo === 'este_mes') return [hoje.slice(0,8)+'01', hoje];
+    if (periodo === 'mes_passado') {
+      const d = new Date(hoje+'T00:00:00'); d.setMonth(d.getMonth()-1); const y=d.getFullYear(); const m=d.getMonth();
+      return [new Date(y,m,1).toISOString().slice(0,10), new Date(y,m+1,0).toISOString().slice(0,10)];
+    }
+    if (periodo === 'custom') {
+      const ini=document.getElementById('hist-data-ini')?.value || '0000-01-01';
+      const fim=document.getElementById('hist-data-fim')?.value || '9999-12-31';
+      return [ini,fim];
+    }
+    return [addDaysFinal(hoje, -29), hoje];
+  }
+
+  function eventoClienteInfo(ev){
+    const c = clienteFinal(ev.clienteId);
+    return {
+      nome: c?.nome || ev.clienteNome || ev.nome || 'Cliente não cadastrado',
+      empresa: c?.empresa || ev.empresa || '',
+      cnpj: c?.cnpj || ev.cnpj || '',
+      telefone: c?.telefone || ev.telefone || ''
+    };
+  }
+  function eventoBase({id,tipo,data,clienteId,title,desc='',icon='fa-circle',status='',ref='',sourceId=null,sourceTipo='',extra='',badges=[]}){
+    const ci = eventoClienteInfo({clienteId});
+    return { id:String(id), tipo, data:data||todayFinal(), clienteId:clienteId||null, clienteNome:ci.nome, empresa:ci.empresa, cnpj:ci.cnpj, telefone:ci.telefone, title, desc:String(desc||''), icon, status, ref, sourceId, sourceTipo, extra, badges };
+  }
+
+  window.eventosHistoricoUnificados = function(){
+    const arr=[];
+    (clientes||[]).forEach(c=>{
+      if (c.criadoEm || c.dataCadastro) arr.push(eventoBase({ id:'cli-'+c.id, tipo:'cliente', data:c.criadoEm||c.dataCadastro, clienteId:c.id, title:'Cliente cadastrado', desc:[c.nome,c.empresa,c.cnpj,c.telefone].filter(Boolean).join('\n'), icon:'fa-user-plus' }));
+    });
+    (solicitacoesOrcamento||[]).forEach(s=>{
+      const d = typeof dadosSolicitacaoCliente === 'function' ? dadosSolicitacaoCliente(s) : {nome:s.nome||'Cliente não cadastrado'};
+      arr.push(eventoBase({ id:'sol-'+s.id, tipo:'solicitacao', data:s.dataSolicitacao||s.criadoEm||s.prazo||todayFinal(), clienteId:s.clienteId||null, title:'Solicitação de orçamento aberta', desc:`${s.produto||'Produto/serviço não informado'}\n${s.descricao||''}`, icon:'fa-clipboard-list', sourceId:s.id, sourceTipo:'solicitacao', extra:`Etapa: ${typeof etapaSolicitacaoLabel === 'function' ? etapaSolicitacaoLabel(s.etapa||'nova') : (s.etapa||'nova')} • Prazo: ${fmtFinal(s.prazo)}`, badges:[s.prioridade||'normal', d.nome] }));
+    });
+    (typeof listaPropostasHistorico === 'function' ? listaPropostasHistorico() : []).forEach(p=>{
+      arr.push(eventoBase({ id:'prop-'+p.ref, tipo:'proposta', data:p.data||todayFinal(), clienteId:p.clienteId||null, title:'Proposta enviada', desc:`${p.origem||''}\nStatus: ${statusLabelFinal(p.status)}${p.pecas||p.servico?`\nNº orçamento: ${p.pecas?`Peças ${p.pecas}`:''}${p.pecas&&p.servico?' • ':''}${p.servico?`Serviço ${p.servico}`:''}`:''}\n${p.descricao||''}`, icon:'fa-file-signature', status:p.status||'aguardando_retorno', ref:p.ref, sourceTipo:'proposta', extra:`Status: ${statusLabelFinal(p.status)}`, badges:[statusLabelFinal(p.status)] }));
+      (p.statusHistorico||[]).forEach((h,idx)=>arr.push(eventoBase({ id:`propstat-${p.ref}-${idx}`, tipo:'status_proposta', data:h.em||p.data||todayFinal(), clienteId:p.clienteId||null, title:'Status da proposta atualizado', desc:`${statusLabelFinal(h.de)} → ${statusLabelFinal(h.para)}${h.obs?`\nObservação: ${h.obs}`:''}`, icon:'fa-sliders', status:h.para||p.status, ref:p.ref, sourceTipo:'status_proposta', extra:`${statusLabelFinal(h.de)} → ${statusLabelFinal(h.para)}` })));
+    });
+    (contatos||[]).forEach(ct=>{
+      const ehProposta = typeof contatoRepresentaProposta === 'function' ? contatoRepresentaProposta(ct) : !!ct.origemOrcamento;
+      const ehStatus = /Status da proposta atualizado/i.test(ct.descricao||'');
+      if (ehProposta || ehStatus) return;
+      arr.push(eventoBase({ id:'ct-'+ct.id, tipo:'contato', data:ct.data||todayFinal(), clienteId:ct.clienteId||null, title:ct.semResposta?'Tentativa sem resposta':'Contato registrado', desc:ct.descricao||'', icon:ct.semResposta?'fa-phone-slash':'fa-phone', sourceId:ct.id, sourceTipo:'contato', extra:ct.canal||'' }));
+    });
+    (agendamentos||[]).forEach(a=>arr.push(eventoBase({ id:'ret-'+a.id, tipo:'retorno', data:a.data||todayFinal(), clienteId:a.clienteId||null, title:(a.data||'') < todayFinal() ? 'Retorno atrasado/programado' : 'Retorno programado', desc:`${a.horario||'Sem horário'} — ${a.motivo||'Retorno agendado'}`, icon:'fa-calendar-day', sourceId:a.id, sourceTipo:'retorno', extra:a.prioridade||'' })));
+    (orcamentos||[]).forEach(o=>arr.push(eventoBase({ id:'orc-'+o.id, tipo:'recorrente', data:o.data||todayFinal(), clienteId:o.clienteId||null, title:'Orçamento recorrente programado', desc:`${o.horario||'Sem horário'} — ${o.obs||''}`, icon:'fa-repeat', sourceId:o.id, sourceTipo:'recorrente' })));
+    (concluidos||[]).forEach(c=>{
+      if (['solicitacao_orcamento','orcamento'].includes(c.tipo)) return;
+      arr.push(eventoBase({ id:'conc-'+c.id, tipo:c.tipo==='retorno'?'retorno':'concluido', data:c.concluidoEm||c.dataOriginal||todayFinal(), clienteId:c.clienteId||null, title:c.tipo==='retorno'?'Retorno concluído':'Registro concluído', desc:c.obsConclusao||c.motivo||'', icon:'fa-circle-check', sourceId:c.id, sourceTipo:'concluido' }));
+    });
+    return arr.sort((a,b)=>(b.data||'').localeCompare(a.data||''));
+  };
+
+  function ensureHistoricoComercialUI(){
+    const view=document.getElementById('view-historico');
+    if (!view || view.dataset.comercialFinal === '1') return;
+    view.dataset.comercialFinal = '1';
+    view.innerHTML = `
+      <div class="historico-shell">
+        <section class="historico-hero">
+          <div><div class="daily-eyebrow">Rastreabilidade comercial</div><h2>Histórico Comercial</h2><p>Veja tudo que aconteceu no sistema em uma linha do tempo compacta, com filtros por cliente, período, tipo de registro e status da proposta.</p></div>
+          <div class="historico-pill"><i class="fa-solid fa-arrow-down-wide-short"></i> Mais recentes primeiro</div>
+        </section>
+        <section class="historico-summary-grid" id="historico-summary-grid"></section>
+        <section class="historico-filtros-card">
+          <div class="historico-filtros-head"><strong><i class="fa-solid fa-filter" style="color:var(--accent)"></i> Filtros inteligentes</strong><button class="btn btn-ghost btn-sm" onclick="limparFiltrosHistoricoComercial()"><i class="fa-solid fa-eraser"></i> Limpar filtros</button></div>
+          <div class="historico-filter-grid">
+            <label>Busca<input type="text" id="hist-busca" placeholder="Cliente, CNPJ, telefone, descrição..." oninput="renderHistorico()"></label>
+            <label>Período<select id="hist-periodo" onchange="toggleHistoricoRange(); renderHistorico()"><option value="hoje">Hoje</option><option value="7">Últimos 7 dias</option><option value="30" selected>Últimos 30 dias</option><option value="este_mes">Este mês</option><option value="mes_passado">Mês passado</option><option value="todos">Todos</option><option value="custom">Personalizado</option></select></label>
+            <label>Tipo<select id="hist-tipo" onchange="renderHistorico()"><option value="">Todos</option><option value="cliente">Cliente cadastrado</option><option value="solicitacao">Solicitação criada</option><option value="proposta">Proposta enviada</option><option value="status_proposta">Status da proposta</option><option value="contato">Contato registrado</option><option value="retorno">Retornos</option><option value="recorrente">Orçamentos recorrentes</option></select></label>
+            <label>Status<select id="hist-status" onchange="renderHistorico()"><option value="">Todos</option><option value="aguardando_retorno">Aguardando retorno</option><option value="cliente_pediu_ajuste">Ajuste solicitado</option><option value="sem_resposta">Sem resposta</option><option value="aprovada">Aprovada</option><option value="recusada">Recusada</option><option value="nao_acompanhar">Sem acompanhamento</option></select></label>
+            <label>Cliente<select id="hist-cliente" onchange="renderHistorico()"><option value="">Todos os clientes</option></select></label>
+            <div class="historico-custom-range" id="hist-custom-range"><label>De<input type="date" id="hist-data-ini" onchange="renderHistorico()"></label><label>Até<input type="date" id="hist-data-fim" onchange="renderHistorico()"></label></div>
+          </div>
+          <div class="historico-quickbar"><button class="btn btn-ghost btn-sm" onclick="setHistoricoPeriodo('hoje')">Hoje</button><button class="btn btn-ghost btn-sm" onclick="setHistoricoPeriodo('7')">7 dias</button><button class="btn btn-ghost btn-sm" onclick="setHistoricoPeriodo('30')">30 dias</button><button class="btn btn-ghost btn-sm" onclick="setHistoricoPeriodo('este_mes')">Este mês</button><button class="btn btn-ghost btn-sm" onclick="setHistoricoPeriodo('todos')">Tudo</button></div>
+          <div class="historico-tabbar" id="historico-tabbar">
+            <button class="historico-tab-btn" data-aba="geral" onclick="setHistoricoAba('geral')"><i class="fa-solid fa-timeline"></i> Todos os registros</button>
+            <button class="historico-tab-btn" data-aba="cliente" onclick="setHistoricoAba('cliente')"><i class="fa-solid fa-user-clock"></i> Jornada por cliente</button>
+            <button class="historico-tab-btn" data-aba="propostas" onclick="setHistoricoAba('propostas')"><i class="fa-solid fa-file-signature"></i> Propostas enviadas</button>
+            <button class="historico-tab-btn" data-aba="contatos" onclick="setHistoricoAba('contatos')"><i class="fa-solid fa-phone-volume"></i> Contatos e retornos</button>
+          </div>
+        </section>
+        <section class="historico-content-card" id="historico-content-card"></section>
+        <span id="historico-count" style="display:none">0</span><div id="historico-overview" style="display:none"></div><div id="lista-historico" style="display:none"></div><div id="dash-propostas-acompanhamento" style="display:none"></div><div id="dash-propostas-enviadas" style="display:none"></div><div id="dash-concluidos-retorno" style="display:none"></div><div id="dash-concluidos-solicitacao" style="display:none"></div><div id="dash-concluidos-orcamento" style="display:none"></div>
+      </div>`;
+  }
+
+  function preencherClientesHistorico(){
+    const sel=document.getElementById('hist-cliente'); if(!sel) return;
+    const atual=sel.value;
+    sel.innerHTML = `<option value="">Todos os clientes</option>` + (clientes||[]).slice().sort((a,b)=>(a.nome||'').localeCompare(b.nome||'')).map(c=>`<option value="${c.id}">${escFinal(c.nome||'Cliente')} ${c.empresa?`— ${escFinal(c.empresa)}`:''}</option>`).join('');
+    if (atual) sel.value = atual;
+  }
+
+  function filtrosHistoricoEventos(){
+    const q = normFinal(document.getElementById('hist-busca')?.value || '');
+    const tipo = document.getElementById('hist-tipo')?.value || '';
+    const status = document.getElementById('hist-status')?.value || '';
+    const clienteId = +(document.getElementById('hist-cliente')?.value || 0);
+    const range = periodRangeHist();
+    let lista = eventosHistoricoUnificados();
+    if (histState.aba === 'propostas') lista = lista.filter(e => ['proposta','status_proposta'].includes(e.tipo));
+    if (histState.aba === 'contatos') lista = lista.filter(e => ['contato','retorno','recorrente'].includes(e.tipo));
+    if (tipo) lista = lista.filter(e => e.tipo === tipo);
+    if (status) lista = lista.filter(e => e.status === status || (e.tipo === 'status_proposta' && e.desc.includes(statusLabelFinal(status))));
+    if (clienteId) lista = lista.filter(e => e.clienteId === clienteId);
+    if (range) lista = lista.filter(e => (e.data || '') >= range[0] && (e.data || '') <= range[1]);
+    if (q) lista = lista.filter(e => normFinal([e.title,e.desc,e.clienteNome,e.empresa,e.cnpj,e.telefone,e.extra,(e.badges||[]).join(' ')].join(' ')).includes(q));
+    return lista.sort((a,b)=>(b.data||'').localeCompare(a.data||''));
+  }
+
+  function renderResumoHistoricoComercial(eventos){
+    const el=document.getElementById('historico-summary-grid'); if(!el) return;
+    const clientesMov = new Set(eventos.map(e=>e.clienteId).filter(Boolean)).size;
+    const cards = [
+      ['Contatos', eventos.filter(e=>e.tipo==='contato').length, 'conversas registradas', 'fa-phone'],
+      ['Propostas', eventos.filter(e=>e.tipo==='proposta').length, 'enviadas/registradas', 'fa-file-signature'],
+      ['Retornos', eventos.filter(e=>e.tipo==='retorno').length, 'programados/concluídos', 'fa-calendar-check'],
+      ['Status', eventos.filter(e=>e.tipo==='status_proposta').length, 'alterações de proposta', 'fa-sliders'],
+      ['Solicitações', eventos.filter(e=>e.tipo==='solicitacao').length, 'abertas no período', 'fa-clipboard-list'],
+      ['Clientes', clientesMov, 'movimentados', 'fa-users']
+    ];
+    el.innerHTML = cards.map(c=>`<div class="historico-summary-card"><span><i class="fa-solid ${c[3]}"></i> ${c[0]}</span><strong>${c[1]}</strong><small>${c[2]}</small></div>`).join('');
+  }
+
+  function acoesEvento(ev){
+    const a=[];
+    if (ev.clienteId) a.push(`<button class="btn btn-ghost btn-sm" onclick="abrirDetalhe(${ev.clienteId})"><i class="fa-solid fa-user"></i> Cliente</button>`);
+    if (ev.clienteId) a.push(`<button class="btn btn-ghost btn-sm" onclick="openContatoFor(${ev.clienteId})"><i class="fa-solid fa-phone"></i> Contato</button>`);
+    if (ev.clienteId) a.push(`<button class="btn btn-warning btn-sm" onclick="openAgendamentoFor(${ev.clienteId})"><i class="fa-regular fa-calendar-plus"></i> Retorno</button>`);
+    if (ev.tipo === 'solicitacao' && ev.sourceId) a.push(`<button class="btn btn-primary btn-sm" onclick="irParaSolicitacaoEditar(${ev.sourceId})"><i class="fa-solid fa-pen"></i> Abrir</button><button class="btn btn-danger btn-sm" onclick="excluirSolicitacaoOrcamento(${ev.sourceId})"><i class="fa-solid fa-trash"></i> Excluir</button>`);
+    if ((ev.tipo === 'proposta' || ev.tipo === 'status_proposta') && ev.ref) a.push(`<button class="btn btn-primary btn-sm" onclick="abrirAtualizarStatusProposta('${escFinal(ev.ref)}')"><i class="fa-solid fa-sliders"></i> Status</button><button class="btn btn-danger btn-sm" onclick="excluirPropostaAcompanhamento('${escFinal(ev.ref)}')"><i class="fa-solid fa-trash"></i> Excluir</button>`);
+    return a.join('');
+  }
+
+  function renderTimelineCompacta(eventos, opts={}){
+    if (!eventos.length) return `<div class="hist-empty"><i class="fa-solid fa-inbox"></i><p>Nenhum registro encontrado.</p><small>Ajuste os filtros ou selecione outro período.</small></div>`;
+    const limit = opts.limit || 160;
+    return `<div class="historico-timeline">${eventos.slice(0,limit).map((ev,idx)=>{
+      const detailId = `hist-${opts.prefix||'g'}-${idx}`;
+      const badgeStatus = ev.status ? `<span class="badge ${statusBadgeFinal(ev.status)}">${escFinal(statusLabelFinal(ev.status))}</span>` : '';
+      const extra = ev.extra ? `<span class="badge badge-gray">${escFinal(ev.extra)}</span>` : '';
+      const preview = (ev.desc || '').replace(/\s+/g,' ').trim();
+      return `<article class="hist-event-card" data-tipo="${escFinal(ev.tipo)}" id="${detailId}">
+        <div class="hist-event-main">
+          <div class="hist-event-icon"><i class="fa-solid ${escFinal(ev.icon)}"></i></div>
+          <div style="min-width:0"><div class="hist-event-title">${escFinal(ev.title)} ${badgeStatus}</div><div class="hist-event-meta"><strong>${escFinal(ev.clienteNome || 'Cliente não cadastrado')}</strong> • ${fmtFinal(ev.data)} ${ev.empresa?`• ${escFinal(ev.empresa)}`:''}</div>${preview?`<div class="hist-event-preview">${escFinal(preview)}</div>`:''}</div>
+          <div class="hist-event-actions">${extra}<button class="btn btn-ghost btn-sm" onclick="toggleHistoricoEvento('${detailId}')"><i class="fa-solid fa-chevron-down"></i> Ver</button>${opts.semAcoes?'':acoesEvento(ev)}</div>
+        </div>
+        <div class="hist-event-details">${escFinal(ev.desc || 'Sem detalhes adicionais.')}</div>
+      </article>`;
+    }).join('')}</div>`;
+  }
+  window.toggleHistoricoEvento = function(id){ document.getElementById(id)?.classList.toggle('open'); };
+
+  function renderHistoricoContent(eventos){
+    const card=document.getElementById('historico-content-card'); if(!card) return;
+    document.querySelectorAll('.historico-tab-btn').forEach(btn=>btn.classList.toggle('active', btn.dataset.aba === histState.aba));
+    const clienteId = +(document.getElementById('hist-cliente')?.value || 0);
+    if (histState.aba === 'cliente') {
+      if (!clienteId) { card.innerHTML = `<div class="historico-content-head"><div><div class="historico-content-title"><i class="fa-solid fa-user-clock" style="color:var(--accent)"></i> Jornada por cliente</div><div class="historico-content-sub">Selecione um cliente no filtro acima para visualizar a jornada compacta.</div></div></div><div class="hist-empty"><i class="fa-solid fa-user-magnifying-glass"></i><p>Nenhum cliente selecionado.</p><small>Use o filtro Cliente para carregar a jornada.</small></div>`; return; }
+      const c = clienteFinal(clienteId);
+      const evs = eventosHistoricoUnificados().filter(e=>e.clienteId===clienteId).sort((a,b)=>(b.data||'').localeCompare(a.data||''));
+      const props = (typeof listaPropostasHistorico === 'function' ? listaPropostasHistorico() : []).filter(p=>p.clienteId===clienteId);
+      const abertas = (solicitacoesOrcamento||[]).filter(s=>s.clienteId===clienteId).length;
+      const proximo = (agendamentos||[]).filter(a=>a.clienteId===clienteId && (a.data||'')>=todayFinal()).sort((a,b)=>(a.data||'').localeCompare(b.data||''))[0];
+      card.innerHTML = `<div class="historico-content-head"><div><div class="historico-content-title"><i class="fa-solid fa-user-clock" style="color:var(--accent)"></i> Jornada por cliente — ${escFinal(c?.nome||'Cliente')}</div><div class="historico-content-sub">Linha do tempo única, compacta e expansível, com os registros mais recentes em cima.</div></div>${c?`<button class="btn btn-primary btn-sm" onclick="abrirDetalhe(${c.id})"><i class="fa-solid fa-up-right-from-square"></i> Abrir ficha</button>`:''}</div><div class="hist-cliente-resumo"><div class="historico-summary-card"><span>Solicitações abertas</span><strong>${abertas}</strong></div><div class="historico-summary-card"><span>Propostas enviadas</span><strong>${props.length}</strong></div><div class="historico-summary-card"><span>Em acompanhamento</span><strong>${props.filter(p=>propostaPrecisaAcompanhamento(p.status)).length}</strong></div><div class="historico-summary-card"><span>Próximo retorno</span><strong style="font-size:13px">${proximo?`${fmtFinal(proximo.data)} ${proximo.horario||''}`:'—'}</strong></div></div>${renderTimelineCompacta(evs,{prefix:'cliente'})}`;
+      return;
+    }
+    const titles = {
+      geral:['Todos os registros','Linha do tempo geral com todos os eventos rastreáveis.'],
+      propostas:['Propostas enviadas','Propostas e alterações de status registradas no sistema.'],
+      contatos:['Contatos e retornos','Conversas, tentativas, retornos e recorrências programadas.']
+    };
+    const t=titles[histState.aba]||titles.geral;
+    card.innerHTML = `<div class="historico-content-head"><div><div class="historico-content-title"><i class="fa-solid fa-timeline" style="color:var(--accent)"></i> ${t[0]}</div><div class="historico-content-sub">${t[1]} Total exibido: ${eventos.length}.</div></div><span class="badge badge-gray">${eventos.length} registros</span></div>${renderTimelineCompacta(eventos,{prefix:histState.aba})}`;
+  }
+
+  window.renderHistorico = function(){
+    ensureHistoricoComercialUI();
+    preencherClientesHistorico();
+    toggleHistoricoRange();
+    const eventos = filtrosHistoricoEventos();
+    const count=document.getElementById('historico-count'); if(count) count.textContent = eventos.length;
+    renderResumoHistoricoComercial(eventos);
+    renderHistoricoContent(eventos);
+  };
+
+  /* Ficha do cliente: substituir linhas antigas por timeline compacta unificada */
+  function resumoClienteCompacto(id){
+    const props = (typeof listaPropostasHistorico === 'function' ? listaPropostasHistorico() : []).filter(p=>p.clienteId===id);
+    const abertas = (solicitacoesOrcamento||[]).filter(s=>s.clienteId===id).length;
+    const proximo = (agendamentos||[]).filter(a=>a.clienteId===id && (a.data||'')>=todayFinal()).sort((a,b)=>(a.data||'').localeCompare(b.data||''))[0];
+    return `<div class="client-commercial-summary"><div class="client-summary-card"><span>Solicitações abertas</span><strong>${abertas}</strong></div><div class="client-summary-card"><span>Propostas enviadas</span><strong>${props.length}</strong></div><div class="client-summary-card"><span>Em acompanhamento</span><strong>${props.filter(p=>propostaPrecisaAcompanhamento(p.status)).length}</strong></div><div class="client-summary-card"><span>Próximo retorno</span><strong style="font-size:13px">${proximo?`${fmtFinal(proximo.data)} ${proximo.horario||''}`:'—'}</strong></div></div>`;
+  }
+  window.renderHistoricoCompletoCliente = function(clienteId){
+    const evs = eventosHistoricoUnificados().filter(e=>e.clienteId===clienteId).sort((a,b)=>(b.data||'').localeCompare(a.data||''));
+    return `<div class="hist-compact-embed"><div class="historico-content-head"><div><div class="historico-content-title"><i class="fa-solid fa-timeline" style="color:var(--accent)"></i> Linha do tempo comercial</div><div class="historico-content-sub">Compacta, expansível e com os registros mais recentes em cima.</div></div><span class="badge badge-gray">${evs.length} registros</span></div>${renderTimelineCompacta(evs,{prefix:'ficha-'+clienteId,limit:80})}</div>`;
+  };
+  const baseAbrirDetalheFinalCompacto = typeof abrirDetalhe === 'function' ? abrirDetalhe : null;
+  window.abrirDetalhe = function(id){
+    if (baseAbrirDetalheFinalCompacto) baseAbrirDetalheFinalCompacto(id);
+    setTimeout(()=>{
+      const content=document.getElementById('detalhe-content'); if(!content) return;
+      content.querySelectorAll('.client-commercial-summary,.client-timeline-enhanced').forEach(el=>el.remove());
+      const anchor=document.getElementById('cliente-historico-anchor');
+      if(anchor) anchor.innerHTML = renderHistoricoCompletoCliente(id);
+      const first=content.children[0];
+      if(first) first.insertAdjacentHTML('afterend', resumoClienteCompacto(id));
+    }, 45);
+  };
+
+  const baseRenderSolicitacoesTabelaFinalCompacto = typeof renderSolicitacoesTabela === 'function' ? renderSolicitacoesTabela : null;
+  window.renderSolicitacoesTabela = function(){
+    if (baseRenderSolicitacoesTabelaFinalCompacto) baseRenderSolicitacoesTabelaFinalCompacto();
+    try { document.querySelectorAll('.orcamento-card').forEach(card=>{}); } catch(e) {}
+  };
+
+  setTimeout(()=>{
+    try { if (document.getElementById('view-historico')?.classList.contains('active')) renderHistorico(); } catch(e) { console.warn(e); }
+    try { if (typeof renderSolicitacoesTabela === 'function') renderSolicitacoesTabela(); } catch(e) { console.warn(e); }
+  }, 250);
+})();
+
+</script>
 </body>
 </html>
