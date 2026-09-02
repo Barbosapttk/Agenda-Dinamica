@@ -268,56 +268,56 @@ function listaPropostasHistorico() {
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
-  --bg: #0d0f14;
-  --surface: #161a22;
-  --surface2: #1e2330;
-  --surface3: #252b3b;
-  --border: #2a3045;
-  --border2: #3a4460;
-  --text: #e8ecf4;
-  --text2: #8b93a8;
-  --text3: #55607a;
-  --accent: #3b7de8;
-  --accent-light: rgba(59,125,232,0.12);
-  --accent-dark: #2563c7;
-  --accent-glow: rgba(59,125,232,0.25);
-  --success: #22c78a;
-  --success-bg: rgba(34,199,138,0.1);
-  --warning: #f5a623;
-  --warning-bg: rgba(245,166,35,0.1);
-  --danger: #f05252;
-  --danger-bg: rgba(240,82,82,0.1);
-  --purple: #8b7de8;
-  --purple-bg: rgba(139,125,232,0.1);
+  --bg: #0a1223;
+  --surface: #101b36;
+  --surface2: #142344;
+  --surface3: #1b2d54;
+  --border: rgba(98,118,156,0.28);
+  --border2: rgba(112,132,170,0.42);
+  --text: #e9effc;
+  --text2: #b3c0da;
+  --text3: #7f95b2;
+  --accent: #3f77d9;
+  --accent-light: rgba(63,119,217,0.14);
+  --accent-dark: #1b53b0;
+  --accent-glow: rgba(63,119,217,0.28);
+  --success: #1fb388;
+  --success-bg: rgba(31,179,136,0.12);
+  --warning: #d49a3f;
+  --warning-bg: rgba(212,154,63,0.12);
+  --danger: #d25f65;
+  --danger-bg: rgba(210,95,101,0.12);
+  --purple: #7360d6;
+  --purple-bg: rgba(115,96,214,0.12);
   --radius: 10px;
   --radius-sm: 6px;
-  --shadow: 0 2px 16px rgba(0,0,0,0.4);
+  --shadow: 0 20px 70px rgba(0,0,0,0.28);
 }
 
 /* TEMA CLARO */
 body.theme-light {
-  --bg: #d8dee8;
-  --surface: #e7ebf2;
-  --surface2: #dfe5ee;
-  --surface3: #cdd6e3;
-  --border: #aeb8c8;
-  --border2: #8f9aad;
-  --text: #111827;
-  --text2: #3e4658;
-  --text3: #687287;
-  --accent: #2563c7;
-  --accent-light: rgba(37,99,199,0.16);
-  --accent-dark: #1d4fa0;
-  --accent-glow: rgba(37,99,199,0.18);
-  --success: #0a8c5c;
-  --success-bg: rgba(10,140,92,0.16);
-  --warning: #a3690a;
-  --warning-bg: rgba(217,144,15,0.18);
-  --danger: #b8302f;
-  --danger-bg: rgba(196,56,56,0.15);
-  --purple: #6450c9;
-  --purple-bg: rgba(100,80,201,0.16);
-  --shadow: 0 1px 3px rgba(20,30,50,0.06), 0 2px 10px rgba(20,30,50,0.05);
+  --bg: #eff4fb;
+  --surface: #ffffff;
+  --surface2: #f2f6fc;
+  --surface3: #dfe7f2;
+  --border: rgba(117,138,172,0.30);
+  --border2: rgba(90,112,145,0.40);
+  --text: #162238;
+  --text2: #4f607a;
+  --text3: #6d7f9d;
+  --accent: #3f77d9;
+  --accent-light: rgba(63,119,217,0.14);
+  --accent-dark: #234a9b;
+  --accent-glow: rgba(63,119,217,0.18);
+  --success: #18896f;
+  --success-bg: rgba(24,137,111,0.10);
+  --warning: #b27b2b;
+  --warning-bg: rgba(178,123,43,0.10);
+  --danger: #a84756;
+  --danger-bg: rgba(168,71,86,0.10);
+  --purple: #6952c2;
+  --purple-bg: rgba(105,82,194,0.10);
+  --shadow: 0 10px 30px rgba(37,59,94,0.12);
 }
 body.theme-light .stat-icon { opacity: 0.85; }
 body.theme-light .stat-card { border-top: 3px solid var(--stat-color, var(--accent)); }
@@ -336,7 +336,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 /* TOP HEADER */
 .topheader { height: 76px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 20px; padding: 0 32px; position: sticky; top: 0; z-index: 150; }
 .logo-h { display: flex; align-items: center; gap: 12px; flex-shrink: 0; margin-right: 12px; }
-.logo-mark { width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(150deg, #5b9af5 0%, var(--accent) 45%, var(--accent-dark) 100%); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 19px; box-shadow: 0 4px 14px rgba(37,99,199,0.4), inset 0 1px 0 rgba(255,255,255,0.25); flex-shrink: 0; position: relative; }
+.logo-mark { width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(150deg, #5c86e8 0%, var(--accent) 45%, var(--accent-dark) 100%); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 19px; box-shadow: 0 4px 14px rgba(63,119,217,0.35), inset 0 1px 0 rgba(255,255,255,0.18); flex-shrink: 0; position: relative; }
 .logo-text { display: flex; flex-direction: column; line-height: 1.2; justify-content: center; }
 .logo-text h1 { font-size: 18.5px; font-weight: 700; color: var(--text); letter-spacing: -0.4px; white-space: nowrap; font-family: Georgia, 'Times New Roman', serif; }
 .logo-text h1 .logo-accent { color: var(--accent); font-weight: 700; font-style: italic; }
@@ -355,9 +355,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .topnav-item[data-view="dashboard"] { --nav-color: var(--accent); --nav-bg: var(--accent-light); }
 .topnav-item[data-view="solicitacoes"] { --nav-color: var(--warning); --nav-bg: var(--warning-bg); }
 .topnav-item[data-view="clientes"] { --nav-color: var(--success); --nav-bg: var(--success-bg); }
-.topnav-item[data-view="agenda"] { --nav-color: #5aa7ff; --nav-bg: rgba(90,167,255,0.12); }
+.topnav-item[data-view="agenda"] { --nav-color: var(--accent); --nav-bg: var(--accent-light); }
 .topnav-item[data-view="orcamentos"] { --nav-color: var(--purple); --nav-bg: var(--purple-bg); }
-.topnav-item[data-view="historico"] { --nav-color: #6ba3f0; --nav-bg: rgba(59,125,232,0.10); }
+.topnav-item[data-view="historico"] { --nav-color: var(--purple); --nav-bg: var(--purple-bg); }
 .topnav-item[data-view="configuracoes"] { --nav-color: var(--text2); --nav-bg: var(--surface3); }
 .topnav-item i { color: var(--nav-color, var(--text2)); }
 .topnav-item:hover { background: var(--nav-bg, var(--surface)); color: var(--text); }
@@ -448,7 +448,7 @@ body.theme-light .theme-switch { background: var(--surface3); }
 .nav { padding: 10px 10px; flex: 1; overflow-y: auto; }
 .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: var(--radius-sm); cursor: pointer; color: var(--text2); font-size: 13px; font-weight: 500; transition: all 0.15s; margin-bottom: 2px; }
 .nav-item:hover { background: var(--surface2); color: var(--text); }
-.nav-item.active { background: var(--accent-light); color: var(--accent); border: 1px solid rgba(59,125,232,0.2); }
+.nav-item.active { background: var(--accent-light); color: var(--accent); border: 1px solid rgba(63,119,217,0.22); }
 .nav-item i { width: 18px; text-align: center; font-size: 14px; }
 .nav-section { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text3); font-weight: 700; padding: 10px 12px 6px; }
 
@@ -520,7 +520,7 @@ tr:hover td { background: var(--surface2); }
 
 /* AVATAR */
 .avatar { width: 34px; height: 34px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
-.av-blue { background: rgba(59,125,232,0.18); color: #6ba3f0; }
+.av-blue { background: rgba(63,119,217,0.18); color: var(--accent); }
 .av-green { background: rgba(34,199,138,0.15); color: #22c78a; }
 .av-purple { background: rgba(139,125,232,0.18); color: #a89af5; }
 .av-coral { background: rgba(240,82,82,0.15); color: #f07070; }
@@ -534,7 +534,7 @@ tr:hover td { background: var(--surface2); }
 .badge-success { background: var(--success-bg); color: var(--success); }
 .badge-warning { background: var(--warning-bg); color: var(--warning); }
 .badge-danger { background: var(--danger-bg); color: var(--danger); }
-.badge-info { background: var(--accent-light); color: #6ba3f0; }
+.badge-info { background: var(--accent-light); color: var(--accent); }
 .badge-gray { background: var(--surface3); color: var(--text2); border: 1px solid var(--border); }
 .badge-purple { background: var(--purple-bg); color: var(--purple); }
 
@@ -717,8 +717,8 @@ tr.cliente-esquecido td:first-child { border-left: 3px solid var(--danger); }
 .attach-drop:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
 
 /* WHATSAPP BACKUP BUTTON */
-.btn-whatsapp { background: rgba(37,211,102,0.12); color: #25d366; border: 1px solid rgba(37,211,102,0.3); }
-.btn-whatsapp:hover { background: rgba(37,211,102,0.22); }
+.btn-whatsapp { background: var(--success-bg); color: var(--success); border: 1px solid rgba(31,179,136,0.22); }
+.btn-whatsapp:hover { background: rgba(31,179,136,0.18); }
 
 /* KEYBOARD SHORTCUTS MODAL */
 .kbd-key { display: inline-block; background: var(--surface3); border: 1px solid var(--border2); border-radius: 4px; padding: 1px 7px; font-size: 11.5px; font-weight: 700; font-family: monospace; color: var(--text2); }
@@ -1471,28 +1471,28 @@ body.auth-locked .auth-screen { display: flex; }
 
 
 /* AJUSTES VISUAIS FINAIS */
-:root { --header-soft: rgba(59,125,232,0.13); }
+:root { --header-soft: rgba(63,119,217,0.13); }
 body.theme-light {
-  --bg: #c8d1de;
-  --surface: #d9e0ea;
-  --surface2: #ced8e6;
-  --surface3: #becbdd;
-  --border: #9ba9bd;
-  --border2: #8391a8;
-  --accent-light: rgba(37,99,199,0.20);
-  --success-bg: rgba(10,140,92,0.20);
-  --warning-bg: rgba(217,144,15,0.22);
-  --danger-bg: rgba(184,48,47,0.20);
-  --purple-bg: rgba(112,92,190,0.20);
-  --header-soft: #bfd2eb;
+  --bg: #eff4fb;
+  --surface: #ffffff;
+  --surface2: #f2f6fc;
+  --surface3: #dfe7f2;
+  --border: rgba(117,138,172,0.30);
+  --border2: rgba(90,112,145,0.40);
+  --accent-light: rgba(63,119,217,0.14);
+  --success-bg: rgba(24,137,111,0.10);
+  --warning-bg: rgba(178,123,43,0.10);
+  --danger-bg: rgba(168,71,86,0.10);
+  --purple-bg: rgba(105,82,194,0.10);
+  --header-soft: #c4d6f0;
 }
 body.theme-light .app, body.theme-light body { background: var(--bg); }
 body.theme-light .card-header,
 body.theme-light .orcamento-kanban-head,
 body.theme-light th { background: var(--header-soft) !important; }
-body.theme-light .orcamento-kanban-wrap { background:#c6d1df; }
-body.theme-light .orcamento-kanban-col { background:#d5dde8; }
-body.theme-light .orcamento-card { background:#e1e6ee; }
+body.theme-light .orcamento-kanban-wrap { background: linear-gradient(180deg, #eef4fb, #e6eef7) !important; }
+body.theme-light .orcamento-kanban-col { background: #f6f9ff !important; }
+body.theme-light .orcamento-card { background: #ffffff !important; }
 body.theme-light .daily-hero,
 body.theme-light .dashboard-focus-hero { background: linear-gradient(135deg,#dbe4ef,#c6d7eb) !important; }
 .site-logo-mark { background:#fff !important; padding:4px; overflow:hidden; box-shadow: 0 4px 16px rgba(0,0,0,.18); }
@@ -1512,8 +1512,8 @@ body.theme-light .dashboard-focus-hero { background: linear-gradient(135deg,#dbe
 .quick-action-card .quick-action-icon { color:var(--qa-color,var(--accent)); background:var(--qa-bg,var(--accent-light)); border-color: color-mix(in srgb, var(--qa-color,var(--accent)) 28%, transparent); }
 .quick-action-card.qa-orcamento { --qa-color:var(--warning); --qa-bg:var(--warning-bg); border-color:rgba(245,166,35,.34); }
 .quick-action-card.qa-cliente { --qa-color:var(--success); --qa-bg:var(--success-bg); border-color:rgba(34,199,138,.30); }
-.quick-action-card.qa-contato { --qa-color:var(--accent); --qa-bg:var(--accent-light); border-color:rgba(59,125,232,.30); }
-.quick-action-card.qa-retorno { --qa-color:#5aa7ff; --qa-bg:rgba(90,167,255,.14); border-color:rgba(90,167,255,.30); }
+.quick-action-card.qa-contato { --qa-color:var(--accent); --qa-bg:var(--accent-light); border-color:rgba(63,119,217,.30); }
+.quick-action-card.qa-retorno { --qa-color:var(--accent); --qa-bg:var(--accent-light); border-color:rgba(63,119,217,.30); }
 .quick-action-card.qa-recorrente { --qa-color:var(--purple); --qa-bg:var(--purple-bg); border-color:rgba(139,125,232,.30); }
 .quick-action-card:hover { box-shadow:0 8px 18px rgba(0,0,0,.14); }
 .solicitacoes-title-clean { padding:2px 2px 10px; border-bottom:1px solid var(--border); margin-bottom:14px; }
@@ -1544,102 +1544,102 @@ body.theme-light .dashboard-focus-hero { background: linear-gradient(135deg,#dbe
 /* Versão expandida: contraste + aplicação em todas as abas + modo claro equivalente */
 
 :root {
-  --bg: #08132a;
-  --surface: #091a39;
-  --surface2: #0b1e4e;
-  --surface3: #10285e;
-  --surface4: #14316b;
-  --border: rgba(72, 121, 204, 0.30);
-  --border2: rgba(108, 157, 235, 0.48);
-  --text: #f8fbff;
-  --text2: #d7e4ff;
-  --text3: #a8bce2;
-  --muted-strong: #c5d6f5;
-  --accent: #0d66e8;
-  --accent-light: rgba(13,102,232,0.18);
-  --accent-dark: #0548a7;
-  --accent-glow: rgba(13,102,232,0.30);
-  --success: #1dd6a5;
-  --success-bg: rgba(29,214,165,0.16);
-  --warning: #ffae42;
-  --warning-bg: rgba(255,174,66,0.18);
-  --danger: #ff5965;
-  --danger-bg: rgba(255,89,101,0.18);
-  --purple: #aa7cff;
-  --purple-bg: rgba(170,124,255,0.18);
-  --cyan: #19c9ff;
-  --cyan-bg: rgba(25,201,255,0.14);
+  --bg: #0a1223;
+  --surface: #101b36;
+  --surface2: #142344;
+  --surface3: #1b2d54;
+  --surface4: #19305b;
+  --border: rgba(98,118,156,0.30);
+  --border2: rgba(112,132,170,0.44);
+  --text: #e9effc;
+  --text2: #b3c0da;
+  --text3: #7f95b2;
+  --muted-strong: #c2d1eb;
+  --accent: #3f77d9;
+  --accent-light: rgba(63,119,217,0.14);
+  --accent-dark: #1b53b0;
+  --accent-glow: rgba(63,119,217,0.28);
+  --success: #1fb388;
+  --success-bg: rgba(31,179,136,0.12);
+  --warning: #d49a3f;
+  --warning-bg: rgba(212,154,63,0.12);
+  --danger: #d25f65;
+  --danger-bg: rgba(210,95,101,0.12);
+  --purple: #7360d6;
+  --purple-bg: rgba(115,96,214,0.12);
+  --cyan: #1db2ff;
+  --cyan-bg: rgba(29,178,255,0.12);
   --radius: 10px;
   --radius-sm: 6px;
-  --shadow: 0 10px 28px rgba(0,0,0,0.34);
+  --shadow: 0 20px 70px rgba(0,0,0,0.28);
 }
 
 body.theme-light {
-  --bg: #d8e0ec;
-  --surface: #edf2f8;
-  --surface2: #e3eaf3;
-  --surface3: #d5e0ee;
-  --surface4: #c9d7ea;
-  --border: rgba(96, 121, 164, 0.36);
-  --border2: rgba(70, 101, 151, 0.50);
-  --text: #071b38;
-  --text2: #1e385f;
-  --text3: #526b93;
-  --muted-strong: #34527f;
-  --accent: #075fe2;
-  --accent-light: rgba(7,95,226,0.12);
-  --accent-dark: #003f9d;
-  --accent-glow: rgba(7,95,226,0.16);
-  --success: #087f68;
-  --success-bg: rgba(8,127,104,0.12);
-  --warning: #b9680e;
-  --warning-bg: rgba(185,104,14,0.12);
-  --danger: #bd3448;
-  --danger-bg: rgba(189,52,72,0.12);
-  --purple: #663ec7;
-  --purple-bg: rgba(102,62,199,0.12);
-  --cyan: #087ea3;
-  --cyan-bg: rgba(8,126,163,0.12);
-  --shadow: 0 8px 22px rgba(39, 63, 105, 0.13);
+  --bg: #eff4fb;
+  --surface: #ffffff;
+  --surface2: #f2f6fc;
+  --surface3: #dfe7f2;
+  --surface4: #cfd9e7;
+  --border: rgba(117,138,172,0.30);
+  --border2: rgba(90,112,145,0.40);
+  --text: #162238;
+  --text2: #4f607a;
+  --text3: #6d7f9d;
+  --muted-strong: #3e5575;
+  --accent: #3f77d9;
+  --accent-light: rgba(63,119,217,0.14);
+  --accent-dark: #234a9b;
+  --accent-glow: rgba(63,119,217,0.18);
+  --success: #18896f;
+  --success-bg: rgba(24,137,111,0.10);
+  --warning: #b27b2b;
+  --warning-bg: rgba(178,123,43,0.10);
+  --danger: #a84756;
+  --danger-bg: rgba(168,71,86,0.10);
+  --purple: #6952c2;
+  --purple-bg: rgba(105,82,194,0.10);
+  --cyan: #0788b5;
+  --cyan-bg: rgba(7,136,181,0.10);
+  --shadow: 0 10px 30px rgba(37,59,94,0.12);
 }
 
 /* Fundo geral */
 body {
   background:
-    radial-gradient(circle at top right, rgba(13,102,232,0.14), transparent 25%),
-    radial-gradient(circle at top left, rgba(79,48,143,0.12), transparent 24%),
-    linear-gradient(180deg, #071226 0%, #08132a 100%);
+    radial-gradient(circle at top right, rgba(63,119,217,0.16), transparent 24%),
+    radial-gradient(circle at top left, rgba(115,96,214,0.10), transparent 22%),
+    linear-gradient(180deg, #08132a 0%, #0b1d3f 100%);
   color: var(--text);
 }
 
 body.theme-light {
   background:
-    radial-gradient(circle at top right, rgba(7,95,226,0.08), transparent 26%),
-    radial-gradient(circle at top left, rgba(102,62,199,0.06), transparent 24%),
-    linear-gradient(180deg, #d8e0ec 0%, #d1dae7 100%);
+    radial-gradient(circle at top right, rgba(63,119,217,0.08), transparent 26%),
+    radial-gradient(circle at top left, rgba(105,82,194,0.06), transparent 24%),
+    linear-gradient(180deg, #eef4fb 0%, #dfe7f2 100%);
   color: var(--text);
 }
 
 /* Cabeçalho e navegação */
 .topheader {
-  background: linear-gradient(180deg, rgba(4,15,35,0.98), rgba(7,20,46,0.98));
-  border-bottom: 1px solid rgba(72,121,204,0.25);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.28);
+  background: linear-gradient(180deg, rgba(10,20,45,0.98), rgba(13,30,61,0.98));
+  border-bottom: 1px solid rgba(98,118,156,0.22);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.22);
 }
 
 body.theme-light .topheader {
-  background: linear-gradient(180deg, #f1f5fa, #e0e8f2);
-  border-bottom: 1px solid rgba(70,101,151,0.32);
+  background: linear-gradient(180deg, #f8fbff, #e9eef8);
+  border-bottom: 1px solid rgba(90,112,145,0.22);
 }
 
 .sidebar {
-  background: linear-gradient(180deg, #061329 0%, #071833 100%);
-  border-right-color: rgba(72,121,204,0.22);
+  background: linear-gradient(180deg, #09142e 0%, #0f1f41 100%);
+  border-right-color: rgba(98,118,156,0.18);
 }
 
 body.theme-light .sidebar {
-  background: linear-gradient(180deg, #edf2f8, #dfe8f3);
-  border-right-color: rgba(70,101,151,0.30);
+  background: linear-gradient(180deg, #f6f9ff, #e9eff9);
+  border-right-color: rgba(90,112,145,0.25);
 }
 
 .topnav {
@@ -1661,26 +1661,26 @@ body.theme-light .topnav-item {
   color: var(--text2);
 }
 
-.topnav-item[data-view="dashboard"] { --nav-color: #ffffff; --nav-bg: rgba(13,102,232,0.24); }
-.topnav-item[data-view="solicitacoes"] { --nav-color: #d9e7ff; --nav-bg: rgba(13,102,232,0.16); }
-.topnav-item[data-view="clientes"] { --nav-color: #37e0a4; --nav-bg: rgba(29,214,165,0.12); }
-.topnav-item[data-view="agenda"] { --nav-color: #e8eefc; --nav-bg: rgba(255,255,255,0.06); }
-.topnav-item[data-view="orcamentos"] { --nav-color: #d1adff; --nav-bg: rgba(170,124,255,0.14); }
-.topnav-item[data-view="historico"] { --nav-color: #dfe8ff; --nav-bg: rgba(255,255,255,0.06); }
-.topnav-item[data-view="configuracoes"] { --nav-color: #e6ebf8; --nav-bg: rgba(255,255,255,0.06); }
+.topnav-item[data-view="dashboard"] { --nav-color: var(--accent); --nav-bg: var(--accent-light); }
+.topnav-item[data-view="solicitacoes"] { --nav-color: var(--warning); --nav-bg: var(--warning-bg); }
+.topnav-item[data-view="clientes"] { --nav-color: var(--success); --nav-bg: var(--success-bg); }
+.topnav-item[data-view="agenda"] { --nav-color: var(--accent); --nav-bg: var(--accent-light); }
+.topnav-item[data-view="orcamentos"] { --nav-color: var(--purple); --nav-bg: var(--purple-bg); }
+.topnav-item[data-view="historico"] { --nav-color: var(--purple); --nav-bg: var(--purple-bg); }
+.topnav-item[data-view="configuracoes"] { --nav-color: var(--text2); --nav-bg: var(--surface3); }
 
-body.theme-light .topnav-item[data-view="dashboard"] { --nav-color: #003f9d; --nav-bg: rgba(7,95,226,0.13); }
-body.theme-light .topnav-item[data-view="solicitacoes"] { --nav-color: #075fe2; --nav-bg: rgba(7,95,226,0.11); }
-body.theme-light .topnav-item[data-view="clientes"] { --nav-color: #087f68; --nav-bg: rgba(8,127,104,0.10); }
-body.theme-light .topnav-item[data-view="agenda"] { --nav-color: #1e385f; --nav-bg: rgba(7,95,226,0.07); }
-body.theme-light .topnav-item[data-view="orcamentos"] { --nav-color: #663ec7; --nav-bg: rgba(102,62,199,0.10); }
-body.theme-light .topnav-item[data-view="historico"] { --nav-color: #1e385f; --nav-bg: rgba(7,95,226,0.07); }
-body.theme-light .topnav-item[data-view="configuracoes"] { --nav-color: #34527f; --nav-bg: rgba(52,82,127,0.09); }
+body.theme-light .topnav-item[data-view="dashboard"] { --nav-color: var(--accent); --nav-bg: var(--accent-light); }
+body.theme-light .topnav-item[data-view="solicitacoes"] { --nav-color: var(--warning); --nav-bg: var(--warning-bg); }
+body.theme-light .topnav-item[data-view="clientes"] { --nav-color: var(--success); --nav-bg: var(--success-bg); }
+body.theme-light .topnav-item[data-view="agenda"] { --nav-color: var(--accent); --nav-bg: var(--accent-light); }
+body.theme-light .topnav-item[data-view="orcamentos"] { --nav-color: var(--purple); --nav-bg: var(--purple-bg); }
+body.theme-light .topnav-item[data-view="historico"] { --nav-color: var(--purple); --nav-bg: var(--purple-bg); }
+body.theme-light .topnav-item[data-view="configuracoes"] { --nav-color: var(--text2); --nav-bg: var(--surface3); }
 
 .topnav-item.active {
-  background: linear-gradient(180deg, rgba(13,102,232,0.42), rgba(13,102,232,0.22));
-  box-shadow: inset 0 0 0 1px rgba(102,170,255,0.26), 0 8px 20px rgba(0,0,0,0.18);
-  color: #fff;
+  background: var(--nav-bg, var(--surface));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08), 0 4px 10px rgba(0,0,0,0.08);
+  color: var(--nav-color, var(--accent));
 }
 
 body.theme-light .topnav-item.active {
@@ -3758,7 +3758,7 @@ body.theme-light .notificacao-interna-item.atencao { background:rgba(185,104,14,
 .cv-status-ag_aprovacao { color:var(--warning); border-color:rgba(245,166,35,.34); background:rgba(245,166,35,.10); }
 .cv-status-aprovado { color:var(--success); border-color:rgba(34,199,138,.34); background:rgba(34,199,138,.10); }
 .cv-status-reprovado { color:var(--danger); border-color:rgba(240,82,82,.34); background:rgba(240,82,82,.10); }
-.cv-status-ag_faturamento { color:#5aa7ff; border-color:rgba(90,167,255,.34); background:rgba(90,167,255,.10); }
+.cv-status-ag_faturamento { color: var(--accent); border-color: rgba(63,119,217,.34); background: rgba(63,119,217,.10); }
 .cv-status-faturado { color:#10b981; border-color:rgba(16,185,129,.34); background:rgba(16,185,129,.12); }
 .cv-status-aprov_mes_seguinte { color:var(--purple); border-color:rgba(139,125,232,.34); background:rgba(139,125,232,.11); }
 .cv-concluir-wrap { display:none; border:1px solid rgba(16,185,129,.28); border-radius:14px; padding:12px; background:linear-gradient(135deg, rgba(16,185,129,.10), rgba(59,125,232,.06)); }
@@ -3888,6 +3888,10 @@ body.theme-light .cv-hero { background:linear-gradient(135deg, rgba(10,140,92,.1
       <span class="quick-action-icon"><i class="fa-solid fa-repeat"></i></span>
       <span><strong>Recorrente</strong><small>Orçamento periódico</small></span>
     </button>
+    <button class="quick-action-card qa-cotacao" onclick="abrirModalCotacaoCompras()" type="button">
+      <span class="quick-action-icon"><i class="fa-solid fa-cart-shopping"></i></span>
+      <span><strong>Cotação</strong><small>Itens para compras</small></span>
+    </button>
   </nav>
 </aside>
 
@@ -3942,6 +3946,17 @@ body.theme-light .cv-hero { background:linear-gradient(135deg, rgba(10,140,92,.1
       </div>
       <div id="dash-acoes-prioritarias" class="daily-actions-list"></div>
     </div>
+
+    <section class="card cotacoes-compras-card" id="cotacoes-compras-painel" aria-labelledby="cotacoes-compras-titulo">
+      <div class="card-header cotacoes-compras-header">
+        <div>
+          <div class="card-title" id="cotacoes-compras-titulo"><i class="fa-solid fa-cart-shopping"></i> Cotações enviadas para compras</div>
+          <p>Itens enviados para compras que ainda precisam de acompanhamento.</p>
+        </div>
+        <button class="btn btn-ghost btn-sm" type="button" onclick="abrirModalCotacaoCompras()"><i class="fa-solid fa-plus"></i> Nova cotação</button>
+      </div>
+      <div id="cotacoes-compras-kanban"></div>
+    </section>
 
     <div class="stats dash-core-stats" style="display:none">
       <div class="stat-card" style="--stat-color:var(--accent)">
@@ -5122,6 +5137,12 @@ async function fazerLogin(event) {
 
 async function sairDoSistema() {
   if (!supabaseClient) return;
+  clearTimeout(sincronizacaoTimer);
+  clearInterval(sincronizacaoInterval);
+  sincronizacaoTimer = null;
+  sincronizacaoInterval = null;
+  if (canalRealtime) await supabaseClient.removeChannel(canalRealtime);
+  canalRealtime = null;
   await supabaseClient.auth.signOut();
   clientes = []; contatos = []; agendamentos = []; solicitacoesOrcamento = []; orcamentos = []; concluidos = []; historicoClientes = []; alarmedIds = [];
   bloquearSistema('Sessão encerrada. Entre novamente para acessar o sistema.');
@@ -5163,6 +5184,7 @@ const STORAGE_KEYS = {
   concluidos: 'secta_concluidos',
   historicoClientes: 'secta_hist_clientes',
   controleVendas: 'secta_controle_vendas',
+  cotacoesCompras: 'secta_cotacoes_compras',
   alarmedIds: 'secta_alarmed',
   theme: 'secta_theme'
 };
@@ -5175,6 +5197,7 @@ let orcamentos = [];
 let concluidos = [];
 let historicoClientes = []; // log de alterações em clientes
 let controleVendas = [];
+let cotacoesCompras = [];
 let calDate = new Date();
 let alarmedIds = [];
 let alarmQueue = [];
@@ -5187,6 +5210,10 @@ let editClienteId = null;
 let appTheme = 'dark';
 let appLoaded = false;
 let saveTimer = null;
+let salvandoDados = false;
+let sincronizacaoTimer = null;
+let sincronizacaoInterval = null;
+let canalRealtime = null;
 
 // ===== SUPABASE STORAGE / ANEXOS =====
 function storageAtivo() {
@@ -5438,6 +5465,7 @@ async function carregarDadosSupabase() {
   concluidos = Array.isArray(values[STORAGE_KEYS.concluidos]) ? values[STORAGE_KEYS.concluidos] : [];
   historicoClientes = Array.isArray(values[STORAGE_KEYS.historicoClientes]) ? values[STORAGE_KEYS.historicoClientes] : [];
   controleVendas = Array.isArray(values[STORAGE_KEYS.controleVendas]) ? values[STORAGE_KEYS.controleVendas] : [];
+  cotacoesCompras = Array.isArray(values[STORAGE_KEYS.cotacoesCompras]) ? values[STORAGE_KEYS.cotacoesCompras] : [];
   alarmedIds = Array.isArray(values[STORAGE_KEYS.alarmedIds]) ? values[STORAGE_KEYS.alarmedIds] : [];
   appTheme = typeof values[STORAGE_KEYS.theme] === 'string' ? values[STORAGE_KEYS.theme] : 'dark';
   applyTheme(appTheme, false);
@@ -5455,30 +5483,103 @@ async function persistirDadosSupabase() {
     { key: STORAGE_KEYS.concluidos, value: concluidos },
     { key: STORAGE_KEYS.historicoClientes, value: historicoClientes },
     { key: STORAGE_KEYS.controleVendas, value: controleVendas },
+    { key: STORAGE_KEYS.cotacoesCompras, value: cotacoesCompras },
     { key: STORAGE_KEYS.alarmedIds, value: alarmedIds },
     { key: STORAGE_KEYS.theme, value: appTheme }
   ];
 
-  const { error } = await supabaseClient
-    .from(SUPABASE_TABLE)
-    .upsert(rows, { onConflict: 'key' });
+  salvandoDados = true;
+  try {
+    const { error } = await supabaseClient
+      .from(SUPABASE_TABLE)
+      .upsert(rows, { onConflict: 'key' });
 
-  if (error) {
-    console.error('Erro ao salvar no Supabase:', error);
-    notify('Erro ao salvar no Supabase. Verifique o console.', '#7a1a1a');
+    if (error) {
+      console.error('Erro ao salvar no Supabase:', error);
+      notify('Erro ao salvar no Supabase. Verifique o console.', '#7a1a1a');
+    }
+  } finally {
+    salvandoDados = false;
   }
 }
 
 function save() {
   if (!appLoaded) return;
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(persistirDadosSupabase, 250);
+  saveTimer = setTimeout(async () => {
+    saveTimer = null;
+    await persistirDadosSupabase();
+  }, 250);
+}
+
+function renderizarDadosSincronizados() {
+  renderDashboard();
+  renderClientes();
+  renderAgenda();
+  renderHistorico();
+  renderSolicitacoesTabela();
+  renderOrcamentosTabela();
+  if (typeof renderControleVendas === 'function') renderControleVendas();
+  if (typeof renderCotacoesComprasPainel === 'function') renderCotacoesComprasPainel();
+  if (typeof renderPropostasAcompanhamentoKanban === 'function') renderPropostasAcompanhamentoKanban();
+}
+
+async function sincronizarDadosRemotos() {
+  if (!appLoaded || !usuarioLogado || document.hidden) return;
+  if (saveTimer || salvandoDados) {
+    agendarSincronizacaoRemota(700);
+    return;
+  }
+
+  try {
+    const estadoAnterior = JSON.stringify([
+      clientes, contatos, agendamentos, solicitacoesOrcamento, orcamentos,
+      concluidos, historicoClientes, controleVendas, cotacoesCompras, alarmedIds, appTheme
+    ]);
+    await carregarDadosSupabase();
+    const estadoAtual = JSON.stringify([
+      clientes, contatos, agendamentos, solicitacoesOrcamento, orcamentos,
+      concluidos, historicoClientes, controleVendas, cotacoesCompras, alarmedIds, appTheme
+    ]);
+    if (estadoAnterior !== estadoAtual) renderizarDadosSincronizados();
+  } catch (error) {
+    console.warn('Falha temporária ao sincronizar dados:', error);
+  }
+}
+
+function agendarSincronizacaoRemota(atraso = 350) {
+  clearTimeout(sincronizacaoTimer);
+  sincronizacaoTimer = setTimeout(sincronizarDadosRemotos, atraso);
+}
+
+function iniciarSincronizacaoAutomatica() {
+  if (!supabaseClient || canalRealtime) return;
+
+  canalRealtime = supabaseClient
+    .channel('agenda-dinamica-atualizacoes')
+    .on('postgres_changes', {
+      event: '*',
+      schema: 'public',
+      table: SUPABASE_TABLE
+    }, () => agendarSincronizacaoRemota())
+    .subscribe(status => {
+      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+        console.warn('Realtime indisponível; mantendo sincronização periódica.');
+      }
+    });
+
+  clearInterval(sincronizacaoInterval);
+  sincronizacaoInterval = setInterval(sincronizarDadosRemotos, 10000);
+  window.addEventListener('focus', () => agendarSincronizacaoRemota(100));
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) agendarSincronizacaoRemota(100);
+  });
 }
 
 function resetarTodosDados() {
   if (!confirm('Isso vai apagar TODOS os clientes, contatos, retornos, solicitações e orçamentos cadastrados. Esta ação não pode ser desfeita. Deseja continuar?')) return;
   if (!confirm('Tem certeza mesmo? Todos os dados serão perdidos permanentemente.')) return;
-  clientes = []; contatos = []; agendamentos = []; solicitacoesOrcamento = []; orcamentos = []; concluidos = []; alarmedIds = []; historicoClientes = []; controleVendas = [];
+  clientes = []; contatos = []; agendamentos = []; solicitacoesOrcamento = []; orcamentos = []; concluidos = []; alarmedIds = []; historicoClientes = []; controleVendas = []; cotacoesCompras = [];
   save();
   notify('✓ Todos os dados foram apagados. Comece a cadastrar do zero!','#0d3d2a');
   closeModal('modalAtalhos');
@@ -7874,6 +7975,7 @@ function renderDashboard() {
   dashOrcSemana.innerHTML = orcamentosSemana.length ? renderOrcamentoCards(orcamentosSemana) : `<div class="empty" style="grid-column:1/-1"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento recorrente nesta semana</p></div>`;
 
   document.getElementById('dash-date').textContent=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  renderCotacoesComprasPainel();
 }
 
 // ===== SISTEMA DE ALARME SONORO + POP-UP =====
@@ -8801,6 +8903,7 @@ async function initApp() {
   renderSolicitacoesTabela();
   renderOrcamentosTabela();
   if (typeof renderControleVendas === 'function') renderControleVendas();
+  iniciarSincronizacaoAutomatica();
 }
 
 iniciarComLogin();
@@ -10174,12 +10277,12 @@ body:not(.theme-light) .daily-date-feature {
 body:not(.theme-light) .daily-date-feature span { color: #9cebdc !important; }
 body:not(.theme-light) .daily-date-feature strong,
 body:not(.theme-light) #dash-date { color:#ffffff !important; opacity:1 !important; visibility:visible !important; display:block !important; }
-body:not(.theme-light) .topnav-item[data-view="dashboard"] { --nav-bg: rgba(37,99,199,.26); --nav-color:#8fbaff; }
-body:not(.theme-light) .topnav-item[data-view="solicitacoes"] { --nav-bg: rgba(245,166,35,.23); --nav-color:#ffd28a; }
-body:not(.theme-light) .topnav-item[data-view="clientes"] { --nav-bg: rgba(29,214,165,.21); --nav-color:#79f2c9; }
-body:not(.theme-light) .topnav-item[data-view="agenda"] { --nav-bg: rgba(8,126,163,.24); --nav-color:#8ce8ff; }
-body:not(.theme-light) .topnav-item[data-view="orcamentos"] { --nav-bg: rgba(124,92,255,.24); --nav-color:#c7b7ff; }
-body:not(.theme-light) .topnav-item[data-view="historico"] { --nav-bg: rgba(236,72,153,.18); --nav-color:#ffb7dc; }
+body:not(.theme-light) .topnav-item[data-view="dashboard"] { --nav-bg: var(--accent-light); --nav-color: var(--accent); }
+body:not(.theme-light) .topnav-item[data-view="solicitacoes"] { --nav-bg: var(--warning-bg); --nav-color: var(--warning); }
+body:not(.theme-light) .topnav-item[data-view="clientes"] { --nav-bg: var(--success-bg); --nav-color: var(--success); }
+body:not(.theme-light) .topnav-item[data-view="agenda"] { --nav-bg: var(--accent-light); --nav-color: var(--accent); }
+body:not(.theme-light) .topnav-item[data-view="orcamentos"] { --nav-bg: var(--purple-bg); --nav-color: var(--purple); }
+body:not(.theme-light) .topnav-item[data-view="historico"] { --nav-bg: var(--purple-bg); --nav-color: var(--purple); }
 body:not(.theme-light) .topnav-item.active,
 body:not(.theme-light) .topnav-item:hover {
   background: var(--nav-bg) !important;
@@ -10246,12 +10349,12 @@ body.theme-light .daily-date-feature {
 body.theme-light .daily-date-feature span { color:#064e76 !important; }
 body.theme-light .daily-date-feature strong,
 body.theme-light #dash-date { color:#06224a !important; opacity:1 !important; visibility:visible !important; display:block !important; }
-body.theme-light .topnav-item[data-view="dashboard"] { --nav-bg: rgba(37,99,199,.22); --nav-color:#043c92; }
-body.theme-light .topnav-item[data-view="solicitacoes"] { --nav-bg: rgba(217,144,15,.24); --nav-color:#7c4402; }
-body.theme-light .topnav-item[data-view="clientes"] { --nav-bg: rgba(10,140,92,.22); --nav-color:#075c46; }
-body.theme-light .topnav-item[data-view="agenda"] { --nav-bg: rgba(8,126,163,.22); --nav-color:#075a76; }
-body.theme-light .topnav-item[data-view="orcamentos"] { --nav-bg: rgba(100,80,201,.22); --nav-color:#4a2c99; }
-body.theme-light .topnav-item[data-view="historico"] { --nav-bg: rgba(196,56,116,.18); --nav-color:#8f2455; }
+body.theme-light .topnav-item[data-view="dashboard"] { --nav-bg: var(--accent-light); --nav-color: var(--accent); }
+body.theme-light .topnav-item[data-view="solicitacoes"] { --nav-bg: var(--warning-bg); --nav-color: var(--warning); }
+body.theme-light .topnav-item[data-view="clientes"] { --nav-bg: var(--success-bg); --nav-color: var(--success); }
+body.theme-light .topnav-item[data-view="agenda"] { --nav-bg: var(--accent-light); --nav-color: var(--accent); }
+body.theme-light .topnav-item[data-view="orcamentos"] { --nav-bg: var(--purple-bg); --nav-color: var(--purple); }
+body.theme-light .topnav-item[data-view="historico"] { --nav-bg: var(--purple-bg); --nav-color: var(--purple); }
 body.theme-light .topnav-item.active,
 body.theme-light .topnav-item:hover { background: var(--nav-bg) !important; color: var(--nav-color) !important; }
 body.theme-light .topnav-item.active i,
@@ -10282,6 +10385,204 @@ body.theme-light .kanban-card {
   background: linear-gradient(180deg, rgba(255,255,255,.88), rgba(235,244,253,.92)) !important;
   border-color: rgba(47,91,160,.28) !important;
 }
+
+/* OVERRIDE GLOBAL DE CORES - NOVA PALETA */
+:root {
+  --bg: #081027;
+  --surface: #111f3a;
+  --surface2: #172a52;
+  --surface3: #203d7a;
+  --surface4: #192f5a;
+  --border: rgba(112,138,190,0.26);
+  --border2: rgba(108,140,255,0.30);
+  --text: #e7efff;
+  --text2: #b3c3e9;
+  --text3: #8797bb;
+  --muted-strong: #9badce;
+  --accent: #6c8cff;
+  --accent-light: rgba(108,140,255,0.18);
+  --accent-dark: #3650c5;
+  --accent-glow: rgba(108,140,255,0.24);
+  --success: #39c2a2;
+  --success-bg: rgba(57,194,162,0.16);
+  --warning: #f0aa4d;
+  --warning-bg: rgba(240,170,77,0.16);
+  --danger: #ea6466;
+  --danger-bg: rgba(234,100,102,0.14);
+  --purple: #a270ff;
+  --purple-bg: rgba(162,112,255,0.14);
+  --cyan: #44c7ff;
+  --cyan-bg: rgba(68,199,255,0.14);
+}
+
+body.theme-light {
+  --bg: #eef3ff;
+  --surface: #ffffff;
+  --surface2: #f2f7ff;
+  --surface3: #e6ecff;
+  --surface4: #dbe3f7;
+  --border: rgba(120,136,179,0.24);
+  --border2: rgba(108,140,255,0.20);
+  --text: #1f2c4f;
+  --text2: #58668d;
+  --text3: #7c8eb5;
+  --muted-strong: #5a6b95;
+  --accent: #6c8cff;
+  --accent-light: rgba(108,140,255,0.14);
+  --accent-dark: #3b55b4;
+  --accent-glow: rgba(108,140,255,0.18);
+  --success: #2fae8c;
+  --success-bg: rgba(47,174,140,0.12);
+  --warning: #d38e48;
+  --warning-bg: rgba(211,142,72,0.12);
+  --danger: #bd4a58;
+  --danger-bg: rgba(189,74,88,0.12);
+  --purple: #8b6fff;
+  --purple-bg: rgba(139,111,255,0.10);
+  --cyan: #3fbaff;
+  --cyan-bg: rgba(63,186,255,0.10);
+}
+
+body,
+body.theme-light .app,
+body.theme-light body {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+body:not(.theme-light) .topnav,
+body:not(.theme-light) .sidebar,
+body:not(.theme-light) .topheader,
+body.theme-light .topnav,
+body.theme-light .sidebar,
+body.theme-light .topheader {
+  background: var(--surface) !important;
+  border-color: var(--border2) !important;
+}
+
+body:not(.theme-light) .card,
+body:not(.theme-light) .content-section,
+body:not(.theme-light) .table-wrap,
+body:not(.theme-light) .config-card,
+body:not(.theme-light) .cliente-card,
+body:not(.theme-light) .mobile-card,
+body:not(.theme-light) .timeline-item,
+body:not(.theme-light) .agenda-day,
+body:not(.theme-light) .calendar-day,
+body:not(.theme-light) .client-history-stat,
+body:not(.theme-light) .productivity-summary div,
+body:not(.theme-light) .settings-stats div,
+body.theme-light .card,
+body.theme-light .content-section,
+body.theme-light .table-wrap,
+body.theme-light .config-card,
+body.theme-light .cliente-card,
+body.theme-light .mobile-card,
+body.theme-light .timeline-item,
+body.theme-light .agenda-day,
+body.theme-light .calendar-day,
+body.theme-light .client-history-stat,
+body.theme-light .productivity-summary div,
+body.theme-light .settings-stats div {
+  background: var(--surface2) !important;
+  border-color: var(--border2) !important;
+}
+
+body:not(.theme-light) .card-header,
+body:not(.theme-light) .modal-header,
+body:not(.theme-light) .drawer-header,
+body:not(.theme-light) .filters-bar,
+body:not(.theme-light) .filter-bar,
+body:not(.theme-light) .table-filters,
+body:not(.theme-light) .form-section-title,
+body:not(.theme-light) .historico-card-head,
+body:not(.theme-light) .history-group-header,
+body.theme-light .card-header,
+body.theme-light .modal-header,
+body.theme-light .drawer-header,
+body.theme-light .filters-bar,
+body.theme-light .filter-bar,
+body.theme-light .table-filters,
+body.theme-light .form-section-title,
+body.theme-light .historico-card-head,
+body.theme-light .history-group-header {
+  background: linear-gradient(90deg, rgba(108,140,255,0.16), rgba(108,140,255,0.06)) !important;
+  color: var(--text) !important;
+}
+
+body:not(.theme-light) .dashboard-focus-hero,
+body:not(.theme-light) .daily-hero,
+body:not(.theme-light) .settings-hero,
+body:not(.theme-light) .page-hero,
+body:not(.theme-light) .view-hero,
+body.theme-light .dashboard-focus-hero,
+body.theme-light .daily-hero,
+body.theme-light .settings-hero,
+body.theme-light .page-hero,
+body.theme-light .view-hero {
+  background: var(--surface3) !important;
+  border-color: rgba(108,140,255,0.24) !important;
+  color: var(--text) !important;
+}
+
+.topnav-item.active,
+.nav-item.active,
+.quick-action-card.highlighted,
+.badge-info,
+.badge-purple,
+.badge-success,
+.badge-warning,
+.badge-danger,
+.seg-tag.blue,
+.seg-tag.purple,
+.seg-tag.green,
+.seg-tag.amber,
+.seg-tag.red {
+  background: var(--accent-light) !important;
+  color: var(--accent) !important;
+  border-color: rgba(108,140,255,0.28) !important;
+}
+
+body.theme-light .badge-info,
+body.theme-light .seg-tag.blue,
+body.theme-light .badge-purple,
+body.theme-light .seg-tag.purple,
+body.theme-light .badge-success,
+body.theme-light .seg-tag.green,
+body.theme-light .badge-warning,
+body.theme-light .seg-tag.amber,
+body.theme-light .badge-danger,
+body.theme-light .seg-tag.red {
+  background: rgba(108,140,255,0.10) !important;
+}
+
+.btn-primary,
+.quick-main-action {
+  background: var(--accent) !important;
+  color: #fff !important;
+}
+.btn-primary:hover,
+.quick-main-action:hover {
+  background: var(--accent-dark) !important;
+}
+.btn-ghost,
+body.theme-light .btn-ghost,
+body:not(.theme-light) .btn-ghost {
+  border-color: var(--border2) !important;
+  color: var(--text2) !important;
+}
+
+.header-alert-btn:hover { border-color: rgba(108,140,255,0.45) !important; }
+.header-alert-item.info { border-color: rgba(108,140,255,0.22) !important; background: rgba(108,140,255,0.08) !important; }
+.header-alert-item.critica { border-color: rgba(234,100,102,0.24) !important; background: rgba(234,100,102,0.08) !important; }
+.header-alert-item.atencao { border-color: rgba(240,170,77,0.24) !important; background: rgba(240,170,77,0.08) !important; }
+
+.av-blue { background: rgba(108,140,255,0.18) !important; color: var(--accent) !important; }
+.quick-action-card.qa-retorno { --qa-color: var(--accent); --qa-bg: var(--accent-light); border-color: rgba(108,140,255,0.30) !important; }
+.cv-status-ag_faturamento { color: var(--accent) !important; border-color: rgba(108,140,255,0.34) !important; background: rgba(108,140,255,0.10) !important; }
+
+*::-webkit-scrollbar-thumb { background: linear-gradient(180deg, rgba(108,140,255,0.95), rgba(68,199,255,0.55)); }
+*::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, rgba(108,140,255,1), rgba(68,199,255,0.75)); }
 
 </style>
 <script>
@@ -13791,5 +14092,203 @@ body.theme-light #modalSolicitacao .sol-client-linked-card {
 })();
 </script>
 
+<style id="cotacoes-compras-styles">
+.qa-cotacao .quick-action-icon { color: var(--warning); }
+.cotacoes-compras-card { margin-bottom:20px; overflow:hidden; }
+.cotacoes-compras-header { align-items:flex-start; }
+.cotacoes-compras-header p { margin:5px 0 0; color:var(--text3); font-size:12.5px; line-height:1.4; }
+.cotacoes-compras-header .card-title i { color:var(--warning); }
+.cotacoes-compras-kanban { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; padding:0 16px 16px; }
+.cotacoes-compras-coluna { min-width:0; padding:12px; border:1px solid var(--border); border-radius:10px; background:var(--surface2); }
+.cotacoes-compras-coluna-titulo { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; color:var(--text2); font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.45px; }
+.cotacoes-compras-contador { min-width:22px; padding:2px 7px; border-radius:999px; background:var(--surface3); color:var(--text2); text-align:center; }
+.cotacao-compras-lista { display:grid; gap:8px; }
+.cotacao-compras-card { padding:11px; border:1px solid var(--border); border-radius:9px; background:var(--surface); box-shadow:var(--shadow-sm); }
+.cotacao-compras-descricao { color:var(--text); font-size:13px; font-weight:650; line-height:1.45; white-space:pre-wrap; overflow-wrap:anywhere; }
+.cotacao-compras-meta { display:flex; flex-wrap:wrap; align-items:center; gap:7px; margin-top:8px; color:var(--text3); font-size:11.5px; }
+.cotacao-compras-status { padding:3px 7px; border-radius:999px; background:var(--accent-bg); color:var(--accent); font-weight:750; }
+.cotacao-compras-status.sem-retorno { background:var(--warning-bg); color:var(--warning); }
+.cotacao-compras-acoes { display:flex; flex-wrap:wrap; gap:5px; margin-top:9px; padding-top:8px; border-top:1px solid var(--border); }
+.cotacao-compras-acoes button { border:0; border-radius:6px; padding:5px 7px; background:var(--surface2); color:var(--text2); cursor:pointer; font:inherit; font-size:11px; }
+.cotacao-compras-acoes button:hover { color:var(--text); background:var(--surface3); }
+.cotacao-compras-acoes .acao-concluir { color:var(--success); }
+.cotacao-compras-acoes .acao-excluir { color:var(--danger); }
+.cotacoes-compras-vazio { padding:18px; color:var(--text3); text-align:center; font-size:13px; }
+.cotacao-coluna-vazia { padding:12px 5px; color:var(--text3); text-align:center; font-size:12px; }
+#cotacao-compras-descricao { min-height:120px; resize:vertical; }
+body.theme-light .cotacoes-compras-coluna { background:#f4f7fb; }
+body.theme-light .cotacao-compras-card { background:#fff; }
+@media (max-width:700px) {
+  .cotacoes-compras-kanban { grid-template-columns:1fr; padding:0 12px 12px; }
+  .cotacoes-compras-header { flex-direction:column; gap:10px; }
+}
+</style>
+
+<div class="modal-overlay" id="modalCotacaoCompras">
+  <div class="modal" style="width:540px">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-cotacao-compras-title"><i class="fa-solid fa-cart-shopping" style="color:var(--warning);margin-right:8px"></i>Nova Cotação de Compras</div>
+      <button class="modal-close" type="button" onclick="closeModal('modalCotacaoCompras')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="cotacao-compras-descricao">Descrição dos itens <span style="color:var(--danger)">*</span></label>
+        <textarea id="cotacao-compras-descricao" required placeholder="Ex: Motor da bomba, bobina Danfoss 115V, união PEX 20mm..."></textarea>
+      </div>
+      <div class="form-group">
+        <label for="cotacao-compras-status">Status</label>
+        <select id="cotacao-compras-status">
+          <option value="enviado">Enviado</option>
+          <option value="sem_retorno">Sem retorno</option>
+          <option value="concluido">Concluído</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" type="button" onclick="closeModal('modalCotacaoCompras')">Cancelar</button>
+      <button class="btn btn-primary" type="button" onclick="salvarCotacaoCompras()"><i class="fa-solid fa-floppy-disk"></i> Salvar cotação</button>
+    </div>
+  </div>
+</div>
+
+<script id="cotacoes-compras-script">
+function getCotacoesCompras() {
+  if (!Array.isArray(cotacoesCompras)) cotacoesCompras = [];
+  return cotacoesCompras;
+}
+
+function getCotacoesComprasAtivas() {
+  return getCotacoesCompras().filter(item => item && item.concluida !== true && item.status !== 'concluido');
+}
+
+function statusCotacaoComprasLabel(status) {
+  return ({ enviado:'Enviado', sem_retorno:'Sem retorno', concluido:'Concluído' })[status] || 'Enviado';
+}
+
+function limparModalCotacaoCompras() {
+  const modal = document.getElementById('modalCotacaoCompras');
+  if (modal) delete modal.dataset.editId;
+  const descricao = document.getElementById('cotacao-compras-descricao');
+  const status = document.getElementById('cotacao-compras-status');
+  if (descricao) descricao.value = '';
+  if (status) status.value = 'enviado';
+}
+
+function abrirModalCotacaoCompras(id = null) {
+  limparModalCotacaoCompras();
+  const modal = document.getElementById('modalCotacaoCompras');
+  const titulo = document.getElementById('modal-cotacao-compras-title');
+  const item = id === null ? null : getCotacoesCompras().find(cotacao => String(cotacao.id) === String(id));
+  if (item) {
+    modal.dataset.editId = String(item.id);
+    document.getElementById('cotacao-compras-descricao').value = item.descricao || '';
+    document.getElementById('cotacao-compras-status').value = item.status || 'enviado';
+    titulo.innerHTML = '<i class="fa-solid fa-pen" style="color:var(--warning);margin-right:8px"></i>Editar Cotação de Compras';
+  } else {
+    titulo.innerHTML = '<i class="fa-solid fa-cart-shopping" style="color:var(--warning);margin-right:8px"></i>Nova Cotação de Compras';
+  }
+  openModal('modalCotacaoCompras');
+  setTimeout(() => document.getElementById('cotacao-compras-descricao')?.focus(), 30);
+}
+
+function atualizarCotacoesCompras() {
+  save();
+  renderDashboard();
+  renderCotacoesComprasPainel();
+}
+
+function salvarCotacaoCompras() {
+  const modal = document.getElementById('modalCotacaoCompras');
+  const descricao = document.getElementById('cotacao-compras-descricao').value.trim();
+  const status = document.getElementById('cotacao-compras-status').value;
+  if (!descricao) {
+    notify('Informe a descrição dos itens para salvar a cotação.', '#7a1a1a');
+    document.getElementById('cotacao-compras-descricao').focus();
+    return;
+  }
+  const statusValido = ['enviado','sem_retorno','concluido'].includes(status) ? status : 'enviado';
+  const editId = modal.dataset.editId;
+  const existente = editId ? getCotacoesCompras().find(item => String(item.id) === String(editId)) : null;
+  if (existente) {
+    existente.descricao = descricao;
+    existente.status = statusValido;
+    existente.concluida = statusValido === 'concluido';
+    existente.atualizadoEm = today();
+  } else {
+    getCotacoesCompras().push({
+      id: Date.now(), descricao, status: statusValido, concluida: statusValido === 'concluido',
+      criadoEm: today(), atualizadoEm: today()
+    });
+  }
+  closeModal('modalCotacaoCompras');
+  limparModalCotacaoCompras();
+  atualizarCotacoesCompras();
+  notify('✓ Cotação salva.', '#0d3d2a');
+}
+
+function editarCotacaoCompras(id) { abrirModalCotacaoCompras(id); }
+
+function alterarStatusCotacaoCompras(id, status) {
+  if (!['enviado','sem_retorno','concluido'].includes(status)) return;
+  const item = getCotacoesCompras().find(cotacao => String(cotacao.id) === String(id));
+  if (!item) return;
+  item.status = status;
+  item.concluida = status === 'concluido';
+  item.atualizadoEm = today();
+  atualizarCotacoesCompras();
+}
+
+function concluirCotacaoCompras(id) { alterarStatusCotacaoCompras(id, 'concluido'); }
+
+function excluirCotacaoCompras(id) {
+  if (!confirm('Excluir definitivamente esta cotação de compras?')) return;
+  cotacoesCompras = getCotacoesCompras().filter(item => String(item.id) !== String(id));
+  atualizarCotacoesCompras();
+  notify('✓ Cotação excluída.', '#0d3d2a');
+}
+
+function escaparHtmlCotacaoCompras(valor) {
+  return String(valor ?? '').replace(/[&<>"']/g, caractere => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[caractere]));
+}
+
+function cardCotacaoCompras(item) {
+  const id = JSON.stringify(String(item.id));
+  const semRetorno = item.status === 'sem_retorno' ? ' sem-retorno' : '';
+  return `<article class="cotacao-compras-card">
+    <div class="cotacao-compras-descricao">${escaparHtmlCotacaoCompras(item.descricao)}</div>
+    <div class="cotacao-compras-meta"><span class="cotacao-compras-status${semRetorno}">${statusCotacaoComprasLabel(item.status)}</span>${item.criadoEm ? `<span>Criada em ${fmtDate(item.criadoEm)}</span>` : ''}</div>
+    <div class="cotacao-compras-acoes">
+      <button type="button" onclick='editarCotacaoCompras(${id})'><i class="fa-solid fa-pen"></i> Editar</button>
+      <button type="button" onclick='alterarStatusCotacaoCompras(${id}, "enviado")'>Enviado</button>
+      <button type="button" onclick='alterarStatusCotacaoCompras(${id}, "sem_retorno")'>Sem retorno</button>
+      <button class="acao-concluir" type="button" onclick='concluirCotacaoCompras(${id})'><i class="fa-solid fa-check"></i> Concluir</button>
+      <button class="acao-excluir" type="button" onclick='excluirCotacaoCompras(${id})'><i class="fa-solid fa-trash"></i> Excluir</button>
+    </div>
+  </article>`;
+}
+
+function renderCotacoesComprasPainel() {
+  const container = document.getElementById('cotacoes-compras-kanban');
+  if (!container) return;
+  const ativas = getCotacoesComprasAtivas();
+  if (!ativas.length) {
+    container.className = 'cotacoes-compras-vazio';
+    container.textContent = 'Nenhuma cotação pendente para compras.';
+    return;
+  }
+  const colunas = [
+    { status:'enviado', label:'Enviado' },
+    { status:'sem_retorno', label:'Sem retorno' }
+  ];
+  container.className = 'cotacoes-compras-kanban';
+  container.innerHTML = colunas.map(coluna => {
+    const itens = ativas.filter(item => item.status === coluna.status);
+    return `<section class="cotacoes-compras-coluna">
+      <div class="cotacoes-compras-coluna-titulo"><span>${coluna.label}</span><span class="cotacoes-compras-contador">${itens.length}</span></div>
+      <div class="cotacao-compras-lista">${itens.length ? itens.map(cardCotacaoCompras).join('') : '<div class="cotacao-coluna-vazia">Nenhum item nesta coluna.</div>'}</div>
+    </section>`;
+  }).join('');
+}
+</script>
 </body>
 </html>
