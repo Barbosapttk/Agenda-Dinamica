@@ -1,5 +1,11 @@
 # Revisão de 09/09/2026
 
+## Correção da publicação em 10/09/2026
+
+O deploy de `7eba561` falhou com `node_modules/.bin/vite: Permission denied` (código 126). O site público continuou servindo o HTML de `793cf49`, confirmado por comparação de conteúdo. A confirmação de push anterior não comprovava publicação na Vercel.
+
+As dependências geradas foram retiradas do índice Git e incluídas no `.gitignore`, preservando a instalação local. `vercel.json` estabelece instalação limpa com `npm ci`, build Vite e saída `dist`. Instalação limpa em diretório temporário e build passaram; o aviso de allow-scripts do esbuild não impediu esse build.
+
 ## Estado anterior
 
 - Executados `git status`, `git diff` e `git log --oneline -5` antes de editar.
