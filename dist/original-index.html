@@ -3953,7 +3953,6 @@ body.theme-light .cv-hero { background:linear-gradient(135deg, rgba(10,140,92,.1
           <div class="card-title" id="cotacoes-compras-titulo"><i class="fa-solid fa-cart-shopping"></i> Cotações enviadas para compras</div>
           <p>Itens enviados para compras que ainda precisam de acompanhamento.</p>
         </div>
-        <button class="btn btn-ghost btn-sm" type="button" onclick="abrirModalCotacaoCompras()"><i class="fa-solid fa-plus"></i> Nova cotação</button>
       </div>
       <div id="cotacoes-compras-kanban"></div>
     </section>
@@ -6857,6 +6856,7 @@ function renderSolicitacaoCards(list) {
   const canalLabel = {whatsapp:'WhatsApp', telefone:'Telefone', email:'E-mail', presencial:'Presencial', videochamada:'Videochamada', outro:'Outro'};
   return list.map(sol => {
     const d = dadosSolicitacaoCliente(sol);
+    const produtoCard = escaparHtmlCotacaoCompras(formatarTextoSistema(sol.produto || ''));
     const atrasado = sol.prazo < today();
     const hoje = sol.prazo === today();
     const cardCls = atrasado ? 'atrasado' : 'solicitacao';
@@ -6986,7 +6986,7 @@ function cardKanbanSolicitacao(sol, classeExtra='') {
       </div>
     </div>
     <div class="orcamento-card-meta">
-      ${d.solicitante ? `<strong>Solicitante:</strong> ${d.solicitante}<br>` : ''}
+      ${d.solicitante ? `<div class="solicitante-destaque"><strong>Solicitante</strong> ${escaparHtmlCotacaoCompras(d.solicitante)}</div>` : ''}
       ${d.empresa ? `<strong>Razão Social:</strong> ${d.empresa}<br>` : ''}
       ${sol.cnpj ? `<strong>CNPJ:</strong> ${sol.cnpj}<br>` : ''}
       ${sol.telefone ? `<i class="fa-solid fa-phone"></i> ${sol.telefone}<br>` : ''}${sol.email ? `<i class="fa-solid fa-envelope"></i> ${sol.email}<br>` : ''}
@@ -6994,7 +6994,7 @@ function cardKanbanSolicitacao(sol, classeExtra='') {
     </div>
     <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:8px">
       <span class="badge ${priorBadge[sol.prioridade]||'badge-gray'}">${sol.prioridade||'normal'}</span>
-      ${sol._concluida ? '<span class="badge badge-success">Concluída</span>' : `<span class="badge badge-gray">${etapaSolicitacaoLabel(etapa)}</span>`}
+      ${sol._concluida ? `<span class="badge badge-success">${statusPropostaLabel(getSolicitacaoConcluida(sol.id)?.statusProposta || 'aguardando_retorno')}</span>` : `<span class="badge badge-gray">${etapaSolicitacaoLabel(etapa)}</span>`}
       ${sol.canal?`<span class="badge badge-gray">${canalLabel[sol.canal]||sol.canal}</span>`:''}
       ${sol.produto?`<span class="badge badge-warning">${sol.produto}</span>`:''}
       ${(sol.anexos||[]).length?`<span class="badge badge-gray"><i class="fa-solid fa-paperclip" style="margin-right:3px"></i>${(sol.anexos||[]).length}</span>`:''}
@@ -7931,7 +7931,7 @@ function renderDashboard() {
     </div>`;
   }
 
-  document.getElementById('concluidos-retorno-count').textContent = concluidosRetorno.length;
+  if (document.getElementById('concluidos-retorno-count')) document.getElementById('concluidos-retorno-count').textContent = concluidosRetorno.length;
   document.getElementById('dash-concluidos-retorno').innerHTML = concluidosRetorno.length
     ? concluidosRetorno.slice(0,8).map(renderConcluidoItem).join('')
     : `<div class="empty"><i class="fa-solid fa-clock-rotate-left"></i><p>Nenhum retorno concluído ainda</p></div>`;
@@ -7945,7 +7945,7 @@ function renderDashboard() {
       : `<div class="empty"><i class="fa-solid fa-clipboard-check"></i><p>Nenhuma solicitação concluída ainda</p></div>`;
   }
 
-  document.getElementById('concluidos-orcamento-count').textContent = concluidosOrcamento.length;
+  if (document.getElementById('concluidos-orcamento-count')) document.getElementById('concluidos-orcamento-count').textContent = concluidosOrcamento.length;
   document.getElementById('dash-concluidos-orcamento').innerHTML = concluidosOrcamento.length
     ? concluidosOrcamento.slice(0,8).map(renderConcluidoItem).join('')
     : `<div class="empty"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento recorrente concluído ainda</p></div>`;
@@ -9118,7 +9118,7 @@ function renderHistorico() {
     return `<div class="concluido-item"><div class="concluido-icon ${(isOrc||isSol)?'orcamento':''}"><i class="fa-solid ${iconCls}"></i></div><div style="flex:1"><div style="display:flex;justify-content:space-between;margin-bottom:3px;gap:10px;flex-wrap:wrap"><span style="font-weight:700;font-size:13.5px">${nomeExibicao}</span><span style="font-size:12px;color:var(--text3)">Concluído em ${fmtDate(cc.concluidoEm)}</span></div><div style="font-size:11.5px;color:var(--text3);margin-bottom:4px">${tipoLabel} — previsto para ${fmtDate(cc.dataOriginal)}</div>${cc.motivo?`<div style="font-size:12.5px;color:var(--text2);margin-bottom:4px"><i class="fa-solid fa-circle-info" style="margin-right:4px;color:var(--text3)"></i>${cc.motivo}</div>`:''}${(cc.numeroOrcamentoPecas||cc.numeroOrcamentoServico)?`<div style="font-size:12.5px;color:var(--text2);margin-bottom:4px"><strong>Nº orçamento:</strong> ${cc.numeroOrcamentoPecas?`Peças ${cc.numeroOrcamentoPecas}`:''}${cc.numeroOrcamentoPecas&&cc.numeroOrcamentoServico?' • ':''}${cc.numeroOrcamentoServico?`Serviço ${cc.numeroOrcamentoServico}`:''}</div>`:''}${cc.obsConclusao?`<div style="font-size:12.5px;color:var(--success);background:var(--success-bg);border-radius:6px;padding:7px 10px;margin-top:4px"><i class="fa-solid fa-check" style="margin-right:5px"></i>${cc.obsConclusao}</div>`:''}${acoesSol}</div></div>`;
   }
 
-  document.getElementById('concluidos-retorno-count').textContent = concluidosRetorno.length;
+  if (document.getElementById('concluidos-retorno-count')) document.getElementById('concluidos-retorno-count').textContent = concluidosRetorno.length;
   document.getElementById('dash-concluidos-retorno').innerHTML = concluidosRetorno.length ? concluidosRetorno.slice(0,10).map(renderConcluidoItem).join('') : `<div class="empty"><i class="fa-solid fa-clock-rotate-left"></i><p>Nenhum retorno concluído ainda</p></div>`;
   const solCountEl = document.getElementById('concluidos-solicitacao-count');
   const solListEl = document.getElementById('dash-concluidos-solicitacao');
@@ -9126,7 +9126,7 @@ function renderHistorico() {
     solCountEl.textContent = concluidosSolicitacao.length;
     solListEl.innerHTML = concluidosSolicitacao.length ? concluidosSolicitacao.slice(0,10).map(renderConcluidoItem).join('') : `<div class="empty"><i class="fa-solid fa-clipboard-check"></i><p>Nenhuma solicitação concluída ainda</p></div>`;
   }
-  document.getElementById('concluidos-orcamento-count').textContent = concluidosOrcamento.length;
+  if (document.getElementById('concluidos-orcamento-count')) document.getElementById('concluidos-orcamento-count').textContent = concluidosOrcamento.length;
   document.getElementById('dash-concluidos-orcamento').innerHTML = concluidosOrcamento.length ? concluidosOrcamento.slice(0,10).map(renderConcluidoItem).join('') : `<div class="empty"><i class="fa-solid fa-file-invoice-dollar"></i><p>Nenhum orçamento recorrente concluído ainda</p></div>`;
 }
 
@@ -9474,7 +9474,7 @@ function listaPropostasHistorico() {
       pecas: ct.numeroOrcamentoPecas || '',
       servico: ct.numeroOrcamentoServico || '',
       status: ct.statusProposta || 'aguardando_retorno',
-      statusHistorico: ct.alteracoesStatusProposta || []
+      observacaoAtualizacao: ct.observacaoAtualizacao || ct.alteracoesStatusProposta?.at(-1)?.obs || '', statusHistorico: ct.alteracoesStatusProposta || []
     };
   });
   const propostasAvulsas = concluidos
@@ -9496,6 +9496,7 @@ function listaPropostasHistorico() {
         pecas: cc.numeroOrcamentoPecas || '',
         servico: cc.numeroOrcamentoServico || '',
         status: cc.statusProposta || 'aguardando_retorno',
+        observacaoAtualizacao: cc.observacaoAtualizacao || cc.alteracoesStatusProposta?.at(-1)?.obs || '',
         statusHistorico: cc.alteracoesStatusProposta || []
       };
     });
@@ -9560,9 +9561,18 @@ function abrirAtualizarStatusProposta(ref) {
   if (!p) { notify('Proposta não encontrada.', '#7a1a1a'); return; }
   document.getElementById('status-proposta-ref').value = p.ref;
   document.getElementById('status-proposta-valor').value = p.status || 'aguardando_retorno';
-  document.getElementById('status-proposta-obs').value = '';
+  document.getElementById('status-proposta-obs').value = propostaSourceFromRef(p.ref)?.item.observacaoAtualizacao || p.statusHistorico?.at(-1)?.obs || '';
   document.getElementById('status-proposta-resumo').innerHTML = `<strong>${p.nome}</strong><div>${p.empresa || 'Sem empresa'}<br>Enviada em ${fmtDate(p.data)} • ${p.origem}<br>Status atual: ${statusPropostaLabel(p.status)}</div>`;
   openModal('modalStatusProposta');
+}
+
+function statusAdministrativoDaProposta(status, atual = 'ag_aprovacao') {
+  const mapa = { aguardando_aprovacao:'ag_aprovacao', aprovada:'aprovado', aprovado:'aprovado',
+    aguardando_faturamento:'ag_faturamento', faturado:'faturado', recusada:'reprovado',
+    reprovada:'reprovado', reprovado:'reprovado', aprovado_mes_seguinte:'aprov_mes_seguinte' };
+  // Uma confirmação comercial não deve regredir um pedido já faturado ou programado.
+  if (['aprovada','aprovado'].includes(status) && ['ag_faturamento','faturado','aprov_mes_seguinte'].includes(atual)) return atual;
+  return mapa[status] || atual || 'ag_aprovacao';
 }
 
 function aplicarStatusProposta(ref, novoStatus, obs='') {
@@ -9571,6 +9581,8 @@ function aplicarStatusProposta(ref, novoStatus, obs='') {
   const item = src.item;
   const anterior = item.statusProposta || 'aguardando_retorno';
   item.statusProposta = novoStatus;
+  item.observacaoAtualizacao = formatarTextoSistema(obs || '');
+  item.atualizadoEm = today();
   if (!item.alteracoesStatusProposta) item.alteracoesStatusProposta = [];
   item.alteracoesStatusProposta.push({ em: today(), de: anterior, para: novoStatus, obs: formatarTextoSistema(obs || '') });
 
@@ -12375,12 +12387,12 @@ body.theme-light .hist-event-icon{ background:rgba(37,99,199,.08); border-color:
 (function(){
   const STORAGE_KEY_CONTROLE = 'secta_controle_vendas';
   const statusPedidoOpcoes = [
-    ['ag_aprovacao', 'AG. APROVAÇÃO'],
+    ['ag_aprovacao', 'AGUARDANDO APROVAÇÃO'],
     ['aprovado', 'APROVADO'],
     ['reprovado', 'REPROVADO'],
-    ['ag_faturamento', 'AG FATURAMENTO'],
+    ['ag_faturamento', 'AGUARDANDO FATURAMENTO'],
     ['faturado', 'FATURADO'],
-    ['aprov_mes_seguinte', 'APROV. MÊS SEGUINTE']
+    ['aprov_mes_seguinte', 'APROVADO MÊS SEGUINTE']
   ];
   const tipoOrcamentoOpcoes = [
     ['pecas','Peças'],
@@ -12410,7 +12422,7 @@ body.theme-light .hist-event-icon{ background:rgba(37,99,199,.08); border-color:
     return new Date(y, m-1, 1).toLocaleDateString('pt-BR', {month:'long', year:'numeric'}).replace(/^./, c=>c.toLocaleUpperCase('pt-BR'));
   }
   function mesRef(data){ return (data || today()).slice(0,7); }
-  function statusPedidoLabel(status){ return Object.fromEntries(statusPedidoOpcoes)[status || 'ag_aprovacao'] || 'AG. APROVAÇÃO'; }
+  function statusPedidoLabel(status){ return Object.fromEntries(statusPedidoOpcoes)[status || 'ag_aprovacao'] || 'AGUARDANDO APROVAÇÃO'; }
   function tipoOrcamentoLabel(tipo){ return Object.fromEntries(tipoOrcamentoOpcoes)[tipo || 'pecas'] || 'Peças'; }
   window.statusPedidoLabel = statusPedidoLabel;
   window.tipoOrcamentoLabel = tipoOrcamentoLabel;
@@ -12432,7 +12444,7 @@ body.theme-light .hist-event-icon{ background:rgba(37,99,199,.08); border-color:
   }
 
   function statusPedidoOptionsHtml(selected='ag_aprovacao'){
-    return statusPedidoOpcoes.map(([v,l]) => `<option value="${v}" ${v===(selected||'ag_aprovacao')?'selected':''}>${l}</option>`).join('');
+    return statusPedidoOpcoes.map(([v,l]) => `<option value="${v}" ${v===selected?'selected':''}>${l}</option>`).join('');
   }
   function tipoOrcamentoOptionsHtml(selected='pecas'){
     return tipoOrcamentoOpcoes.map(([v,l]) => `<option value="${v}" ${v===(selected||'pecas')?'selected':''}>${l}</option>`).join('');
@@ -12828,7 +12840,12 @@ body.theme-light .hist-event-icon{ background:rgba(37,99,199,.08); border-color:
     window.aplicarStatusProposta = function(ref, novoStatus, obs=''){
       const ok = baseAplicarStatusPropostaControle(ref, novoStatus, obs);
       if (ok) {
-        arrControle().filter(r=>r.refProposta === ref).forEach(r => { r.statusComercial = novoStatus; r.atualizadoEm = today(); });
+        arrControle().filter(r=>!r.excluido && r.refProposta === ref).forEach(r => {
+          r.statusComercial = novoStatus;
+          r.statusPedido = statusAdministrativoDaProposta(novoStatus, r.statusPedido);
+          if (obs.trim()) r.observacao = formatarTextoSistema(obs);
+          r.atualizadoEm = today();
+        });
         save(); renderControleVendas();
       }
       return ok;
@@ -12966,9 +12983,9 @@ body.theme-light .hist-event-icon{ background:rgba(37,99,199,.08); border-color:
   }
   function statusPedidoLabelFinal(status){
     return {
-      ag_aprovacao:'AG. APROVAÇÃO', aprovado:'APROVADO', reprovado:'REPROVADO',
-      ag_faturamento:'AG FATURAMENTO', faturado:'FATURADO', aprov_mes_seguinte:'APROV. MÊS SEGUINTE'
-    }[status || 'ag_aprovacao'] || 'AG. APROVAÇÃO';
+      ag_aprovacao:'AGUARDANDO APROVAÇÃO', aprovado:'APROVADO', reprovado:'REPROVADO',
+      ag_faturamento:'AGUARDANDO FATURAMENTO', faturado:'FATURADO', aprov_mes_seguinte:'APROVADO MÊS SEGUINTE'
+    }[status || 'ag_aprovacao'] || 'AGUARDANDO APROVAÇÃO';
   }
   window.statusPedidoLabel = window.statusPedidoLabel || statusPedidoLabelFinal;
   window.tipoOrcamentoLabel = window.tipoOrcamentoLabel || tipoOrcamentoLabelFinal;
@@ -13014,10 +13031,10 @@ body.theme-light .hist-event-icon{ background:rgba(37,99,199,.08); border-color:
   }
   function statusPedidoOptionsFinal(selected='ag_aprovacao'){
     const ops = [
-      ['ag_aprovacao','AG. APROVAÇÃO'], ['aprovado','APROVADO'], ['reprovado','REPROVADO'],
-      ['ag_faturamento','AG FATURAMENTO'], ['faturado','FATURADO'], ['aprov_mes_seguinte','APROV. MÊS SEGUINTE']
+      ['ag_aprovacao','AGUARDANDO APROVAÇÃO'], ['aprovado','APROVADO'], ['reprovado','REPROVADO'],
+      ['ag_faturamento','AGUARDANDO FATURAMENTO'], ['faturado','FATURADO'], ['aprov_mes_seguinte','APROVADO MÊS SEGUINTE']
     ];
-    return ops.map(([v,l]) => `<option value="${v}" ${v===(selected||'ag_aprovacao')?'selected':''}>${l}</option>`).join('');
+    return ops.map(([v,l]) => `<option value="${v}" ${v===selected?'selected':''}>${l}</option>`).join('');
   }
   function montarLinhaControleFinal(tipo, numero=''){
     const icon = tipo === 'servico' ? 'fa-screwdriver-wrench' : 'fa-gears';
@@ -13134,7 +13151,7 @@ body.theme-light .hist-event-icon{ background:rgba(37,99,199,.08); border-color:
         email: c?.email || cc.emailAvulso || sol.email || '',
         tipoOrcamento: tipo,
         valor: Number(linha.valor || 0),
-        statusPedido: linha.statusPedido || 'ag_aprovacao',
+        statusPedido: statusAdministrativoDaProposta(ctx.statusComercial || cc.statusProposta, linha.statusPedido),
         statusComercial: ctx.statusComercial || cc.statusProposta || 'aguardando_retorno',
         observacao: formatarTextoFinal(linha.observacao || cc.obsConclusao || ''),
         resumo: formatarTextoFinal(linha.resumo || sol.descricao || cc.motivo || cc.produto || item.obs || ''),
@@ -13320,6 +13337,7 @@ body.theme-light .hist-event-icon{ background:rgba(37,99,199,.08); border-color:
         descricao: cc.obsConclusao || cc.motivo || cc.produto || '',
         canal: cc.canal || '', pecas: cc.numeroOrcamentoPecas || '', servico: cc.numeroOrcamentoServico || '',
         status: cc.statusProposta || 'aguardando_retorno',
+        observacaoAtualizacao: cc.observacaoAtualizacao || cc.alteracoesStatusProposta?.at(-1)?.obs || '',
         statusHistorico: cc.alteracoesStatusProposta || []
       });
     });
@@ -13333,7 +13351,7 @@ body.theme-light .hist-event-icon{ background:rgba(37,99,199,.08); border-color:
         id: ref, ref, rawId: ct.id, sourceTipo:'contato', data: ct.data || (typeof today==='function'?today():''), clienteId: ct.clienteId || null,
         nome: c?.nome || 'Cliente removido', empresa: c?.empresa || '', origem: ct.origemOrcamento ? 'Orçamento feito/enviado' : 'Contato registrado',
         descricao: ct.observacaoProposta || ct.descricao || '', canal: ct.canal || '', pecas: ct.numeroOrcamentoPecas || '', servico: ct.numeroOrcamentoServico || '',
-        status: ct.statusProposta || 'aguardando_retorno', statusHistorico: ct.alteracoesStatusProposta || []
+        status: ct.statusProposta || 'aguardando_retorno', observacaoAtualizacao: ct.observacaoAtualizacao || ct.alteracoesStatusProposta?.at(-1)?.obs || '', statusHistorico: ct.alteracoesStatusProposta || []
       });
     });
     return propostas.map(p => {
@@ -13383,14 +13401,18 @@ body.theme-light .hist-event-icon{ background:rgba(37,99,199,.08); border-color:
     const rows = p.controleVendas || [];
     const controleHtml = rows.length ? `<div class="proposta-kanban-cv">${rows.map(r => `<div class="proposta-kanban-cv-row">
       <div class="proposta-kanban-cv-top"><strong>${escFinal(r.numeroProposta || 'Sem nº')} • ${tipoOrcamentoLabelFinal(r.tipoOrcamento)}</strong><span class="cv-status-pill cv-status-${r.statusPedido || 'ag_aprovacao'}">${statusPedidoLabelFinal(r.statusPedido)}</span></div>
-      <div class="proposta-kanban-cv-top"><span>${moedaBRFinal(r.valor)}</span><span>${escFinal(r.contato || '')}</span></div>
+      <div class="proposta-valor"><small>Valor da proposta</small><strong>${moedaBRFinal(r.valor)}</strong></div>
+      ${r.contato ? `<div class="proposta-kanban-meta"><strong>Contato:</strong> ${escFinal(r.contato)}</div>` : ''}
+      ${r.resumo ? `<div class="proposta-itens"><strong>Itens / resumo</strong><div>${escFinal(r.resumo)}</div></div>` : ''}
+      ${r.observacao ? `<div class="proposta-observacao"><strong>Observações</strong><div>${escFinal(r.observacao)}</div></div>` : ''}
     </div>`).join('')}</div>` : `<div class="proposta-kanban-cv"><div class="proposta-kanban-cv-row"><div class="proposta-kanban-cv-top"><strong>Controle de vendas</strong><span class="cv-status-pill cv-status-ag_aprovacao">Pendente</span></div><div class="proposta-kanban-cv-top"><span>Sem linha administrativa</span><span></span></div></div></div>`;
     const nome = String(p.nome || 'Cliente não cadastrado').toLocaleUpperCase('pt-BR');
     return `<div class="proposta-kanban-card ${typeof propostaStatusClasse==='function'?propostaStatusClasse(status):''}" draggable="true" data-proposta-ref="${escFinal(p.ref)}" ondblclick="abrirAtualizarStatusProposta('${escFinal(p.ref)}')" ondragstart="dragPropostaKanban(event,'${escFinal(p.ref)}')" ondragend="dragEndPropostaKanban(event)" title="Duplo clique para atualizar o status">
       <div class="proposta-kanban-card-top"><div style="min-width:0;flex:1"><div class="proposta-kanban-title">${escFinal(nome)}</div>${p.empresa?`<div class="proposta-kanban-meta">${escFinal(p.empresa)}</div>`:''}</div><span class="proposta-kanban-status">${statusPropostaLabelFinal(status)}</span></div>
       <div class="proposta-kanban-meta"><strong>Enviada em:</strong> ${typeof fmtDate==='function'?fmtDate(p.data):escFinal(p.data)} • ${escFinal(p.origem || 'Proposta enviada')}</div>
       ${controleHtml}
-      ${p.descricao?`<div class="proposta-kanban-desc">${escFinal(p.descricao)}</div>`:''}
+      ${p.descricao?`<div class="proposta-kanban-desc"><strong>Descrição do envio</strong><div>${escFinal(p.descricao)}</div></div>`:''}
+      ${p.observacaoAtualizacao ? `<div class="proposta-observacao"><strong>Última atualização</strong><div>${escFinal(p.observacaoAtualizacao)}</div></div>` : ''}
       <div class="proposta-kanban-actions">
         <button class="btn btn-primary btn-sm" onclick="abrirAtualizarStatusProposta('${escFinal(p.ref)}'); event.stopPropagation();"><i class="fa-solid fa-sliders"></i> Status</button>
         ${p.clienteId?`<button class="btn btn-ghost btn-sm" onclick="registrarContatoFromProposta('${escFinal(p.ref)}'); event.stopPropagation();"><i class="fa-solid fa-phone"></i> Contato</button><button class="btn btn-warning btn-sm" onclick="agendarRetornoFromProposta('${escFinal(p.ref)}'); event.stopPropagation();"><i class="fa-regular fa-calendar-plus"></i> Retorno</button>`:''}
@@ -14282,7 +14304,7 @@ function renderCotacoesComprasPainel() {
   ];
   container.className = 'cotacoes-compras-kanban';
   container.innerHTML = colunas.map(coluna => {
-    const itens = ativas.filter(item => item.status === coluna.status);
+    const itens = ativas.filter(item => (item.status || 'enviado') === coluna.status);
     return `<section class="cotacoes-compras-coluna">
       <div class="cotacoes-compras-coluna-titulo"><span>${coluna.label}</span><span class="cotacoes-compras-contador">${itens.length}</span></div>
       <div class="cotacao-compras-lista">${itens.length ? itens.map(cardCotacaoCompras).join('') : '<div class="cotacao-coluna-vazia">Nenhum item nesta coluna.</div>'}</div>
@@ -14884,6 +14906,155 @@ body.theme-light .quick-action-card {
 @media (max-width:760px) {
   #view-dashboard .dashboard-grid-2 { grid-auto-rows:auto; }
   #view-dashboard .dashboard-grid-2 > .card { height:auto; min-height:0; }
+}
+</style>
+
+<style id="refinamentos-coerencia-visual-final">
+/* =========================================================
+   COERÊNCIA FINAL - AÇÕES, FILTROS, CARDS E MARCA
+   ========================================================= */
+:root {
+  --activity-main: #16b8b2;
+  --activity-deep: #116b6a;
+  --history-main: #667eea;
+  --history-deep: #353f83;
+  --filter-accent: #d99a4e;
+  --filter-surface: #3b291c;
+}
+body.theme-light {
+  --activity-main: #078f8a;
+  --activity-deep: #d7f3f0;
+  --history-main: #5268d5;
+  --history-deep: #e2e6ff;
+  --filter-accent: #a85f16;
+  --filter-surface: #f8e7d2;
+}
+
+/* Ações rápidas: cor viva, sólida e próxima das abas superiores */
+.quick-action-card {
+  --single-color:var(--side-settings);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--single-color) 93%,#fff 7%),color-mix(in srgb,var(--single-color) 82%,#000 18%)) !important;
+  border:1px solid color-mix(in srgb,var(--single-color) 72%,#fff 28%) !important;
+  color:#fff !important;
+  box-shadow:0 6px 15px color-mix(in srgb,var(--single-color) 24%,rgba(0,0,0,.30)),inset 0 1px rgba(255,255,255,.20) !important;
+}
+.quick-action-card.qa-cliente { --single-color:#079669; }
+.quick-action-card.qa-contato { --single-color:#2274c7; }
+.quick-action-card.qa-retorno { --single-color:#c9790c; }
+.quick-action-card.qa-recorrente { --single-color:#7048c5; }
+.quick-action-card.qa-cotacao { --single-color:#5058cf; }
+.quick-action-card .quick-action-icon {
+  color:#fff !important;
+  background:rgba(0,0,0,.14) !important;
+  border:1px solid rgba(255,255,255,.30) !important;
+  box-shadow:inset 0 1px rgba(255,255,255,.16) !important;
+  opacity:1 !important;
+}
+.quick-action-card .quick-action-icon i { color:#fff !important; opacity:1 !important; filter:none !important; }
+.quick-action-card strong { color:#fff !important; }
+.quick-action-card small { color:rgba(255,255,255,.82) !important; }
+.quick-action-card:hover { filter:brightness(1.12); transform:translateY(-2px); }
+body.theme-light .quick-action-card {
+  background:linear-gradient(180deg,color-mix(in srgb,var(--single-color) 90%,#fff 10%),color-mix(in srgb,var(--single-color) 83%,#000 17%)) !important;
+  color:#fff !important;
+}
+body.theme-light .quick-action-card .quick-action-icon,
+body.theme-light .quick-action-card .quick-action-icon i { color:#fff !important; opacity:1 !important; }
+
+/* Atividades: ciano operacional; Histórico: azul-violeta */
+#view-dashboard .card:has(#dash-proximos) {
+  --deck-color:var(--activity-main) !important;
+  --deck-surface:var(--activity-deep) !important;
+}
+#view-dashboard .card:has(#dash-historico) {
+  --deck-color:var(--history-main) !important;
+  --deck-surface:var(--history-deep) !important;
+}
+#view-dashboard .card:has(#dash-proximos) .card-header {
+  background:linear-gradient(100deg,color-mix(in srgb,var(--activity-main) 40%,var(--activity-deep)),color-mix(in srgb,var(--activity-deep) 88%,#fff 7%)) !important;
+}
+#view-dashboard .card:has(#dash-historico) .card-header {
+  background:linear-gradient(100deg,color-mix(in srgb,var(--history-main) 42%,var(--history-deep)),color-mix(in srgb,var(--history-deep) 88%,#fff 7%)) !important;
+}
+#view-dashboard .card:has(#dash-proximos) .card-title i { color:color-mix(in srgb,var(--activity-main) 68%,#fff 32%) !important; }
+#view-dashboard .card:has(#dash-historico) .card-title i { color:color-mix(in srgb,var(--history-main) 68%,#fff 32%) !important; }
+
+/* Ordenação e futuros filtros do card prioritário */
+#card-acoes-prioritarias .dashboard-order-control {
+  padding:5px 6px 5px 10px;
+  border:1px solid color-mix(in srgb,var(--filter-accent) 46%,var(--premium-line)) !important;
+  border-radius:10px;
+  background:linear-gradient(145deg,color-mix(in srgb,var(--filter-surface) 88%,#fff 6%),color-mix(in srgb,var(--filter-surface) 90%,#000 5%)) !important;
+  box-shadow:inset 0 1px rgba(255,255,255,.11),0 4px 12px rgba(0,0,0,.15);
+}
+#card-acoes-prioritarias .dashboard-order-control label {
+  color:color-mix(in srgb,var(--filter-accent) 70%,#fff 30%) !important;
+  letter-spacing:.75px;
+}
+#card-acoes-prioritarias .dashboard-order-control select,
+#card-acoes-prioritarias .dashboard-order-control input,
+#card-acoes-prioritarias .dashboard-order-control button {
+  min-height:34px;
+  color:var(--dash-card-text) !important;
+  background:color-mix(in srgb,var(--filter-surface) 78%,var(--theme-surface)) !important;
+  border:1px solid color-mix(in srgb,var(--filter-accent) 50%,var(--premium-line)) !important;
+  border-radius:8px !important;
+  box-shadow:inset 0 1px rgba(255,255,255,.08);
+}
+#card-acoes-prioritarias .dashboard-order-control select:hover,
+#card-acoes-prioritarias .dashboard-order-control input:hover { border-color:var(--filter-accent) !important; }
+#card-acoes-prioritarias .dashboard-order-control select:focus,
+#card-acoes-prioritarias .dashboard-order-control input:focus { box-shadow:0 0 0 3px color-mix(in srgb,var(--filter-accent) 22%,transparent) !important; }
+body.theme-light #card-acoes-prioritarias .dashboard-order-control label { color:var(--filter-accent) !important; }
+
+/* A mesma versão colorida da marca nos dois temas */
+.brand-logo-header .logo-darkmode,
+body.theme-light .brand-logo-header .logo-darkmode { display:none !important; }
+.brand-logo-header .logo-lightmode,
+body.theme-light .brand-logo-header .logo-lightmode {
+  display:block !important;
+  filter:drop-shadow(0 2px 6px rgba(0,0,0,.22));
+  opacity:1 !important;
+}
+body.theme-light .brand-logo-header .logo-lightmode { filter:drop-shadow(0 2px 5px rgba(30,64,175,.12)); }
+
+@media (max-width:760px) {
+  #card-acoes-prioritarias .dashboard-order-control { width:100%; justify-content:space-between; }
+  #card-acoes-prioritarias .dashboard-order-control select { flex:1 1 160px; min-width:0; }
+}
+</style>
+
+<style id="refinamentos-fluxos-cards">
+#solicitacoes-kanban [data-etapa="nova"] { --column-color:var(--theme-blue); }
+#solicitacoes-kanban [data-etapa="aguardando_info"] { --column-color:var(--theme-cyan); }
+#solicitacoes-kanban [data-etapa="aguardando_cotacao"] { --column-color:var(--theme-amber); }
+#solicitacoes-kanban [data-etapa="em_elaboracao"] { --column-color:var(--theme-purple); }
+#view-solicitacoes #solicitacoes-kanban .orcamento-kanban-col { background:linear-gradient(180deg,color-mix(in srgb,var(--column-color) 16%,var(--surface)),var(--surface)) !important; }
+#view-solicitacoes #solicitacoes-kanban .orcamento-kanban-head { background:color-mix(in srgb,var(--column-color) 14%,var(--surface)) !important; }
+#solicitacoes-kanban .orcamento-card-top { flex-wrap:wrap; }
+#solicitacoes-kanban .orcamento-card-top > div:first-child { flex-basis:100% !important; }
+#solicitacoes-kanban .orcamento-kanban-head { border-top:3px solid var(--column-color); min-height:80px; }
+#solicitacoes-kanban .orcamento-kanban-title i, #solicitacoes-kanban .empty i { color:var(--column-color) !important; }
+#solicitacoes-kanban .kanban-count-pill { color:var(--text); background:color-mix(in srgb,var(--column-color) 22%,var(--surface)); }
+.orcamento-card-title { font-size:17px !important; line-height:1.35; overflow-wrap:anywhere; }
+.solicitante-destaque { margin:8px 0; padding:7px 9px; border-radius:8px; background:var(--surface2); color:var(--text); font-size:13px; font-weight:600; }
+.solicitante-destaque strong { display:block; color:var(--text2); font-size:11px; }
+.proposta-kanban-cv-top { flex-wrap:wrap; gap:8px; align-items:flex-start; }
+.proposta-kanban-cv-top > strong { display:block; flex:1 1 120px; overflow-wrap:anywhere; }
+.cv-status-pill, .proposta-kanban-status, .badge { max-width:100%; white-space:normal; overflow-wrap:anywhere; }
+.proposta-valor, .proposta-itens, .proposta-observacao { margin-top:9px; padding:9px; border:1px solid var(--border); border-radius:8px; background:var(--surface2); overflow-wrap:anywhere; white-space:pre-wrap; }
+.proposta-valor small, .proposta-valor strong { display:block; }
+.proposta-valor strong { font-size:19px; color:var(--success); }
+.proposta-itens > strong, .proposta-observacao > strong, .proposta-kanban-desc > strong { display:block; font-size:11px; color:var(--text2); margin-bottom:5px; }
+.kanban-card, .orcamento-card, .proposta-kanban-card { min-width:0; overflow-wrap:anywhere; }
+.kanban-actions, .proposta-kanban-actions, .orcamento-card-mini-actions { display:flex; flex-wrap:wrap; gap:6px; max-width:100%; }
+.kanban-actions .btn, .proposta-kanban-actions .btn { flex:1 1 auto; min-width:0; max-width:100%; white-space:normal; padding:7px 9px; justify-content:center; }
+.kanban-card > div:has(> .btn) { flex-wrap:wrap !important; min-width:0; gap:6px; }
+.kanban-card .btn { max-width:100%; white-space:normal; }
+@media(max-width:760px) {
+ .cv-proposal-grid { grid-template-columns:minmax(0,1fr) !important; }
+ .cv-proposal-grid .form-group[style*="grid-column:span 2"] { grid-column:1 !important; }
+ .proposta-kanban-card-top { flex-wrap:wrap; }
 }
 </style>
 </body>
