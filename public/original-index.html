@@ -5706,6 +5706,7 @@ function applyTheme(theme, shouldSave = true) {
   appTheme = theme === 'light' ? 'light' : 'dark';
   if (appTheme === 'light') document.body.classList.add('theme-light');
   else document.body.classList.remove('theme-light');
+  document.documentElement.style.colorScheme = 'dark';
   if (shouldSave) save();
 }
 function toggleTheme() {
@@ -15056,6 +15057,319 @@ body.theme-light .brand-logo-header .logo-lightmode { filter:drop-shadow(0 2px 5
  .cv-proposal-grid .form-group[style*="grid-column:span 2"] { grid-column:1 !important; }
  .proposta-kanban-card-top { flex-wrap:wrap; }
 }
+</style>
+
+<style>
+  :root {
+    --bg: #080808;
+    --surface: #151515;
+    --surface-alt: #1f1f1f;
+    --surface-strong: #111111;
+    --border: rgba(255,255,255,0.12);
+    --border-soft: rgba(255,255,255,0.08);
+    --text: #ffffff;
+    --text-soft: #d1d5db;
+    --text-muted: #9ca3af;
+
+    --solicitacao: #2563EB;
+    --solicitacao-soft: #3B82F6;
+    --pendencia: #DC2626;
+    --pendencia-soft: #EF4444;
+    --contato: #16A34A;
+    --contato-soft: #22C55E;
+    --retorno: #EAB308;
+    --retorno-soft: #FACC15;
+    --cotacao: #9333EA;
+    --cotacao-soft: #A855F7;
+    --historico: #6B7280;
+    --historico-soft: #9CA3AF;
+    --config: #111111;
+    --config-soft: #1F2937;
+
+    --shadow-soft: 0 2px 6px rgba(0,0,0,0.15);
+  }
+
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background-image: none !important;
+    filter: none !important;
+  }
+
+  html, body, #root, .app, .app-shell {
+    background: var(--bg) !important;
+    color: var(--text) !important;
+    color-scheme: dark !important;
+  }
+
+  body, .topheader, .sidebar, .card, .modal, .drawer, .table-wrap, .content-section,
+  .quick-action-card, .nav-item, .search-bar, input, select, textarea,
+  .stat-card, .sol-summary-card, .daily-priority-card, .productivity-summary div,
+  .settings-stats div, .client-history-stat, .agenda-day, .calendar-day,
+  .kanban-card, .orcamento-kanban-col, .orcamento-card, .propostas-kanban-col,
+  .proposta-kanban-card, .jornada-step, .config-card, .mobile-card, .cliente-card,
+  .orcamento-kanban-wrap, .propostas-kanban-wrap {
+    background: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: var(--shadow-soft) !important;
+  }
+
+  .topheader {
+    background: #0d0d0d !important;
+    border-bottom: 1px solid var(--border) !important;
+  }
+
+  .topnav, .sidebar, .card-header, .table-filters, .filters-bar, .nav-section,
+  .orcamento-kanban-head, .propostas-kanban-head, th {
+    background: var(--surface-alt) !important;
+    border-color: var(--border) !important;
+  }
+
+  .topnav-item, .nav-item, .quick-action-card, .card-title, .stat-label, .stat-value,
+  .modal-title, .drawer-title, .table-title, .settings-title, p, small, label, td,
+  .empty p, .empty small, .form-help, .helper-text {
+    color: var(--text-soft) !important;
+  }
+
+  .topnav-item {
+    border: 1px solid transparent;
+    background: var(--surface-alt) !important;
+    color: var(--text-soft) !important;
+  }
+
+  .topnav-item.active {
+    border-color: currentColor !important;
+    color: #fff !important;
+  }
+
+  .topnav-item[data-view="dashboard"] { background: var(--solicitacao) !important; color: #fff !important; }
+  .topnav-item[data-view="solicitacoes"] { background: var(--solicitacao) !important; color: #fff !important; }
+  .topnav-item[data-view="clientes"] { background: var(--contato) !important; color: #fff !important; }
+  .topnav-item[data-view="historico"] { background: var(--historico) !important; color: #fff !important; }
+  .topnav-item[data-view="configuracoes"] { background: var(--config) !important; color: #fff !important; }
+  .topnav-item[data-view="agenda"] { background: var(--retorno) !important; color: #111 !important; }
+  .topnav-item[data-view="orcamentos"] { background: var(--cotacao) !important; color: #fff !important; }
+
+  .quick-main-action {
+    background: var(--solicitacao) !important;
+    color: #fff !important;
+    border: 1px solid var(--solicitacao-soft) !important;
+  }
+
+  .quick-action-card {
+    border-radius: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--border) !important;
+    color: #fff !important;
+  }
+
+  .quick-action-card.qa-cliente,
+  .quick-action-card.qa-contato {
+    background: var(--contato) !important;
+    border-color: var(--contato-soft) !important;
+  }
+
+  .quick-action-card.qa-retorno {
+    background: var(--retorno) !important;
+    color: #111 !important;
+    border-color: var(--retorno-soft) !important;
+  }
+
+  .quick-action-card.qa-cotacao,
+  .quick-action-card.qa-recorrente {
+    background: var(--cotacao) !important;
+    border-color: var(--cotacao-soft) !important;
+  }
+
+  .quick-action-card.qa-cliente .quick-action-icon,
+  .quick-action-card.qa-contato .quick-action-icon,
+  .quick-action-card.qa-cotacao .quick-action-icon,
+  .quick-action-card.qa-recorrente .quick-action-icon,
+  .quick-action-card.qa-retorno .quick-action-icon,
+  .quick-main-action .fa-plus {
+    background: rgba(255,255,255,0.12) !important;
+    border-color: rgba(255,255,255,0.18) !important;
+    color: #fff !important;
+  }
+
+  .quick-action-card strong,
+  .quick-action-card .quick-action-icon i,
+  .quick-main-action i,
+  .quick-main-action {
+    color: #fff !important;
+  }
+
+  .quick-action-card.qa-retorno strong,
+  .quick-action-card.qa-retorno .quick-action-icon i,
+  .quick-action-card.qa-retorno {
+    color: #111 !important;
+  }
+
+  .quick-action-card small {
+    display: none !important;
+  }
+
+  .dashboard-focus-hero,
+  .daily-hero,
+  .settings-hero,
+  .page-hero,
+  .view-hero {
+    background: var(--surface-alt) !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: none !important;
+  }
+
+  #card-acoes-prioritarias .card-header,
+  .card:has(#dash-proximos) .card-header,
+  .card:has(#dash-historico) .card-header {
+    border-left: 4px solid var(--pendencia) !important;
+    background: var(--surface-alt) !important;
+  }
+
+  #card-acoes-prioritarias {
+    border-left: 4px solid var(--pendencia) !important;
+  }
+
+  .card:has(#dash-proximos) {
+    border-left: 4px solid var(--pendencia) !important;
+  }
+
+  .card:has(#dash-historico) {
+    border-left: 4px solid var(--historico) !important;
+  }
+
+  .orcamento-kanban-col,
+  .propostas-kanban-col {
+    background: var(--surface) !important;
+    border-left: 4px solid var(--solicitacao) !important;
+    border-color: var(--border) !important;
+  }
+
+  .orcamento-kanban-col:nth-child(2) { border-left-color: var(--retorno) !important; }
+  .orcamento-kanban-col:nth-child(3) { border-left-color: var(--contato) !important; }
+  .orcamento-kanban-col:nth-child(4) { border-left-color: var(--cotacao) !important; }
+
+  .orcamento-card,
+  .proposta-kanban-card,
+  .kanban-card {
+    background: var(--surface-alt) !important;
+    border-left: 4px solid var(--solicitacao) !important;
+    border-color: var(--border) !important;
+    box-shadow: none !important;
+  }
+
+  .orcamento-card.warning,
+  .kanban-card.warning,
+  .proposta-kanban-card.warning,
+  .badge-warning {
+    border-left-color: var(--retorno) !important;
+  }
+
+  .orcamento-card.success,
+  .kanban-card.success,
+  .proposta-kanban-card.success,
+  .badge-success {
+    border-left-color: var(--contato) !important;
+  }
+
+  .orcamento-card.danger,
+  .kanban-card.danger,
+  .proposta-kanban-card.danger,
+  .badge-danger {
+    border-left-color: var(--pendencia) !important;
+  }
+
+  .orcamento-card.purple,
+  .kanban-card.purple,
+  .proposta-kanban-card.purple,
+  .badge-purple {
+    border-left-color: var(--cotacao) !important;
+  }
+
+  .badge, .seg-tag, .kanban-count-pill, .proposta-kanban-status, .status-badge, .tag {
+    background: var(--surface-strong) !important;
+    color: #fff !important;
+    border: 1px solid var(--border) !important;
+  }
+
+  .btn-primary {
+    background: var(--solicitacao) !important;
+    color: #fff !important;
+    border: 1px solid var(--solicitacao-soft) !important;
+  }
+
+  .btn-ghost {
+    background: var(--surface-alt) !important;
+    color: var(--text-soft) !important;
+    border: 1px solid var(--border) !important;
+  }
+
+  .btn-success {
+    background: var(--contato) !important;
+    color: #fff !important;
+    border-color: var(--contato-soft) !important;
+  }
+
+  .btn-warning {
+    background: var(--retorno) !important;
+    color: #111 !important;
+    border-color: var(--retorno-soft) !important;
+  }
+
+  .btn-danger {
+    background: var(--pendencia) !important;
+    color: #fff !important;
+    border-color: var(--pendencia-soft) !important;
+  }
+
+  .btn-primary:hover, .btn-ghost:hover, .btn-success:hover, .btn-warning:hover, .btn-danger:hover {
+    opacity: 0.95;
+    filter: brightness(1.05);
+  }
+
+  .theme-toggle-wrap, .theme-switch, .theme-switch-knob, .fa-sun, .fa-moon {
+    display: none !important;
+  }
+
+  .topnav-item i,
+  .nav-item i,
+  .card-title i,
+  .quick-action-card .quick-action-icon i,
+  .btn i {
+    color: inherit !important;
+  }
+
+  .header-alert-btn, .header-alert-dropdown, .notificacoes-internas-card {
+    background: var(--surface) !important;
+    border-color: var(--border) !important;
+  }
+
+  .dashboard-order-control {
+    background: var(--surface-alt) !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: none !important;
+  }
+
+  .brand-logo-header, .logo-h, .logo-mark, .logo-text, .brand-logo-header img {
+    display: none !important;
+  }
+
+  .topnav-item[data-view="agenda"],
+  .topnav-item[data-view="orcamentos"],
+  .theme-toggle-wrap,
+  .theme-switch,
+  .theme-switch-knob,
+  .qa-retorno,
+  .qa-recorrente,
+  .brand-logo-header,
+  .logo-h,
+  .logo-mark,
+  .logo-text,
+  .brand-logo-header img {
+    display: none !important;
+  }
 </style>
 </body>
 </html>
