@@ -7721,8 +7721,7 @@ function criarAcoesDoDia() {
         classe: s.prazo < hoje ? 'atrasado' : s.prazo === hoje ? 'hoje' : 'urgente',
         score: (s.prazo < hoje ? 0 : s.prioridade === 'urgente' ? 1 : 2),
         htmlAcoes: '',
-        ondblclick: `irParaSolicitacaoEditar(${s.id})`,
-        dica: 'Clique duas vezes para abrir e editar a solicitação.'
+        ondblclick: `irParaSolicitacaoEditar(${s.id})`
       });
     }
   });
@@ -7763,13 +7762,12 @@ function renderAcoesDoDia() {
   const wrap = document.getElementById('dash-acoes-prioritarias');
   if (wrap) {
     wrap.innerHTML = lista.length ? lista.map(a => `
-      <div class="daily-action-item ${a.classe} ${a.tipo==='solicitacao'?'daily-action-solicitacao':''}" ${a.ondblclick ? `ondblclick="${a.ondblclick}" title="${a.dica||'Clique duas vezes para abrir'}"` : ''}>
+      <div class="daily-action-item ${a.classe} ${a.tipo==='solicitacao'?'daily-action-solicitacao':''}" ${a.ondblclick ? `ondblclick="${a.ondblclick}"` : ''}>
         <div class="daily-action-icon"><i class="fa-solid ${a.tipo==='solicitacao'?'fa-clipboard-list':a.tipo==='orcamento'?'fa-file-invoice-dollar':'fa-phone'}" style="color:${a.classe==='atrasado'?'var(--danger)':a.classe==='hoje'?'var(--warning)':'var(--accent)'}"></i></div>
         <div class="daily-action-content">
           <div class="daily-action-title">${a.titulo} — ${a.nome}</div>
           <div class="daily-action-meta">Prazo: ${fmtDate(a.data)}${a.meta ? ' • ' + a.meta : ''}</div>
           <div class="daily-action-meta">${(a.detalhe||'').length>140 ? a.detalhe.slice(0,140)+'…' : a.detalhe}</div>
-          ${a.dica ? `<div class="daily-action-hint"><i class="fa-solid fa-computer-mouse"></i> ${a.dica}</div>` : ''}
         </div>
         ${a.htmlAcoes ? `<div class="action-row">${a.htmlAcoes}</div>` : ''}
       </div>`).join('') : `<div class="empty"><i class="fa-solid fa-circle-check"></i><p>Nenhuma pendência prioritária para hoje.</p></div>`;
@@ -15696,14 +15694,30 @@ body.theme-light .brand-logo-header .logo-lightmode { filter:drop-shadow(0 2px 5
   .sidebar .qa-retorno .quick-action-icon { border-color: #C99A00 !important; }
   .sidebar .quick-action-card .quick-action-icon i { color: inherit !important; }
 
+  html body .sidebar .quick-action-grid .quick-action-card.qa-solicitacao .quick-action-icon {
+    background: #7F1D1D !important;
+    border-color: #FCA5A5 !important;
+    color: #fff !important;
+  }
+
+  html body .sidebar .quick-action-grid .quick-action-card.qa-cliente .quick-action-icon,
+  html body .sidebar .quick-action-grid .quick-action-card.qa-contato .quick-action-icon {
+    background: #DBEAFE !important;
+    border-color: #BFDBFE !important;
+    color: #1D4ED8 !important;
+  }
+
+  html body .sidebar .quick-action-grid .quick-action-card.qa-cliente .quick-action-icon i,
+  html body .sidebar .quick-action-grid .quick-action-card.qa-contato .quick-action-icon i {
+    color: #1D4ED8 !important;
+  }
+
   .sidebar-top,
   .floating-config-btn { display: none !important; }
 
   #view-dashboard #card-acoes-prioritarias,
   #view-dashboard #card-para-hoje,
-  #view-dashboard #card-solicitacoes-pendentes-dashboard,
   #view-dashboard #cotacoes-compras-painel,
-  #view-dashboard .card:has(#dash-proximos),
   #view-dashboard .card:has(#dash-orcamentos-semana),
   #view-dashboard .card:has(#dash-historico) {
     --dashboard-color: var(--historico);
@@ -15715,9 +15729,7 @@ body.theme-light .brand-logo-header .logo-lightmode { filter:drop-shadow(0 2px 5
   }
 
   #view-dashboard #card-acoes-prioritarias,
-  #view-dashboard #card-para-hoje,
-  #view-dashboard #card-solicitacoes-pendentes-dashboard,
-  #view-dashboard .card:has(#dash-proximos) { --dashboard-color: #DC2626; }
+  #view-dashboard #card-para-hoje { --dashboard-color: #DC2626; }
 
   #view-dashboard #cotacoes-compras-painel,
   #view-dashboard .card:has(#dash-orcamentos-semana) { --dashboard-color: #9333EA; }
@@ -15727,17 +15739,66 @@ body.theme-light .brand-logo-header .logo-lightmode { filter:drop-shadow(0 2px 5
 
   #view-dashboard #card-acoes-prioritarias::after,
   #view-dashboard #card-para-hoje::after,
-  #view-dashboard #card-solicitacoes-pendentes-dashboard::after,
   #view-dashboard #cotacoes-compras-painel::after,
-  #view-dashboard .card:has(#dash-proximos)::after,
   #view-dashboard .card:has(#dash-orcamentos-semana)::after,
   #view-dashboard .card:has(#dash-historico)::after { content: none !important; }
 
+  #view-dashboard #card-solicitacoes-pendentes-dashboard,
+  #view-dashboard .card:has(#dash-proximos) {
+    --dashboard-color: #1C6B66;
+    background: #0B282C !important;
+    background-image: none !important;
+    border: 1px solid #1C6B66 !important;
+    border-left: 1px solid #1C6B66 !important;
+    box-shadow: none !important;
+  }
+
+  #view-dashboard #card-solicitacoes-pendentes-dashboard {
+    --dashboard-color: #DC2626;
+    background: #29171B !important;
+    border: 1px solid #78343D !important;
+    border-left: 1px solid #78343D !important;
+  }
+
+  #view-dashboard #card-solicitacoes-pendentes-dashboard .card-header,
+  #view-dashboard .card:has(#dash-proximos) .card-header {
+    background: #123235 !important;
+    background-image: none !important;
+    border-left: 1px solid #1C6B66 !important;
+    border-bottom: 1px solid #1C6B66 !important;
+    box-shadow: none !important;
+  }
+
+  #view-dashboard #card-solicitacoes-pendentes-dashboard .card-header {
+    background: #3A2025 !important;
+    border-bottom-color: #78343D !important;
+    border-left: 1px solid #78343D !important;
+  }
+
+  #view-dashboard #card-solicitacoes-pendentes-dashboard .card-title,
+  #view-dashboard .card:has(#dash-proximos) .card-title { color: #fff !important; }
+
+  #view-dashboard #card-solicitacoes-pendentes-dashboard .card-title i,
+  #view-dashboard .card:has(#dash-proximos) .card-title i { color: #63C8BE !important; }
+
+  #view-dashboard #card-solicitacoes-pendentes-dashboard .kanban-card,
+  #view-dashboard .card:has(#dash-proximos) .kanban-card {
+    background: #153137 !important;
+    background-image: none !important;
+    border: 1px solid #245B5A !important;
+    box-shadow: none !important;
+  }
+
+  #view-dashboard #card-solicitacoes-pendentes-dashboard .kanban-card {
+    background: #321D22 !important;
+    border-color: #6B3038 !important;
+  }
+
+  #view-dashboard #card-solicitacoes-pendentes-dashboard .card-title i { color: #F87171 !important; }
+
   #view-dashboard #card-acoes-prioritarias .card-header,
   #view-dashboard #card-para-hoje .card-header,
-  #view-dashboard #card-solicitacoes-pendentes-dashboard .card-header,
   #view-dashboard #cotacoes-compras-painel .card-header,
-  #view-dashboard .card:has(#dash-proximos) .card-header,
   #view-dashboard .card:has(#dash-orcamentos-semana) .card-header,
   #view-dashboard .card:has(#dash-historico) .card-header {
     background: color-mix(in srgb, var(--dashboard-color) 26%, #151515) !important;
@@ -15748,25 +15809,19 @@ body.theme-light .brand-logo-header .logo-lightmode { filter:drop-shadow(0 2px 5
 
   #view-dashboard #card-acoes-prioritarias .card-title,
   #view-dashboard #card-para-hoje .card-title,
-  #view-dashboard #card-solicitacoes-pendentes-dashboard .card-title,
   #view-dashboard #cotacoes-compras-painel .card-title,
-  #view-dashboard .card:has(#dash-proximos) .card-title,
   #view-dashboard .card:has(#dash-orcamentos-semana) .card-title,
   #view-dashboard .card:has(#dash-historico) .card-title { color: #fff !important; }
 
   #view-dashboard #card-acoes-prioritarias .card-title i,
   #view-dashboard #card-para-hoje .card-title i,
-  #view-dashboard #card-solicitacoes-pendentes-dashboard .card-title i,
   #view-dashboard #cotacoes-compras-painel .card-title i,
-  #view-dashboard .card:has(#dash-proximos) .card-title i,
   #view-dashboard .card:has(#dash-orcamentos-semana) .card-title i,
   #view-dashboard .card:has(#dash-historico) .card-title i { color: var(--dashboard-color) !important; }
 
   #view-dashboard #card-acoes-prioritarias .kanban-card,
   #view-dashboard #card-para-hoje .kanban-card,
-  #view-dashboard #card-solicitacoes-pendentes-dashboard .kanban-card,
   #view-dashboard #cotacoes-compras-painel .cotacao-compras-card,
-  #view-dashboard .card:has(#dash-proximos) .kanban-card,
   #view-dashboard .card:has(#dash-orcamentos-semana) .kanban-card,
   #view-dashboard .card:has(#dash-historico) .kanban-card {
     background: color-mix(in srgb, var(--dashboard-color) 20%, #1f1f1f) !important;
