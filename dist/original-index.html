@@ -3865,14 +3865,13 @@ body.theme-light .cv-hero { background:linear-gradient(135deg, rgba(10,140,92,.1
 <div class="body-row">
 <!-- SIDEBAR -->
 <aside class="sidebar">
-  <div class="sidebar-top">
-    <button class="btn btn-primary quick-main-action" onclick="openModal('modalSolicitacao')" title="Registrar uma nova solicitação de orçamento">
-      <i class="fa-solid fa-plus"></i> Nova Solicitação
-    </button>
-  </div>
   <nav class="nav quick-action-grid">
     <div class="nav-section">Ações Rápidas</div>
-<button class="quick-action-card qa-cliente" onclick="openModal('modalCliente')" type="button">
+    <button class="quick-action-card qa-solicitacao" onclick="openModal('modalSolicitacao')" title="Registrar uma nova solicitação de orçamento" type="button">
+      <span class="quick-action-icon"><i class="fa-solid fa-plus"></i></span>
+      <span><strong>Nova Solicitação</strong></span>
+    </button>
+    <button class="quick-action-card qa-cliente" onclick="openModal('modalCliente')" type="button">
       <span class="quick-action-icon"><i class="fa-solid fa-user-plus"></i></span>
       <span><strong>Cliente</strong><small>Cadastrar novo</small></span>
     </button>
@@ -3891,6 +3890,10 @@ body.theme-light .cv-hero { background:linear-gradient(135deg, rgba(10,140,92,.1
     <button class="quick-action-card qa-cotacao" onclick="abrirModalCotacaoCompras()" type="button">
       <span class="quick-action-icon"><i class="fa-solid fa-cart-shopping"></i></span>
       <span><strong>Cotação</strong><small>Itens para compras</small></span>
+    </button>
+    <button class="quick-action-card qa-config" onclick="showView('configuracoes')" title="Configurações, backup e exportações" type="button">
+      <span class="quick-action-icon"><i class="fa-solid fa-gear"></i></span>
+      <span><strong>Configurações</strong></span>
     </button>
   </nav>
 </aside>
@@ -4018,7 +4021,7 @@ body.theme-light .cv-hero { background:linear-gradient(135deg, rgba(10,140,92,.1
     </div>
 
     <div class="dashboard-grid-1">
-      <div class="card" id="card-solicitacoes-pendentes-dashboard" style="margin-bottom:20px;display:none">
+      <div class="card" id="card-solicitacoes-pendentes-dashboard" style="margin-bottom:20px">
         <div class="card-header">
           <div class="card-title"><i class="fa-solid fa-clipboard-list" style="color:var(--warning)"></i> Solicitações de Orçamento Pendentes</div>
           <button class="btn btn-ghost btn-sm" onclick="showView('solicitacoes')">Ver Tudo</button>
@@ -9754,6 +9757,7 @@ criarAcoesDoDia = function() {
       <div class="orcamento-kanban-col" data-etapa="${col.key}">
         <div class="orcamento-kanban-head">
           <div class="orcamento-kanban-title"><i class="fa-solid ${col.icon}" style="color:${col.key==='nova'?'var(--warning)':col.key==='aguardando_info'?'var(--accent)':col.key==='aguardando_cotacao'?'var(--purple)':'var(--cyan)'}"></i> ${col.title}</div>
+          <span class="kanban-count-pill">${col.list.length}</span>
         </div>
         <div class="orcamento-kanban-body" ondragover="allowDropSolicitacaoKanban(event)" ondragleave="leaveDropSolicitacaoKanban(event)" ondrop="dropSolicitacaoKanban(event,'${col.key}')">
           ${col.list.length ? col.list.map(sol => cardKanbanSolicitacao(sol, col.cls)).join('') : `<div class="empty" style="padding:24px 10px"><i class="fa-solid ${col.icon}"></i><p>Nenhum item nesta etapa.</p></div>`}
@@ -9797,6 +9801,7 @@ criarAcoesDoDia = function() {
         <div class="propostas-kanban-head">
           <div class="propostas-kanban-title"><i class="fa-solid ${col.icon}" style="color:${col.key==='sem_resposta'?'var(--danger)':col.key==='cliente_pediu_ajuste'?'var(--warning)':'var(--accent)'}"></i> ${col.title}</div>
           <div class="propostas-kanban-subtitle">${col.help}</div>
+          <span class="kanban-count-pill">${itens.length}</span>
         </div>
         <div class="propostas-kanban-body" ondragover="allowDropPropostaKanban(event)" ondragleave="leaveDropPropostaKanban(event)" ondrop="dropPropostaKanban(event,'${col.key}')">
           ${itens.length ? itens.map(renderPropostaKanbanCard).join('') : `<div class="proposta-kanban-empty"><i class="fa-solid ${col.icon}"></i>Nenhuma proposta nesta etapa.</div>`}
@@ -11018,10 +11023,6 @@ body:not(.theme-light) .btn-ghost {
   else initAjustesComerciais();
 })();
 </script>
-
-<button class="floating-config-btn" type="button" onclick="showView('configuracoes')" title="Configurações, backup e exportações">
-  <i class="fa-solid fa-gear"></i><span>Configurações</span>
-</button>
 
 <script id="pacote-final-producao-agenda-dinamica">
 (function(){
@@ -15071,12 +15072,12 @@ body.theme-light .brand-logo-header .logo-lightmode { filter:drop-shadow(0 2px 5
     --text-soft: #d1d5db;
     --text-muted: #9ca3af;
 
-    --solicitacao: #2563EB;
-    --solicitacao-soft: #3B82F6;
+    --solicitacao: #DC2626;
+    --solicitacao-soft: #EF4444;
     --pendencia: #DC2626;
     --pendencia-soft: #EF4444;
-    --contato: #16A34A;
-    --contato-soft: #22C55E;
+    --contato: #2563EB;
+    --contato-soft: #3B82F6;
     --retorno: #EAB308;
     --retorno-soft: #FACC15;
     --cotacao: #9333EA;
@@ -15554,6 +15555,435 @@ body.theme-light .brand-logo-header .logo-lightmode { filter:drop-shadow(0 2px 5
   #view-solicitacoes .btn-warning { background: var(--retorno) !important; }
   #view-solicitacoes .btn-danger { background: var(--pendencia) !important; }
   #view-solicitacoes .btn-ghost { background: var(--surface-alt) !important; }
+
+  :root {
+    --tab-dashboard: #374151;
+    --tab-solicitacoes: #DC2626;
+    --tab-clientes: #2563EB;
+    --tab-agenda: #EAB308;
+    --tab-orcamentos: #9333EA;
+    --tab-vendas: #16A34A;
+    --tab-historico: #6B7280;
+    --tab-config: #111111;
+  }
+
+  .topnav-item,
+  .topnav-item:hover,
+  .topnav-item.active,
+  body.theme-light .topnav-item,
+  body.theme-light .topnav-item.active {
+    --tab-ink: #fff;
+    min-height: 36px !important;
+    padding: 8px 12px !important;
+    border: 1px solid color-mix(in srgb, var(--tab-color) 68%, #fff 32%) !important;
+    border-radius: 8px !important;
+    background: var(--tab-color) !important;
+    background-image: none !important;
+    color: var(--tab-ink) !important;
+    opacity: 1 !important;
+    box-shadow: none !important;
+    filter: none !important;
+    transform: none !important;
+    transition: background-color .14s ease, border-color .14s ease !important;
+  }
+
+  .topnav-item[data-view="dashboard"] { --tab-color: var(--tab-dashboard) !important; }
+  .topnav-item[data-view="solicitacoes"] { --tab-color: var(--tab-solicitacoes) !important; }
+  .topnav-item[data-view="clientes"] { --tab-color: var(--tab-clientes) !important; }
+  .topnav-item[data-view="agenda"] { --tab-color: var(--tab-agenda) !important; --tab-ink: #111 !important; }
+  .topnav-item[data-view="orcamentos"] { --tab-color: var(--tab-orcamentos) !important; }
+  .topnav-item[data-view="controle-vendas"] { --tab-color: var(--tab-vendas) !important; }
+  .topnav-item[data-view="historico"] { --tab-color: var(--tab-historico) !important; }
+  .topnav-item[data-view="configuracoes"] { --tab-color: var(--tab-config) !important; }
+
+  html body .topnav-item[data-view="dashboard"] { background: #374151 !important; color: #fff !important; }
+  html body .topnav-item[data-view="solicitacoes"] { background: #DC2626 !important; color: #fff !important; }
+  html body .topnav-item[data-view="clientes"] { background: #2563EB !important; color: #fff !important; }
+  html body .topnav-item[data-view="agenda"] { background: #EAB308 !important; color: #111 !important; }
+  html body .topnav-item[data-view="orcamentos"] { background: #9333EA !important; color: #fff !important; }
+  html body .topnav-item[data-view="controle-vendas"] { background: #16A34A !important; color: #fff !important; }
+  html body .topnav-item[data-view="historico"] { background: #6B7280 !important; color: #fff !important; }
+  html body .topnav-item[data-view="configuracoes"] { background: #111 !important; color: #fff !important; }
+
+  html body .topnav-item.active[data-view] {
+    background: color-mix(in srgb, var(--tab-color) 28%, #111 72%) !important;
+    border-color: var(--tab-color) !important;
+  }
+
+  html body .topnav-item[data-view]:hover {
+    background: color-mix(in srgb, var(--tab-color) 84%, #fff 16%) !important;
+  }
+
+  .topnav-item:hover,
+  body.theme-light .topnav-item:hover {
+    background: color-mix(in srgb, var(--tab-color) 84%, #fff 16%) !important;
+  }
+
+  .topnav-item.active,
+  body.theme-light .topnav-item.active {
+    background: color-mix(in srgb, var(--tab-color) 28%, #111 72%) !important;
+    border-color: var(--tab-color) !important;
+  }
+
+  .topnav-item[data-view="agenda"]:hover,
+  .topnav-item[data-view="agenda"].active { color: #111 !important; }
+
+  .topnav-item i { color: inherit !important; }
+
+  .sidebar .quick-action-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+    padding: 12px 10px !important;
+  }
+
+  .sidebar .quick-action-grid .quick-action-card {
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+    min-height: 46px !important;
+    height: auto !important;
+    padding: 7px 10px !important;
+    gap: 10px !important;
+    border: 1px solid var(--action-color) !important;
+    border-radius: 8px !important;
+    background: var(--action-color) !important;
+    background-image: none !important;
+    color: var(--action-ink, #fff) !important;
+    opacity: 1 !important;
+    box-shadow: none !important;
+    filter: none !important;
+    transform: none !important;
+    transition: background-color .14s ease, border-color .14s ease !important;
+  }
+
+  .sidebar .qa-solicitacao { --action-color: #DC2626; }
+  .sidebar .qa-cliente,
+  .sidebar .qa-contato { --action-color: #2563EB; }
+  .sidebar .qa-retorno { --action-color: #EAB308; --action-ink: #111; display: flex !important; }
+  .sidebar .qa-cotacao { --action-color: #9333EA; }
+  .sidebar .qa-config { --action-color: #111; border-color: #4B5563 !important; }
+
+  html body .sidebar .quick-action-grid .quick-action-card.qa-solicitacao { background: #DC2626 !important; }
+  html body .sidebar .quick-action-grid .quick-action-card.qa-cliente,
+  html body .sidebar .quick-action-grid .quick-action-card.qa-contato { background: #2563EB !important; }
+  html body .sidebar .quick-action-grid .quick-action-card.qa-retorno { background: #EAB308 !important; color: #111 !important; }
+  html body .sidebar .quick-action-grid .quick-action-card.qa-cotacao { background: #9333EA !important; }
+  html body .sidebar .quick-action-grid .quick-action-card.qa-config { background: #111 !important; }
+  html body .sidebar .quick-action-grid .quick-action-card.qa-recorrente { display: none !important; }
+
+  .sidebar .quick-action-card:hover {
+    background: color-mix(in srgb, var(--action-color) 84%, #fff 16%) !important;
+    border-color: color-mix(in srgb, var(--action-color) 68%, #fff 32%) !important;
+  }
+
+  .sidebar .quick-action-card > span:not(.quick-action-icon) { display: block !important; }
+  .sidebar .quick-action-card strong { color: var(--action-ink, #fff) !important; }
+  .sidebar .quick-action-card small { display: none !important; }
+  .sidebar .quick-action-card .quick-action-icon {
+    width: 32px !important;
+    height: 32px !important;
+    margin: 0 !important;
+    border: 1px solid var(--action-color) !important;
+    border-radius: 7px !important;
+    background: var(--action-color) !important;
+    background-image: none !important;
+    color: var(--action-ink, #fff) !important;
+    box-shadow: none !important;
+  }
+
+  .sidebar .qa-retorno .quick-action-icon { border-color: #C99A00 !important; }
+  .sidebar .quick-action-card .quick-action-icon i { color: inherit !important; }
+
+  .sidebar-top,
+  .floating-config-btn { display: none !important; }
+
+  #view-dashboard #card-acoes-prioritarias,
+  #view-dashboard #card-para-hoje,
+  #view-dashboard #card-solicitacoes-pendentes-dashboard,
+  #view-dashboard #cotacoes-compras-painel,
+  #view-dashboard .card:has(#dash-proximos),
+  #view-dashboard .card:has(#dash-orcamentos-semana),
+  #view-dashboard .card:has(#dash-historico) {
+    --dashboard-color: var(--historico);
+    background: color-mix(in srgb, var(--dashboard-color) 16%, #151515) !important;
+    background-image: none !important;
+    border: 1px solid color-mix(in srgb, var(--dashboard-color) 54%, #383838) !important;
+    border-top: 3px solid var(--dashboard-color) !important;
+    box-shadow: none !important;
+  }
+
+  #view-dashboard #card-acoes-prioritarias,
+  #view-dashboard #card-para-hoje,
+  #view-dashboard #card-solicitacoes-pendentes-dashboard,
+  #view-dashboard .card:has(#dash-proximos) { --dashboard-color: #DC2626; }
+
+  #view-dashboard #cotacoes-compras-painel,
+  #view-dashboard .card:has(#dash-orcamentos-semana) { --dashboard-color: #9333EA; }
+
+  #view-dashboard .card:has(#dash-historico) { --dashboard-color: #6B7280; }
+  #view-dashboard .stats .stat-card:nth-child(2) { --dashboard-color: #2563EB; }
+
+  #view-dashboard #card-acoes-prioritarias::after,
+  #view-dashboard #card-para-hoje::after,
+  #view-dashboard #card-solicitacoes-pendentes-dashboard::after,
+  #view-dashboard #cotacoes-compras-painel::after,
+  #view-dashboard .card:has(#dash-proximos)::after,
+  #view-dashboard .card:has(#dash-orcamentos-semana)::after,
+  #view-dashboard .card:has(#dash-historico)::after { content: none !important; }
+
+  #view-dashboard #card-acoes-prioritarias .card-header,
+  #view-dashboard #card-para-hoje .card-header,
+  #view-dashboard #card-solicitacoes-pendentes-dashboard .card-header,
+  #view-dashboard #cotacoes-compras-painel .card-header,
+  #view-dashboard .card:has(#dash-proximos) .card-header,
+  #view-dashboard .card:has(#dash-orcamentos-semana) .card-header,
+  #view-dashboard .card:has(#dash-historico) .card-header {
+    background: color-mix(in srgb, var(--dashboard-color) 26%, #151515) !important;
+    background-image: none !important;
+    border-bottom: 1px solid color-mix(in srgb, var(--dashboard-color) 54%, #383838) !important;
+    box-shadow: none !important;
+  }
+
+  #view-dashboard #card-acoes-prioritarias .card-title,
+  #view-dashboard #card-para-hoje .card-title,
+  #view-dashboard #card-solicitacoes-pendentes-dashboard .card-title,
+  #view-dashboard #cotacoes-compras-painel .card-title,
+  #view-dashboard .card:has(#dash-proximos) .card-title,
+  #view-dashboard .card:has(#dash-orcamentos-semana) .card-title,
+  #view-dashboard .card:has(#dash-historico) .card-title { color: #fff !important; }
+
+  #view-dashboard #card-acoes-prioritarias .card-title i,
+  #view-dashboard #card-para-hoje .card-title i,
+  #view-dashboard #card-solicitacoes-pendentes-dashboard .card-title i,
+  #view-dashboard #cotacoes-compras-painel .card-title i,
+  #view-dashboard .card:has(#dash-proximos) .card-title i,
+  #view-dashboard .card:has(#dash-orcamentos-semana) .card-title i,
+  #view-dashboard .card:has(#dash-historico) .card-title i { color: var(--dashboard-color) !important; }
+
+  #view-dashboard #card-acoes-prioritarias .kanban-card,
+  #view-dashboard #card-para-hoje .kanban-card,
+  #view-dashboard #card-solicitacoes-pendentes-dashboard .kanban-card,
+  #view-dashboard #cotacoes-compras-painel .cotacao-compras-card,
+  #view-dashboard .card:has(#dash-proximos) .kanban-card,
+  #view-dashboard .card:has(#dash-orcamentos-semana) .kanban-card,
+  #view-dashboard .card:has(#dash-historico) .kanban-card {
+    background: color-mix(in srgb, var(--dashboard-color) 20%, #1f1f1f) !important;
+    background-image: none !important;
+    border: 1px solid color-mix(in srgb, var(--dashboard-color) 56%, #383838) !important;
+    box-shadow: none !important;
+  }
+
+  #view-solicitacoes .orcamento-kanban-wrap,
+  #view-solicitacoes .propostas-kanban-wrap {
+    margin-top: 16px !important;
+    padding: 14px !important;
+    border: 1px solid #383838 !important;
+    border-radius: 8px !important;
+    background: #111 !important;
+    background-image: none !important;
+    box-shadow: none !important;
+  }
+
+  #view-solicitacoes #solicitacoes-kanban,
+  #view-solicitacoes #propostas-acompanhamento-kanban {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)) !important;
+    gap: 12px !important;
+    align-items: stretch !important;
+  }
+
+  #view-solicitacoes #solicitacoes-kanban > .orcamento-kanban-col,
+  #view-solicitacoes #propostas-acompanhamento-kanban > .propostas-kanban-col {
+    display: flex !important;
+    flex-direction: column !important;
+    min-width: 0 !important;
+    min-height: 300px !important;
+    overflow: hidden !important;
+    border: 1px solid #3f3f3f !important;
+    border-top: 3px solid #DC2626 !important;
+    border-radius: 8px !important;
+    background: #151515 !important;
+    background-image: none !important;
+    box-shadow: none !important;
+  }
+
+  #view-solicitacoes #solicitacoes-kanban .orcamento-kanban-head,
+  #view-solicitacoes #propostas-acompanhamento-kanban .propostas-kanban-head {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    grid-template-rows: auto auto !important;
+    align-items: center !important;
+    gap: 4px 8px !important;
+    min-height: 80px !important;
+    padding: 12px 14px !important;
+    border: 0 !important;
+    border-bottom: 1px solid #3f3f3f !important;
+    background: #1f1f1f !important;
+    background-image: none !important;
+    box-shadow: none !important;
+  }
+
+  #view-solicitacoes #solicitacoes-kanban .orcamento-kanban-title,
+  #view-solicitacoes #propostas-acompanhamento-kanban .propostas-kanban-title {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    color: #fff !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    line-height: 1.35 !important;
+    text-transform: uppercase;
+  }
+
+  #view-solicitacoes #solicitacoes-kanban .orcamento-kanban-title i,
+  #view-solicitacoes #propostas-acompanhamento-kanban .propostas-kanban-title i { color: #DC2626 !important; }
+
+  #view-solicitacoes #propostas-acompanhamento-kanban .propostas-kanban-subtitle {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    margin-top: 0 !important;
+    color: #b8b8b8 !important;
+    font-size: 11px !important;
+    line-height: 1.35 !important;
+  }
+
+  #view-solicitacoes #solicitacoes-kanban .kanban-count-pill,
+  #view-solicitacoes #propostas-acompanhamento-kanban .kanban-count-pill {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    min-width: 28px !important;
+    min-height: 28px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 4px 8px !important;
+    border: 1px solid #EF4444 !important;
+    border-radius: 7px !important;
+    background: #DC2626 !important;
+    color: #fff !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    box-shadow: none !important;
+  }
+
+  #view-solicitacoes #solicitacoes-kanban .orcamento-kanban-head .kanban-count-pill,
+  #view-solicitacoes #propostas-acompanhamento-kanban .propostas-kanban-head .kanban-count-pill {
+    border-color: #EF4444 !important;
+    background: #DC2626 !important;
+    color: #fff !important;
+  }
+
+  #view-solicitacoes #solicitacoes-kanban .orcamento-kanban-body,
+  #view-solicitacoes #propostas-acompanhamento-kanban .propostas-kanban-body {
+    display: flex !important;
+    flex: 1 1 auto !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    min-height: 210px !important;
+    max-height: 620px !important;
+    padding: 12px !important;
+    overflow: auto !important;
+    background: #151515 !important;
+    background-image: none !important;
+    outline: 0 !important;
+  }
+
+  #view-solicitacoes #solicitacoes-kanban .orcamento-card,
+  #view-solicitacoes #propostas-acompanhamento-kanban .proposta-kanban-card {
+    min-width: 0 !important;
+    padding: 12px !important;
+    border: 1px solid #3f3f3f !important;
+    border-left: 3px solid #DC2626 !important;
+    border-radius: 8px !important;
+    background: #1f1f1f !important;
+    background-image: none !important;
+    color: #f3f4f6 !important;
+    box-shadow: none !important;
+    filter: none !important;
+    transform: none !important;
+  }
+
+  #view-solicitacoes #solicitacoes-kanban .orcamento-card-title,
+  #view-solicitacoes #propostas-acompanhamento-kanban .proposta-kanban-title {
+    color: #fff !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    line-height: 1.35 !important;
+  }
+
+  #view-solicitacoes #solicitacoes-kanban .orcamento-card-meta,
+  #view-solicitacoes #solicitacoes-kanban .orcamento-card-desc,
+  #view-solicitacoes #propostas-acompanhamento-kanban .proposta-kanban-meta,
+  #view-solicitacoes #propostas-acompanhamento-kanban .proposta-kanban-desc {
+    color: #d1d5db !important;
+    font-size: 12px !important;
+    line-height: 1.45 !important;
+  }
+
+  #view-solicitacoes #solicitacoes-kanban .solicitante-destaque,
+  #view-solicitacoes #solicitacoes-kanban .proposta-valor,
+  #view-solicitacoes #solicitacoes-kanban .proposta-itens,
+  #view-solicitacoes #solicitacoes-kanban .proposta-observacao,
+  #view-solicitacoes #propostas-acompanhamento-kanban .proposta-kanban-meta,
+  #view-solicitacoes #propostas-acompanhamento-kanban .proposta-kanban-desc {
+    padding: 8px !important;
+    border: 1px solid #383838 !important;
+    border-radius: 6px !important;
+    background: #111 !important;
+    background-image: none !important;
+    box-shadow: none !important;
+  }
+
+  #view-solicitacoes #solicitacoes-kanban .empty,
+  #view-solicitacoes #propostas-acompanhamento-kanban .proposta-kanban-empty {
+    display: flex !important;
+    flex: 1 1 auto !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    min-height: 128px !important;
+    margin: 0 !important;
+    padding: 20px 12px !important;
+    border: 1px dashed #4b4b4b !important;
+    border-radius: 8px !important;
+    background: #111 !important;
+    background-image: none !important;
+    color: #a3a3a3 !important;
+    text-align: center !important;
+    box-shadow: none !important;
+  }
+
+  #view-solicitacoes #solicitacoes-kanban .empty p { margin: 0 !important; color: #a3a3a3 !important; }
+  #view-solicitacoes #solicitacoes-kanban .empty i,
+  #view-solicitacoes #propostas-acompanhamento-kanban .proposta-kanban-empty i { color: #EF4444 !important; }
+
+  #view-solicitacoes .proposta-kanban-actions,
+  #view-solicitacoes .orcamento-card-mini-actions {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    margin-top: 10px !important;
+  }
+
+  #view-solicitacoes .proposta-kanban-actions .btn,
+  #view-solicitacoes .orcamento-card-mini-actions .btn {
+    min-height: 28px !important;
+    box-shadow: none !important;
+    filter: none !important;
+    transform: none !important;
+  }
+
+  #view-solicitacoes #solicitacoes-kanban,
+  #view-solicitacoes #propostas-acompanhamento-kanban { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+
+  @media (max-width: 760px) {
+    #view-solicitacoes #solicitacoes-kanban,
+    #view-solicitacoes #propostas-acompanhamento-kanban { grid-template-columns: minmax(0, 1fr) !important; }
+    #view-solicitacoes .orcamento-kanban-wrap,
+    #view-solicitacoes .propostas-kanban-wrap { padding: 10px !important; }
+  }
 </style>
 </body>
 </html>
