@@ -3907,7 +3907,6 @@ body.theme-light .cv-hero { background:linear-gradient(135deg, rgba(10,140,92,.1
       <div class="dashboard-hero-main">
         <div class="daily-eyebrow">Ações do Dia</div>
         <h2 id="daily-title">Olá, Patrick Barbosa.</h2>
-        <p id="daily-subtitle">Acompanhe pendências, retornos, solicitações e orçamentos futuros em um único fluxo de trabalho.</p>
       </div>
       <div class="daily-date-feature">
         <span>Data de hoje</span>
@@ -4053,13 +4052,6 @@ body.theme-light .cv-hero { background:linear-gradient(135deg, rgba(10,140,92,.1
         </div>
       </div>
 
-      <div class="card" style="margin-bottom:20px">
-        <div class="card-header">
-          <div class="card-title"><i class="fa-solid fa-clock-rotate-left" style="color:var(--accent)"></i> Últimos Contatos</div>
-          <button class="btn btn-ghost btn-sm" onclick="showView('historico')">Ver Tudo</button>
-        </div>
-        <div id="dash-historico"></div>
-      </div>
     </div>
   </div>
 
@@ -4703,7 +4695,7 @@ body.theme-light .cv-hero { background:linear-gradient(135deg, rgba(10,140,92,.1
           </div>
 
           <div class="sol-request-grid">
-            <div class="form-group sol-produto-field"><label>Produto/Serviço solicitado</label><select id="sol-produto" aria-label="Produto/Serviço solicitado"><option value="">Selecionar...</option></select><small>Cadastre as opções em Configurações → Produtos/Serviços das Solicitações.</small></div>
+            <div class="form-group sol-produto-field"><label>Produto/Serviço solicitado</label><select id="sol-produto" aria-label="Produto/Serviço solicitado"><option value="">Selecionar...</option></select></div>
             <div class="form-group"><label>Data da solicitação *</label><input type="date" id="sol-data"></div>
             <div class="form-group"><label>Prazo de envio *</label><input type="date" id="sol-prazo"></div>
             <div class="form-group"><label>Canal da solicitação</label>
@@ -13349,10 +13341,9 @@ body.theme-light .hist-event-icon{ background:rgba(37,99,199,.08); border-color:
     const resumo = source?.produto || rows.map(r => r.resumo).filter(Boolean).join(' / ') || p.descricao || 'Não informado';
     return `<div class="proposta-kanban-card proposal-mini" draggable="true" data-proposta-ref="${escFinal(p.ref)}" ondblclick="abrirAtualizarStatusProposta('${escFinal(p.ref)}')" ondragstart="dragPropostaKanban(event,'${escFinal(p.ref)}')" ondragend="dragEndPropostaKanban(event)">
       <div class="mini-heading"><div class="proposta-kanban-title">${escFinal(p.nome)}</div><div class="mini-proposal-numbers">${rows.map(r => `<div><small>Proposta ${escFinal(r.numeroProposta || 'Sem nº')}</small><strong>${moedaBRFinal(r.valor)}</strong></div>`).join('')}</div></div>
-      <div class="mini-item"><small>Item / resumo da proposta</small><strong>${escFinal(resumo)}</strong></div>
-      <div class="mini-requester">Status: ${statusPropostaLabelFinal(status)}</div>
+      <div class="mini-item"><strong>${escFinal(resumo)}</strong></div>
+      <div class="mini-status-badge status-${status}">${statusPropostaLabelFinal(status)}</div>
       ${rows.filter(r => r.statusPedido).map(r => `<div class="mini-requester">${tipoOrcamentoLabelFinal(r.tipoOrcamento)}: ${statusPedidoLabelFinal(r.statusPedido)}</div>`).join('')}
-      ${p.observacaoAtualizacao ? `<div class="mini-requester">Última atualização: ${escFinal(p.observacaoAtualizacao)}</div>` : ''}
       <div class="proposta-kanban-actions"><button class="btn btn-ghost btn-sm" onclick="abrirEditarProposta('${escFinal(p.ref)}'); event.stopPropagation();"><i class="fa-solid fa-pen"></i> Editar</button>
         <button class="btn btn-primary btn-sm" onclick="abrirAtualizarStatusProposta('${escFinal(p.ref)}'); event.stopPropagation();"><i class="fa-solid fa-sliders"></i> Status</button>
         ${p.clienteId?`<button class="btn btn-ghost btn-sm" onclick="registrarContatoFromProposta('${escFinal(p.ref)}'); event.stopPropagation();"><i class="fa-solid fa-phone"></i> Contato</button><button class="btn btn-warning btn-sm" onclick="agendarRetornoFromProposta('${escFinal(p.ref)}'); event.stopPropagation();"><i class="fa-regular fa-calendar-plus"></i> Retorno</button>`:''}

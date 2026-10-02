@@ -1,4 +1,75 @@
 /* Superfícies opacas e hierarquia compacta, preservando as cores dos módulos. */
+html body .topheader {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+html body .logo-h { justify-self: start !important; }
+html body .topnav { justify-self: center !important; width: min(100%, 760px) !important; max-width: 100% !important; }
+html body .topheader > .btn,
+html body .topheader .auth-user-pill,
+html body .topheader .theme-toggle-wrap { justify-self: end !important; }
+html body .sidebar {
+  display: flex !important;
+  flex-direction: column !important;
+}
+html body .quick-action-grid {
+  flex: 1 !important;
+}
+html body .quick-action-card.qa-config {
+  margin-top: auto !important;
+  position: sticky !important;
+  bottom: 0 !important;
+}
+html body #view-dashboard .cotacoes-compras-card {
+  border-top: 3px solid #9333ea !important;
+}
+html body #view-dashboard .cotacoes-compras-header {
+  background: rgba(147, 51, 234, 0.12) !important;
+  border-bottom: 1px solid rgba(147, 51, 234, 0.32) !important;
+}
+html body #view-dashboard .cotacoes-compras-header .card-title i {
+  color: #9333ea !important;
+}
+html body .mini-status-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 7px 10px !important;
+  border-radius: 999px !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  margin: 0 0 8px !important;
+}
+html body .mini-status-badge.status-aguardando_retorno,
+html body .mini-status-badge.status-aguardando_aprovacao,
+html body .mini-status-badge.status-cliente_pediu_ajuste {
+  background: #fef3c7 !important;
+  color: #92400e !important;
+}
+html body .mini-status-badge.status-aprovada,
+html body .mini-status-badge.status-aprovado,
+html body .mini-status-badge.status-faturado {
+  background: #dcfce7 !important;
+  color: #166534 !important;
+}
+html body .mini-status-badge.status-recusada,
+html body .mini-status-badge.status-reprovada,
+html body .mini-status-badge.status-reprovado {
+  background: #fee2e2 !important;
+  color: #991b1b !important;
+}
+html body .mini-status-badge.status-sem_resposta {
+  background: #ffe4e6 !important;
+  color: #9f1239 !important;
+}
+html body .mini-status-badge.status-nao_acompanhar {
+  background: #e0e7ff !important;
+  color: #3730a3 !important;
+}
 html body #view-solicitacoes {
   --request-surface: #29171b;
   --request-header: #3a2025;
