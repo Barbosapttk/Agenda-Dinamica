@@ -14746,51 +14746,15 @@ body.theme-light {
 #view-dashboard .card:has(#dash-orcamentos-semana) { --deck-color:var(--dash-recurring); --deck-surface:var(--dash-recurring-surface); }
 #view-dashboard .card:has(#dash-historico) { --deck-color:var(--dash-history); --deck-surface:var(--dash-history-surface); }
 
-/* Superfície metálica mais clara e identidade própria */
-#card-acoes-prioritarias,
-#cotacoes-compras-painel,
-#view-dashboard .card:has(#dash-proximos),
-#view-dashboard .card:has(#dash-orcamentos-semana),
-#view-dashboard .card:has(#dash-historico) {
-  background:
-    var(--dash-metal-sheen),
-    linear-gradient(145deg, color-mix(in srgb,var(--deck-surface) 82%,#fff 8%), color-mix(in srgb,var(--deck-surface) 88%,#000 6%)) !important;
-  border:1px solid color-mix(in srgb,var(--deck-color) 54%,rgba(255,255,255,.16)) !important;
-  border-top:3px solid var(--deck-color) !important;
-  box-shadow:var(--dash-card-shadow) !important;
-}
-#card-acoes-prioritarias .card-header,
-#cotacoes-compras-painel .card-header,
-#view-dashboard .card:has(#dash-proximos) .card-header,
-#view-dashboard .card:has(#dash-orcamentos-semana) .card-header,
-#view-dashboard .card:has(#dash-historico) .card-header {
-  background:linear-gradient(100deg,color-mix(in srgb,var(--deck-color) 36%,var(--deck-surface)),color-mix(in srgb,var(--deck-surface) 90%,#fff 5%)) !important;
-  border-bottom:1px solid color-mix(in srgb,var(--deck-color) 42%,rgba(255,255,255,.14)) !important;
-  box-shadow:inset 0 1px rgba(255,255,255,.16), inset 0 -1px rgba(0,0,0,.18) !important;
-}
-#card-acoes-prioritarias .card-title,
-#cotacoes-compras-painel .card-title,
-#view-dashboard .card:has(#dash-proximos) .card-title,
-#view-dashboard .card:has(#dash-orcamentos-semana) .card-title,
-#view-dashboard .card:has(#dash-historico) .card-title { color:var(--dash-card-text) !important; }
-#card-acoes-prioritarias .card-title i,
-#cotacoes-compras-painel .card-title i,
-#view-dashboard .card:has(#dash-proximos) .card-title i,
-#view-dashboard .card:has(#dash-orcamentos-semana) .card-title i,
-#view-dashboard .card:has(#dash-historico) .card-title i { color:color-mix(in srgb,var(--deck-color) 70%,#fff 30%) !important; }
-#cotacoes-compras-painel .card-header p { color:var(--dash-card-muted) !important; }
-body.theme-light #cotacoes-compras-painel .card-header p { color:var(--dash-card-muted) !important; }
-
+/* Cards do painel padrão: sem diferenciação visual especial para apenas 2 blocos */
 #cotacoes-compras-painel,
 #view-dashboard .card:has(#dash-orcamentos-semana) {
   background: var(--surface) !important;
   border: 1px solid var(--border) !important;
-  border-top: 1px solid var(--border) !important;
   box-shadow: none !important;
   display: flex !important;
   flex-direction: column !important;
-  min-height: 320px !important;
-  height: auto !important;
+  min-height: 300px !important;
   overflow: hidden !important;
 }
 #cotacoes-compras-painel .card-header,
@@ -14802,30 +14766,23 @@ body.theme-light #cotacoes-compras-painel .card-header p { color:var(--dash-card
 }
 #cotacoes-compras-painel .card-title,
 #view-dashboard .card:has(#dash-orcamentos-semana) .card-title {
-  display: inline-flex !important;
+  display: flex !important;
   align-items: center !important;
   gap: 8px !important;
   color: var(--text) !important;
-  padding: 6px 10px !important;
-  border-radius: 999px !important;
-  background: rgba(255,255,255,0.02) !important;
-  border: 1px solid var(--border) !important;
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  border-radius: 0 !important;
 }
 #cotacoes-compras-painel .card-title i,
 #view-dashboard .card:has(#dash-orcamentos-semana) .card-title i {
-  width: 26px !important;
-  height: 26px !important;
-  border-radius: 8px !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  background: var(--warning-bg) !important;
-  color: var(--warning) !important;
-  font-size: 11px !important;
-}
-#view-dashboard .card:has(#dash-orcamentos-semana) .card-title i {
-  background: var(--purple-bg) !important;
-  color: var(--purple) !important;
+  width: auto !important;
+  height: auto !important;
+  background: transparent !important;
+  color: inherit !important;
+  border-radius: 0 !important;
+  font-size: 14px !important;
 }
 #cotacoes-compras-painel .card-header p,
 #view-dashboard .card:has(#dash-orcamentos-semana) .card-title span,
