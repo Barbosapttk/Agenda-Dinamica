@@ -14777,6 +14777,39 @@ body.theme-light {
 #cotacoes-compras-painel .card-header p { color:var(--dash-card-muted) !important; }
 body.theme-light #cotacoes-compras-painel .card-header p { color:var(--dash-card-muted) !important; }
 
+#cotacoes-compras-painel,
+#view-dashboard .card:has(#dash-orcamentos-semana) {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  border-top: 1px solid var(--border) !important;
+  box-shadow: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 320px !important;
+  height: auto !important;
+}
+#cotacoes-compras-painel .card-header,
+#view-dashboard .card:has(#dash-orcamentos-semana) .card-header {
+  background: var(--surface2) !important;
+  border-bottom: 1px solid var(--border) !important;
+  box-shadow: none !important;
+  padding: 16px 20px !important;
+}
+#cotacoes-compras-painel .card-title,
+#view-dashboard .card:has(#dash-orcamentos-semana) .card-title {
+  color: var(--text) !important;
+}
+#cotacoes-compras-painel .card-header p,
+#view-dashboard .card:has(#dash-orcamentos-semana) .card-title span,
+#view-dashboard .card:has(#dash-orcamentos-semana) .btn-ghost {
+  color: var(--text2) !important;
+}
+#cotacoes-compras-painel #cotacoes-compras-kanban,
+#view-dashboard #dash-orcamentos-semana {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+}
+
 /* Alinha os decks inferiores pela mesma altura e linha de base */
 #view-dashboard .dashboard-grid-2 {
   align-items:stretch !important;
