@@ -14058,7 +14058,7 @@ body.theme-light #modalSolicitacao .sol-client-linked-card {
 .cotacao-compras-lista { display:grid; gap:8px; }
 .cotacao-compras-card { display:flex; flex-direction:column; gap:9px; padding:11px; border:1px solid var(--border); border-radius:9px; background:var(--surface); box-shadow:var(--shadow-sm); min-height:160px; }
 .cotacao-compras-top { display:flex; align-items:center; gap:8px; padding-bottom:8px; border-bottom:1px solid var(--border); }
-.cotacao-compras-icon { width:30px; height:30px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center; background:var(--warning-bg); color:var(--warning); font-size:13px; }
+.cotacao-compras-icon { width:30px; height:30px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center; background:var(--warning-bg); color:var(--warning); font-size:13px; box-shadow:inset 0 1px 0 rgba(255,255,255,0.12); }
 .cotacao-compras-titulo { font-size:11.5px; font-weight:800; letter-spacing:.6px; text-transform:uppercase; color:var(--text2); }
 .cotacao-compras-descricao { color:var(--text); font-size:13px; font-weight:650; line-height:1.45; white-space:pre-wrap; overflow-wrap:anywhere; }
 .cotacao-compras-meta { display:flex; flex-wrap:wrap; align-items:center; gap:7px; margin-top:auto; color:var(--text3); font-size:11.5px; }
@@ -14791,6 +14791,7 @@ body.theme-light #cotacoes-compras-painel .card-header p { color:var(--dash-card
   flex-direction: column !important;
   min-height: 320px !important;
   height: auto !important;
+  overflow: hidden !important;
 }
 #cotacoes-compras-painel .card-header,
 #view-dashboard .card:has(#dash-orcamentos-semana) .card-header {
@@ -14801,7 +14802,30 @@ body.theme-light #cotacoes-compras-painel .card-header p { color:var(--dash-card
 }
 #cotacoes-compras-painel .card-title,
 #view-dashboard .card:has(#dash-orcamentos-semana) .card-title {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
   color: var(--text) !important;
+  padding: 6px 10px !important;
+  border-radius: 999px !important;
+  background: rgba(255,255,255,0.02) !important;
+  border: 1px solid var(--border) !important;
+}
+#cotacoes-compras-painel .card-title i,
+#view-dashboard .card:has(#dash-orcamentos-semana) .card-title i {
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 8px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: var(--warning-bg) !important;
+  color: var(--warning) !important;
+  font-size: 11px !important;
+}
+#view-dashboard .card:has(#dash-orcamentos-semana) .card-title i {
+  background: var(--purple-bg) !important;
+  color: var(--purple) !important;
 }
 #cotacoes-compras-painel .card-header p,
 #view-dashboard .card:has(#dash-orcamentos-semana) .card-title span,
@@ -14812,6 +14836,35 @@ body.theme-light #cotacoes-compras-painel .card-header p { color:var(--dash-card
 #view-dashboard #dash-orcamentos-semana {
   flex: 1 1 auto !important;
   min-height: 0 !important;
+}
+#view-dashboard #dash-orcamentos-semana {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) !important;
+  align-content: start !important;
+  gap: 12px !important;
+  padding: 16px !important;
+}
+#view-dashboard #dash-orcamentos-semana .kanban-card {
+  min-height: 150px !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 14px !important;
+  border-radius: 12px !important;
+  background: var(--surface2) !important;
+  border: 1px solid var(--border) !important;
+  border-left: 3px solid var(--purple) !important;
+  box-shadow: none !important;
+}
+#view-dashboard #dash-orcamentos-semana .kanban-card .kanban-date {
+  font-size: 11.5px !important;
+  color: var(--purple) !important;
+}
+#view-dashboard #dash-orcamentos-semana .kanban-card .kanban-client,
+#view-dashboard #dash-orcamentos-semana .kanban-card .kanban-note {
+  color: var(--text) !important;
+}
+#view-dashboard #dash-orcamentos-semana .kanban-card .badge {
+  font-size: 10.5px !important;
 }
 
 /* Alinha os decks inferiores pela mesma altura e linha de base */
