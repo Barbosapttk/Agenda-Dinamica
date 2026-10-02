@@ -1,0 +1,74 @@
+/* Superfícies opacas e hierarquia compacta, preservando as cores dos módulos. */
+html body #view-solicitacoes {
+  --request-surface: #29171b;
+  --request-header: #3a2025;
+  --request-ink: #f3f4f6;
+  --request-muted: #d1d5db;
+  background-color: #17181d !important;
+  opacity: 1 !important;
+}
+html body.theme-light #view-solicitacoes {
+  --request-surface: #fff1f2;
+  --request-header: #ffe4e6;
+  --request-ink: #29171b;
+  --request-muted: #67474d;
+  background-color: #fff9f9 !important;
+}
+html body #view-solicitacoes :is(.card, .card-header, .orcamento-kanban-wrap, .propostas-kanban-wrap, .orcamento-kanban-col, .propostas-kanban-col, .orcamento-kanban-head, .propostas-kanban-head, .orcamento-kanban-body, .propostas-kanban-body, .orcamento-card, .proposta-kanban-card, input, select) {
+  opacity: 1 !important;
+  backdrop-filter: none !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+html body #view-solicitacoes > .card,
+html body #view-solicitacoes .solicitacoes-overview,
+html body #view-solicitacoes .sol-summary-card,
+html body #view-solicitacoes .orcamento-kanban-wrap,
+html body #view-solicitacoes .orcamento-kanban-col,
+html body #view-solicitacoes .orcamento-kanban-head,
+html body #view-solicitacoes .orcamento-kanban-body,
+html body #view-solicitacoes .orcamento-card,
+html body #view-solicitacoes #solicitacoes-kanban .orcamento-card,
+html body #view-solicitacoes #propostas-acompanhamento-kanban .proposta-kanban-card {
+  background: var(--request-surface) !important;
+  background-color: var(--request-surface) !important;
+  color: var(--request-ink) !important;
+  border-color: rgba(148, 163, 184, 0.24) !important;
+}
+html body #view-solicitacoes .card-header,
+html body #view-solicitacoes :is(.card-header, .orcamento-kanban-head, .propostas-kanban-head) {
+  background: var(--request-header) !important;
+  background-color: var(--request-header) !important;
+  color: var(--request-ink) !important;
+}
+html body #view-solicitacoes :is(.card, .orcamento-card, .proposta-kanban-card)::before,
+html body #view-solicitacoes :is(.card, .orcamento-card, .proposta-kanban-card)::after { content: none !important; }
+html body #view-solicitacoes :is(.card-title, .orcamento-kanban-title, .propostas-kanban-title),
+html body #view-solicitacoes #solicitacoes-kanban .orcamento-card-title,
+html body #view-solicitacoes #propostas-acompanhamento-kanban .proposta-kanban-title { color: var(--request-ink) !important; }
+.mini-heading { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 45%); align-items: start; gap: 10px; }
+.mini-heading > * { min-width: 0; overflow-wrap: anywhere; }
+.mini-heading .orcamento-card-title, .mini-heading .proposta-kanban-title { text-transform: uppercase; }
+.mini-deadline, .mini-proposal-numbers { text-align: right; line-height: 1.4; }
+.mini-deadline small, .mini-deadline strong, .mini-proposal-numbers small, .mini-proposal-numbers strong { display: block; }
+.mini-deadline small, .mini-proposal-numbers small { font-size: 11px; }
+.mini-deadline strong { font-size: 14px; }
+.mini-deadline.overdue { color: var(--danger); }
+.mini-proposal-numbers strong { font-size: 19px; font-weight: 800; }
+.mini-proposal-numbers > div + div { margin-top: 6px; }
+.mini-item { margin: 14px 0 10px; overflow-wrap: anywhere; }
+.mini-item small { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+.mini-item strong { display: block; font-size: 17px; line-height: 1.35; white-space: pre-wrap; }
+.mini-requester { font-size: 11px; line-height: 1.5; color: var(--request-muted, var(--text2)); overflow-wrap: anywhere; }
+.mini-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+html body .mini-actions .orcamento-card-mini-actions { margin: 0 !important; flex-wrap: wrap; }
+.request-mini, .proposal-mini { min-width: 0; overflow-wrap: anywhere; }
+.produto-opcao-row { display: flex; gap: 8px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.produto-opcao-row span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+#produto-opcao-form { margin: 14px 0; }
+#produto-opcao-form input { width: 100%; margin-top: 6px; }
+#produto-opcoes-lista { margin-top: 12px; }
+.proposta-edit-row { border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 12px; min-width: 0; }
+.proposta-edit-row input { width: 100%; }
+#modalEditarProposta .modal { background: var(--surface); }
+#modalSolicitacao :is(.modal, input, select, textarea) { opacity: 1 !important; backdrop-filter: none !important; background-color: var(--surface) !important; }

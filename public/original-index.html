@@ -84,7 +84,7 @@ function configurarModalConclusao(tipo, item) {
     help.style.display = 'block';
     help.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:6px"></i>Ao salvar, esta solicitação será movida para Concluídos, ficará como proposta enviada em acompanhamento e será registrado automaticamente um contato no histórico do cliente, se houver cliente vinculado.';
     resumo.style.display = 'flex';
-    resumo.innerHTML = `<div class="concluir-summary-icon"><i class="fa-solid ${icon}"></i></div><div><div class="concluir-summary-title">${nomeCliente}</div><div class="concluir-summary-text">Produto/serviço: ${item?.produto || 'Não informado'}<br>Prazo original: ${fmtDate(item?.prazo)}</div></div>`;
+    resumo.innerHTML = `<div class="concluir-summary-icon"><i class="fa-solid ${icon}"></i></div><div><div class="concluir-summary-title">${nomeCliente}</div><div class="concluir-summary-text">Produto/serviço: ${item?.produto || 'Não informado'}<br>Prazo de envio original: ${fmtDate(item?.prazo)}</div></div>`;
   } else if (tipo === 'orcamento') {
     title.innerHTML = '<i class="fa-solid fa-repeat" style="color:var(--purple);margin-right:8px"></i>Registrar proposta recorrente enviada';
     label.textContent = 'Observação sobre a proposta recorrente enviada (opcional)';
@@ -1447,7 +1447,7 @@ body.auth-locked .auth-screen { display: flex; }
   #view-solicitacoes td:nth-child(1)::before { content:'Cliente'; }
   #view-solicitacoes td:nth-child(2)::before { content:'Razão Social'; }
   #view-solicitacoes td:nth-child(3)::before { content:'Solicitado'; }
-  #view-solicitacoes td:nth-child(4)::before { content:'Prazo'; }
+  #view-solicitacoes td:nth-child(4)::before { content:'Prazo de envio'; }
   #view-solicitacoes td:nth-child(5)::before { content:'Canal'; }
   #view-solicitacoes td:nth-child(6)::before { content:'Prioridade'; }
   #view-solicitacoes td:nth-child(7)::before { content:'Produto'; }
@@ -4703,9 +4703,9 @@ body.theme-light .cv-hero { background:linear-gradient(135deg, rgba(10,140,92,.1
           </div>
 
           <div class="sol-request-grid">
-            <div class="form-group sol-produto-field"><label>Produto/Serviço solicitado</label><input type="text" id="sol-produto" spellcheck="true" lang="pt-BR" placeholder="Ex: CALIBRAÇÃO, MANUTENÇÃO, PEÇA X..."></div>
+            <div class="form-group sol-produto-field"><label>Produto/Serviço solicitado</label><select id="sol-produto" aria-label="Produto/Serviço solicitado"><option value="">Selecionar...</option></select><small>Cadastre as opções em Configurações → Produtos/Serviços das Solicitações.</small></div>
             <div class="form-group"><label>Data da solicitação *</label><input type="date" id="sol-data"></div>
-            <div class="form-group"><label>Prazo para preparar *</label><input type="date" id="sol-prazo"></div>
+            <div class="form-group"><label>Prazo de envio *</label><input type="date" id="sol-prazo"></div>
             <div class="form-group"><label>Canal da solicitação</label>
               <select id="sol-canal">
                 <option value="whatsapp">WhatsApp</option>
@@ -5188,6 +5188,7 @@ const STORAGE_KEYS = {
   controleVendas: 'secta_controle_vendas',
   cotacoesCompras: 'secta_cotacoes_compras',
   alarmedIds: 'secta_alarmed',
+  produtosSolicitacoes: 'secta_produtos_solicitacoes',
   theme: 'secta_theme'
 };
 
@@ -5200,6 +5201,7 @@ let concluidos = [];
 let historicoClientes = []; // log de alterações em clientes
 let controleVendas = [];
 let cotacoesCompras = [];
+let produtosSolicitacoes = [];
 let calDate = new Date();
 let alarmedIds = [];
 let alarmQueue = [];
@@ -5440,7 +5442,7 @@ function normalizarTextosSolicitacaoObjeto(dados) {
   dados.nome = formatarNomeSistema(dados.nome);
   dados.solicitante = formatarNomeSistema(dados.solicitante);
   dados.empresa = formatarNomeSistema(dados.empresa);
-  dados.produto = formatarTextoSistema(dados.produto);
+  // Produto é uma opção cadastrada ou o texto original de um registro legado.
   dados.descricao = formatarTextoSistema(dados.descricao);
   dados.obs = formatarTextoSistema(dados.obs);
   return dados;
@@ -5470,6 +5472,7 @@ async function carregarDadosSupabase() {
   cotacoesCompras = Array.isArray(values[STORAGE_KEYS.cotacoesCompras]) ? values[STORAGE_KEYS.cotacoesCompras] : [];
   alarmedIds = Array.isArray(values[STORAGE_KEYS.alarmedIds]) ? values[STORAGE_KEYS.alarmedIds] : [];
   appTheme = typeof values[STORAGE_KEYS.theme] === 'string' ? values[STORAGE_KEYS.theme] : 'dark';
+  produtosSolicitacoes = Array.isArray(values[STORAGE_KEYS.produtosSolicitacoes]) ? values[STORAGE_KEYS.produtosSolicitacoes] : [];
   applyTheme(appTheme, false);
 }
 
@@ -5487,6 +5490,7 @@ async function persistirDadosSupabase() {
     { key: STORAGE_KEYS.controleVendas, value: controleVendas },
     { key: STORAGE_KEYS.cotacoesCompras, value: cotacoesCompras },
     { key: STORAGE_KEYS.alarmedIds, value: alarmedIds },
+    { key: STORAGE_KEYS.produtosSolicitacoes, value: produtosSolicitacoes },
     { key: STORAGE_KEYS.theme, value: appTheme }
   ];
 
@@ -5515,6 +5519,8 @@ function save() {
 }
 
 function renderizarDadosSincronizados() {
+  renderProdutosSolicitacoes();
+  atualizarSelectProdutosSolicitacoes();
   renderDashboard();
   renderClientes();
   renderAgenda();
@@ -5536,12 +5542,12 @@ async function sincronizarDadosRemotos() {
   try {
     const estadoAnterior = JSON.stringify([
       clientes, contatos, agendamentos, solicitacoesOrcamento, orcamentos,
-      concluidos, historicoClientes, controleVendas, cotacoesCompras, alarmedIds, appTheme
+      concluidos, historicoClientes, controleVendas, cotacoesCompras, produtosSolicitacoes, alarmedIds, appTheme
     ]);
     await carregarDadosSupabase();
     const estadoAtual = JSON.stringify([
       clientes, contatos, agendamentos, solicitacoesOrcamento, orcamentos,
-      concluidos, historicoClientes, controleVendas, cotacoesCompras, alarmedIds, appTheme
+      concluidos, historicoClientes, controleVendas, cotacoesCompras, produtosSolicitacoes, alarmedIds, appTheme
     ]);
     if (estadoAnterior !== estadoAtual) renderizarDadosSincronizados();
   } catch (error) {
@@ -5762,7 +5768,7 @@ function openModal(id) {
     document.getElementById('sol-cnpj').value = '';
     document.getElementById('sol-telefone').value = '';
     document.getElementById('sol-email').value = '';
-    document.getElementById('sol-produto').value = '';
+    atualizarSelectProdutosSolicitacoes('');
     if (document.getElementById('sol-tipo-orcamento')) document.getElementById('sol-tipo-orcamento').value = 'pecas';
     document.getElementById('sol-data').value = today();
     document.getElementById('sol-prazo').value = today();
@@ -6614,7 +6620,7 @@ function abrirFluxoSolicitacao(id) {
     <div class="fluxo-resumo-meta">
       <strong>Produto/serviço:</strong> ${sol.produto || 'Não informado'}<br>
       ${sol.telefone ? `<strong>Telefone:</strong> ${sol.telefone}<br>` : ''}${sol.email ? `<strong>E-mail:</strong> ${sol.email}<br>` : ''}${(sol.anexos||[]).length ? `<strong>Anexos:</strong> ${(sol.anexos||[]).length}<br>` : ''}
-      <strong>Prazo:</strong> ${fmtDate(sol.prazo)} • <strong>Prioridade:</strong> ${sol.prioridade || 'normal'}${sol.clienteId ? '<br><strong>Status operacional:</strong> cliente já vinculado' : '<br><strong>Status operacional:</strong> sem cliente cadastrado/vinculado'}
+      <strong>Prazo de envio:</strong> ${fmtDate(sol.prazo)} • <strong>Prioridade:</strong> ${sol.prioridade || 'normal'}${sol.clienteId ? '<br><strong>Status operacional:</strong> cliente já vinculado' : '<br><strong>Status operacional:</strong> sem cliente cadastrado/vinculado'}
     </div>`;
   const bloqueado = !sol.clienteId;
   acoes.innerHTML = `
@@ -6691,7 +6697,10 @@ async function salvarSolicitacaoOrcamento() {
   const cnpj = document.getElementById('sol-cnpj')?.value.trim() || (cliente ? cliente.cnpj || '' : '');
   const telefone = (document.getElementById('sol-telefone').value.trim() || (cliente ? cliente.telefone || '' : '')).trim();
   const email = (document.getElementById('sol-email').value.trim() || (cliente ? cliente.email || '' : '')).trim();
-  const produto = formatarTextoSistema(document.getElementById('sol-produto').value);
+  const produto = document.getElementById('sol-produto').value;
+  const produtoAnterior = solicitacoesOrcamento.find(s => String(s.id) === document.getElementById('modalSolicitacao').dataset.editId)?.produto || '';
+  if ((!produto || !produtosSolicitacoes.includes(produto)) && produto !== produtoAnterior) { notify('Selecione um produto/serviço cadastrado nas Configurações.', '#7a1a1a'); return; }
+  if (!produto && !document.getElementById('modalSolicitacao').dataset.editId) { notify('Cadastre e selecione um produto/serviço nas Configurações.', '#7a1a1a'); return; }
   const tipoOrcamento = document.getElementById('sol-tipo-orcamento')?.value || 'pecas';
   const dataSolicitacao = document.getElementById('sol-data').value;
   const prazo = document.getElementById('sol-prazo').value;
@@ -6758,7 +6767,7 @@ function editarSolicitacaoOrcamento(id) {
   if (document.getElementById('sol-cnpj')) document.getElementById('sol-cnpj').value = sol.cnpj || '';
   document.getElementById('sol-telefone').value = sol.telefone || '';
   document.getElementById('sol-email').value = sol.email || '';
-  document.getElementById('sol-produto').value = sol.produto || '';
+  atualizarSelectProdutosSolicitacoes(sol.produto || '');
   if (document.getElementById('sol-tipo-orcamento')) document.getElementById('sol-tipo-orcamento').value = sol.tipoOrcamento || 'pecas';
   document.getElementById('sol-data').value = sol.dataSolicitacao || today();
   document.getElementById('sol-prazo').value = sol.prazo || today();
@@ -6856,45 +6865,7 @@ function marcarSolicitacaoFeita(id, obsFinal='', canalContato='whatsapp', numero
 }
 
 function renderSolicitacaoCards(list) {
-  const priorBadge = {normal:'badge-info', alta:'badge-warning', urgente:'badge-danger'};
-  const canalLabel = {whatsapp:'WhatsApp', telefone:'Telefone', email:'E-mail', presencial:'Presencial', videochamada:'Videochamada', outro:'Outro'};
-  return list.map(sol => {
-    const d = dadosSolicitacaoCliente(sol);
-    const produtoCard = escaparHtmlCotacaoCompras(formatarTextoSistema(sol.produto || ''));
-    const atrasado = sol.prazo < today();
-    const hoje = sol.prazo === today();
-    const cardCls = atrasado ? 'atrasado' : 'solicitacao';
-    return `<div class="kanban-card ${cardCls}">
-      <div class="kanban-date">
-        <i class="fa-regular fa-calendar"></i> Prazo: ${fmtDatetime(sol.prazo)}
-        ${atrasado?'<span class="badge badge-danger" style="margin-left:4px;font-size:10.5px">Atrasada</span>':hoje?'<span class="badge badge-warning" style="margin-left:4px;font-size:10.5px">Hoje</span>':''}
-      </div>
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-        <div class="avatar ${d.avatar}" style="width:26px;height:26px;font-size:10px">${d.iniciais}</div>
-        <div>
-          <div class="kanban-client">${d.nome}</div>
-          ${d.solicitante?`<div style="font-size:11px;color:var(--text3)">Solicitante: ${d.solicitante}</div>`:''}
-          ${d.empresa?`<div style="font-size:11px;color:var(--text3)">${d.empresa}</div>`:''}
-          ${sol.cnpj?`<div style="font-size:11px;color:var(--text3)"><i class="fa-solid fa-building-columns"></i> ${sol.cnpj}</div>`:''}
-          ${sol.telefone?`<div style="font-size:11px;color:var(--text3)"><i class="fa-solid fa-phone"></i> ${sol.telefone}</div>`:''}
-          ${sol.email?`<div style="font-size:11px;color:var(--text3)"><i class="fa-solid fa-envelope"></i> ${sol.email}</div>`:''}
-        </div>
-      </div>
-      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px">
-        <span class="badge ${priorBadge[sol.prioridade]||'badge-gray'}">${sol.prioridade||'normal'}</span>
-        <span class="badge badge-gray">${canalLabel[sol.canal]||sol.canal||'Canal'}</span>
-        ${produtoCard?`<span class="badge badge-warning">${produtoCard}</span>`:''}
-        ${!sol.clienteId?'<span class="badge badge-danger">Sem cliente cadastrado</span>':''}
-        ${(sol.anexos||[]).length?`<span class="badge badge-gray"><i class="fa-solid fa-paperclip" style="margin-right:3px"></i>${(sol.anexos||[]).length}</span>`:''}
-      </div>
-      ${sol.descricao?`<div class="kanban-note">${sol.descricao.length>120?sol.descricao.slice(0,120)+'…':sol.descricao}</div>`:''}
-      <div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-top:8px;flex-wrap:wrap">
-        ${!sol.clienteId?`<button class="btn btn-ghost btn-sm" title="Criar cliente" onclick="criarClienteFromSolicitacao(${sol.id})"><i class="fa-solid fa-user-plus"></i></button>`:''}
-        <button class="btn btn-warning btn-sm" title="Editar" onclick="irParaSolicitacaoEditar(${sol.id})"><i class="fa-solid fa-pen"></i></button>
-        <button class="btn btn-success btn-sm" onclick="abrirConcluirSolicitacao(${sol.id})"><i class="fa-solid fa-check"></i> Feito</button>
-      </div>
-    </div>`;
-  }).join('');
+  return list.map(sol => cardKanbanSolicitacao(sol, 'solicitacao')).join('');
 }
 
 function getSolicitacoesFiltradasBase() {
@@ -6957,53 +6928,26 @@ function irParaSolicitacaoEditar(id) {
 }
 
 function cardKanbanSolicitacao(sol, classeExtra='') {
-  const priorBadge = {normal:'badge-info', alta:'badge-warning', urgente:'badge-danger'};
-  const canalLabel = {whatsapp:'WhatsApp', telefone:'Telefone', email:'E-mail', presencial:'Presencial', videochamada:'Videochamada', outro:'Outro'};
-  const dRaw = dadosSolicitacaoCliente(sol);
-  const d = {
-    ...dRaw,
-    nome: formatarNomeSistema(dRaw.nome || ''),
-    solicitante: formatarNomeSistema(dRaw.solicitante || ''),
-    empresa: formatarNomeSistema(dRaw.empresa || '')
-  };
-  const produtoCard = formatarTextoSistema(sol.produto || '');
-  const descricaoCard = formatarTextoSistema(sol.descricao || '');
-  const atrasado = !sol._concluida && sol.prazo < today();
-  const hoje = !sol._concluida && sol.prazo === today();
-  const etapa = sol.etapa || 'nova';
-  const colCls = sol._concluida ? 'concluido' : atrasado ? 'atrasado' : classeExtra;
-  const canDrag = !sol._concluida;
-  return `<div class="orcamento-card ${colCls}" draggable="${canDrag?'true':'false'}" data-sol-id="${sol.id}" ${!sol._concluida ? `ondblclick="irParaSolicitacaoEditar(${sol.id})" title="Duplo clique para editar"` : ''} ondragstart="dragSolicitacaoKanban(event, ${sol.id})" ondragend="dragEndSolicitacaoKanban(event)">
-    <div class="orcamento-card-top">
-      <div style="min-width:0;flex:1">
-        <div class="orcamento-card-title">${d.nome}</div>
-        ${!sol.clienteId?'<div style="font-size:11px;color:var(--danger);font-weight:700;margin-top:2px">Sem cliente cadastrado</div>':''}
-      </div>
+  const d = dadosSolicitacaoCliente(sol);
+  const esc = escaparHtmlCotacaoCompras;
+  const atrasado = !sol._concluida && sol.prazo && sol.prazo < today();
+  return `<div class="orcamento-card request-mini ${classeExtra || ''}" draggable="${!sol._concluida}" data-sol-id="${sol.id}" ${!sol._concluida ? `ondblclick="irParaSolicitacaoEditar(${sol.id})" title="Duplo clique para editar"` : ''} ondragstart="dragSolicitacaoKanban(event, ${sol.id})" ondragend="dragEndSolicitacaoKanban(event)">
+    <div class="mini-heading">
+      <div class="orcamento-card-title">${esc(d.nome)}</div>
+      <div class="mini-deadline ${atrasado ? 'overdue' : ''}"><small>${sol._concluida ? 'Concluído em' : 'Prazo de envio'}</small><strong>${fmtDate(sol._concluida ? sol.concluidoEm : sol.prazo)}</strong>${atrasado ? '<small>Atrasada</small>' : ''}</div>
+    </div>
+    <div class="mini-item"><small>Item solicitado</small><strong>${esc(sol.produto || 'Não informado')}</strong></div>
+    ${d.solicitante ? `<div class="mini-requester">Solicitante: ${esc(d.solicitante)}</div>` : ''}
+    ${!sol.clienteId ? '<div class="mini-requester">Sem cliente cadastrado</div>' : ''}
+    <div class="mini-actions">
       <div class="orcamento-card-mini-actions">
         ${!sol._concluida ? `<button class="btn btn-warning btn-sm btn-icon-mini" title="Editar" onclick="irParaSolicitacaoEditar(${sol.id}); event.stopPropagation();"><i class="fa-solid fa-pen"></i></button>` : ''}
         ${!sol._concluida ? `<button class="btn btn-success btn-sm btn-icon-mini" title="Marcar como feito" onclick="abrirConcluirSolicitacao(${sol.id}); event.stopPropagation();"><i class="fa-solid fa-check"></i></button>` : ''}
+        ${!sol._concluida ? `<button class="btn btn-ghost btn-sm btn-icon-mini" title="Abrir detalhes" onclick="abrirFluxoSolicitacao(${sol.id}); event.stopPropagation();"><i class="fa-solid fa-up-right-and-down-left-from-center"></i></button>` : ''}
         ${sol._concluida && sol.clienteId ? `<button class="btn btn-ghost btn-sm btn-icon-mini" title="Ver cliente" onclick="abrirDetalhe(${sol.clienteId}); event.stopPropagation();"><i class="fa-solid fa-user-check"></i></button>` : ''}
-        ${sol._concluida && sol.clienteId ? `<button class="btn btn-ghost btn-sm btn-icon-mini" title="Registrar contato" onclick="registrarContatoFromSolicitacaoConcluida(${sol.id}); event.stopPropagation();"><i class="fa-solid fa-phone"></i></button>` : ''}
-        ${sol._concluida && sol.clienteId ? `<button class="btn btn-warning btn-sm btn-icon-mini" title="Agendar retorno" onclick="agendarRetornoFromSolicitacaoConcluida(${sol.id}); event.stopPropagation();"><i class="fa-regular fa-calendar-plus"></i></button>` : ''}
-        ${sol._concluida && sol.clienteId ? `<button class="btn btn-primary btn-sm btn-icon-mini" title="Criar recorrente" onclick="criarOrcamentoRecorrenteFromSolicitacaoConcluida(${sol.id}); event.stopPropagation();"><i class="fa-solid fa-repeat"></i></button>` : ''}
         ${sol._concluida ? `<button class="btn btn-danger btn-sm btn-icon-mini" title="Reabrir solicitação" onclick="reabrirSolicitacaoConcluida(${sol.id}); event.stopPropagation();"><i class="fa-solid fa-rotate-left"></i></button>` : ''}
       </div>
     </div>
-    <div class="orcamento-card-meta">
-      ${d.solicitante ? `<div class="solicitante-destaque"><strong>Solicitante</strong> ${escaparHtmlCotacaoCompras(d.solicitante)}</div>` : ''}
-      ${d.empresa ? `<strong>Razão Social:</strong> ${d.empresa}<br>` : ''}
-      ${sol.cnpj ? `<strong>CNPJ:</strong> ${sol.cnpj}<br>` : ''}
-      ${sol.telefone ? `<i class="fa-solid fa-phone"></i> ${sol.telefone}<br>` : ''}${sol.email ? `<i class="fa-solid fa-envelope"></i> ${sol.email}<br>` : ''}
-      <strong>${sol._concluida ? 'Concluído em' : 'Prazo'}:</strong> ${fmtDate(sol._concluida ? sol.concluidoEm : sol.prazo)} ${atrasado?'<span class="badge badge-danger" style="margin-left:4px">Atrasada</span>':hoje?'<span class="badge badge-warning" style="margin-left:4px">Hoje</span>':''}
-    </div>
-    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:8px">
-      <span class="badge ${priorBadge[sol.prioridade]||'badge-gray'}">${sol.prioridade||'normal'}</span>
-      ${sol._concluida ? `<span class="badge badge-success">${statusPropostaLabel(getSolicitacaoConcluida(sol.id)?.statusProposta || 'aguardando_retorno')}</span>` : `<span class="badge badge-gray">${etapaSolicitacaoLabel(etapa)}</span>`}
-      ${sol.canal?`<span class="badge badge-gray">${canalLabel[sol.canal]||sol.canal}</span>`:''}
-      ${sol.produto?`<span class="badge badge-warning">${sol.produto}</span>`:''}
-      ${(sol.anexos||[]).length?`<span class="badge badge-gray"><i class="fa-solid fa-paperclip" style="margin-right:3px"></i>${(sol.anexos||[]).length}</span>`:''}
-    </div>
-    ${descricaoCard?`<div class="orcamento-card-desc">${descricaoCard.length>150?descricaoCard.slice(0,150)+'…':descricaoCard}</div>`:''}
   </div>`;
 }
 
@@ -7297,7 +7241,7 @@ function configurarModalConclusao(tipo, item) {
     help.style.display = 'block';
     help.innerHTML = '<i class="fa-solid fa-circle-info" style="margin-right:6px"></i>Ao confirmar, esta solicitação será movida para Concluídos. Ela continuará com ações de acompanhamento disponíveis na coluna Concluídos e será registrado automaticamente um contato no histórico do cliente, se houver cliente vinculado.';
     resumo.style.display = 'flex';
-    resumo.innerHTML = `<div class="concluir-summary-icon"><i class="fa-solid ${icon}"></i></div><div><div class="concluir-summary-title">${nomeCliente}</div><div class="concluir-summary-text">Produto/serviço: ${item?.produto || 'Não informado'}<br>Prazo original: ${fmtDate(item?.prazo)}</div></div>`;
+    resumo.innerHTML = `<div class="concluir-summary-icon"><i class="fa-solid ${icon}"></i></div><div><div class="concluir-summary-title">${nomeCliente}</div><div class="concluir-summary-text">Produto/serviço: ${item?.produto || 'Não informado'}<br>Prazo de envio original: ${fmtDate(item?.prazo)}</div></div>`;
   } else if (tipo === 'orcamento') {
     title.innerHTML = '<i class="fa-solid fa-repeat" style="color:var(--purple);margin-right:8px"></i>Concluir orçamento recorrente';
     label.textContent = 'Observação sobre o orçamento recorrente feito/enviado (opcional)';
@@ -7766,7 +7710,7 @@ function renderAcoesDoDia() {
         <div class="daily-action-icon"><i class="fa-solid ${a.tipo==='solicitacao'?'fa-clipboard-list':a.tipo==='orcamento'?'fa-file-invoice-dollar':'fa-phone'}" style="color:${a.classe==='atrasado'?'var(--danger)':a.classe==='hoje'?'var(--warning)':'var(--accent)'}"></i></div>
         <div class="daily-action-content">
           <div class="daily-action-title">${a.titulo} — ${a.nome}</div>
-          <div class="daily-action-meta">Prazo: ${fmtDate(a.data)}${a.meta ? ' • ' + a.meta : ''}</div>
+          <div class="daily-action-meta">Prazo de envio: ${fmtDate(a.data)}${a.meta ? ' • ' + a.meta : ''}</div>
           <div class="daily-action-meta">${(a.detalhe||'').length>140 ? a.detalhe.slice(0,140)+'…' : a.detalhe}</div>
         </div>
         ${a.htmlAcoes ? `<div class="action-row">${a.htmlAcoes}</div>` : ''}
@@ -7824,6 +7768,7 @@ function abrirExportRelatorioMensal() {
 }
 
 function renderConfiguracoes() {
+  renderProdutosSolicitacoes();
   const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
   setTxt('config-total-clientes', clientes.length);
   setTxt('config-total-contatos', contatos.length);
@@ -8246,7 +8191,7 @@ function retornosParaRows(lista = agendamentos) {
   return [['ID','Data','Horário','Cliente','Razão Social','Prioridade','Motivo'], ...lista.map(a => { const c=clientes.find(x=>x.id===a.clienteId); return [a.id,fmtDate(a.data),a.horario||'09:00',c?c.nome:'—',c?c.empresa||'':'',a.prioridade||'normal',a.motivo||'']; })];
 }
 function solicitacoesParaRows(lista = solicitacoesOrcamento) {
-  return [['ID','Prazo','Data da Solicitação','Cliente/Solicitante','Solicitante','CNPJ','Telefone','E-mail','Razão Social','Produto/Serviço','Canal','Prioridade','Descrição','Observações','Anexos','Vinculado a Cliente'], ...lista.map(sol => { const d=dadosSolicitacaoCliente(sol); return [sol.id,fmtDate(sol.prazo),fmtDate(sol.dataSolicitacao),d.nome,d.solicitante||'',sol.cnpj||'',sol.telefone||'',sol.email||'',d.empresa||'',d.produto||'',sol.canal||'',sol.prioridade||'normal',sol.descricao||'',sol.obs||'',(sol.anexos||[]).length,sol.clienteId?'Sim':'Não']; })];
+  return [['ID','Prazo de envio','Data da Solicitação','Cliente/Solicitante','Solicitante','CNPJ','Telefone','E-mail','Razão Social','Produto/Serviço','Canal','Prioridade','Descrição','Observações','Anexos','Vinculado a Cliente'], ...lista.map(sol => { const d=dadosSolicitacaoCliente(sol); return [sol.id,fmtDate(sol.prazo),fmtDate(sol.dataSolicitacao),d.nome,d.solicitante||'',sol.cnpj||'',sol.telefone||'',sol.email||'',d.empresa||'',d.produto||'',sol.canal||'',sol.prioridade||'normal',sol.descricao||'',sol.obs||'',(sol.anexos||[]).length,sol.clienteId?'Sim':'Não']; })];
 }
 function orcamentosParaRows(lista = orcamentos) {
   return [['ID','Data','Horário','Cliente','Razão Social','Mensal','Observação'], ...lista.map(o => { const c=clientes.find(x=>x.id===o.clienteId); return [o.id,fmtDate(o.data),o.horario||'09:00',c?c.nome:'—',c?c.empresa||'':'',o.repetir?'Sim':'Não',o.obs||'']; })];
@@ -8262,6 +8207,7 @@ function backupPayload() {
     exportadoEm: new Date().toISOString(),
     versao: 'agenda-dinamica-supabase',
     utilizadorPlanilha: usuarioAtivo,
+    produtosSolicitacoes,
     clientes,
     contatos,
     agendamentos,
@@ -8789,7 +8735,7 @@ function exportarFichaClientePDF(clienteId) {
   let sy = doc.lastAutoTable.finalY + 8;
   if (contatosCliente.length) doc.autoTable({ head:[['Data','Canal','Sem resposta','Descrição']], body:contatosCliente.slice(0,25).map(ct=>[fmtDate(ct.data),ct.canal,ct.semResposta?'Sim':'Não',ct.descricao]), startY:sy, theme:'striped', styles:{fontSize:8}, headStyles:{fillColor:[37,99,199]}, columnStyles:{3:{cellWidth:90}} });
   sy = (doc.lastAutoTable?.finalY || sy) + 8;
-  if (solicitacoesCliente.length) doc.autoTable({ head:[['Prazo','Produto/Serviço','Prioridade','Solicitação']], body:solicitacoesCliente.map(sol=>[fmtDate(sol.prazo),sol.produto||'—',sol.prioridade||'normal',sol.descricao||'—']), startY:sy, theme:'striped', styles:{fontSize:8}, headStyles:{fillColor:[245,166,35]}, columnStyles:{3:{cellWidth:90}} });
+  if (solicitacoesCliente.length) doc.autoTable({ head:[['Prazo de envio','Produto/Serviço','Prioridade','Solicitação']], body:solicitacoesCliente.map(sol=>[fmtDate(sol.prazo),sol.produto||'—',sol.prioridade||'normal',sol.descricao||'—']), startY:sy, theme:'striped', styles:{fontSize:8}, headStyles:{fillColor:[245,166,35]}, columnStyles:{3:{cellWidth:90}} });
   sy = (doc.lastAutoTable?.finalY || sy) + 8;
   if (concluidosCliente.length) doc.autoTable({ head:[['Concluído em','Tipo','Motivo','Observação']], body:concluidosCliente.slice(0,20).map(cc=>[fmtDate(cc.concluidoEm),cc.tipo,cc.motivo||'—',cc.obsConclusao||'—']), startY:sy, theme:'striped', styles:{fontSize:8}, headStyles:{fillColor:[34,140,92]} });
   pdfFooter(doc);
@@ -8843,7 +8789,7 @@ function exportarPdf() {
     lista.sort((a,b)=>a.prazo.localeCompare(b.prazo));
     pdfHeader(doc, 'Relatório de Solicitações de Orçamento' + (range?` (${fmtDate(range[0])} a ${fmtDate(range[1])})`:''));
     const body = lista.map(sol => { const d = dadosSolicitacaoCliente(sol); return [fmtDate(sol.prazo), fmtDate(sol.dataSolicitacao), d.nome, d.solicitante||'—', sol.telefone||'—', sol.email||'—', d.empresa||'—', d.produto||'—', sol.prioridade||'normal', sol.descricao||'—']; });
-    doc.autoTable({ head: [['Prazo','Solicitado em','Cliente','Solicitante','Telefone','E-mail','Razão Social','Produto/Serviço','Prioridade','Descrição']], body, startY: 28, theme:'striped', headStyles:{fillColor:[245,166,35]}, styles:{fontSize:8}, columnStyles:{7:{cellWidth:75}} });
+    doc.autoTable({ head: [['Prazo de envio','Solicitado em','Cliente','Solicitante','Telefone','E-mail','Razão Social','Produto/Serviço','Prioridade','Descrição']], body, startY: 28, theme:'striped', headStyles:{fillColor:[245,166,35]}, styles:{fontSize:8}, columnStyles:{7:{cellWidth:75}} });
     pdfFooter(doc); doc.save(`relatorio_solicitacoes_orcamento_${today()}.pdf`);
   }
 
@@ -8865,7 +8811,7 @@ function exportarPdf() {
     const contatosMes = filtrarPorRange([...contatos], 'data', r).slice(0, 40);
     if (contatosMes.length) { doc.autoTable({ head:[['Data','Cliente','Canal','Sem Resp.','Descrição']], body:contatosMes.map(ct=>{const c=clientes.find(x=>x.id===ct.clienteId); return [fmtDate(ct.data),c?c.nome:'—',ct.canal,ct.semResposta?'Sim':'Não',ct.descricao];}), startY:y, theme:'striped', headStyles:{fillColor:[37,99,199]}, styles:{fontSize:7.5}, columnStyles:{4:{cellWidth:110}} }); y = doc.lastAutoTable.finalY + 8; }
     const solMes = filtrarPorRange([...solicitacoesOrcamento], 'prazo', r).slice(0, 40);
-    if (solMes.length) { doc.autoTable({ head:[['Prazo','Cliente','Produto/Serviço','Prioridade','Solicitação']], body:solMes.map(sol=>{const d=dadosSolicitacaoCliente(sol); return [fmtDate(sol.prazo),d.nome,d.produto||'—',sol.prioridade||'normal',sol.descricao||'—'];}), startY:y, theme:'striped', headStyles:{fillColor:[245,166,35]}, styles:{fontSize:7.5}, columnStyles:{4:{cellWidth:110}} }); }
+    if (solMes.length) { doc.autoTable({ head:[['Prazo de envio','Cliente','Produto/Serviço','Prioridade','Solicitação']], body:solMes.map(sol=>{const d=dadosSolicitacaoCliente(sol); return [fmtDate(sol.prazo),d.nome,d.produto||'—',sol.prioridade||'normal',sol.descricao||'—'];}), startY:y, theme:'striped', headStyles:{fillColor:[245,166,35]}, styles:{fontSize:7.5}, columnStyles:{4:{cellWidth:110}} }); }
     pdfFooter(doc); doc.save(`relatorio_mensal_completo_${today()}.pdf`);
   }
 
@@ -9224,7 +9170,7 @@ function configurarModalConclusao(tipo, item) {
     }
     if (resumo) {
       resumo.style.display = 'flex';
-      resumo.innerHTML = `<div class="concluir-summary-icon"><i class="fa-solid ${icon}"></i></div><div><div class="concluir-summary-title">${nomeCliente}</div><div class="concluir-summary-text">${isSolicitacao ? 'Solicitação de orçamento' : 'Orçamento recorrente'}<br>Produto/serviço: ${item?.produto || item?.obs || 'Não informado'}<br>${isSolicitacao ? `Prazo original: ${fmtDate(item?.prazo)}` : `Data do acompanhamento: ${fmtDate(item?.data)}`}</div></div>`;
+      resumo.innerHTML = `<div class="concluir-summary-icon"><i class="fa-solid ${icon}"></i></div><div><div class="concluir-summary-title">${nomeCliente}</div><div class="concluir-summary-text">${isSolicitacao ? 'Solicitação de orçamento' : 'Orçamento recorrente'}<br>Produto/serviço: ${item?.produto || item?.obs || 'Não informado'}<br>${isSolicitacao ? `Prazo de envio original: ${fmtDate(item?.prazo)}` : `Data do acompanhamento: ${fmtDate(item?.data)}`}</div></div>`;
     }
   } else {
     title.innerHTML = '<i class="fa-solid fa-circle-check" style="color:var(--success);margin-right:8px"></i>Concluir retorno';
@@ -9841,7 +9787,7 @@ criarAcoesDoDia = function() {
     const add = (nivel, titulo, meta, icon, actions='') => itens.push({nivel,titulo,meta,icon,actions});
     solicitacoesOrcamento.forEach(s => {
       const d = dadosSolicitacaoCliente(s);
-      if (s.prazo < hoje) add('critica', 'Solicitação atrasada', `${d.nome} • Prazo ${fmtDate(s.prazo)}`, 'fa-triangle-exclamation', `<button class="btn btn-danger btn-sm" onclick="irParaSolicitacaoEditar(${s.id})">Abrir</button>`);
+      if (s.prazo < hoje) add('critica', 'Solicitação atrasada', `${d.nome} • Prazo de envio ${fmtDate(s.prazo)}`, 'fa-triangle-exclamation', `<button class="btn btn-danger btn-sm" onclick="irParaSolicitacaoEditar(${s.id})">Abrir</button>`);
       else if (s.prazo === hoje) add('atencao', 'Solicitação para hoje', `${d.nome} • ${s.produto || 'Sem produto informado'}`, 'fa-bell', `<button class="btn btn-warning btn-sm" onclick="irParaSolicitacaoEditar(${s.id})">Abrir</button>`);
       if (!s.clienteId) add('atencao', 'Solicitação sem cliente cadastrado', `${d.nome} • vincule ou cadastre o cliente`, 'fa-user-slash', `<button class="btn btn-ghost btn-sm" onclick="irParaSolicitacaoEditar(${s.id})">Vincular</button>`);
     });
@@ -10650,7 +10596,7 @@ body:not(.theme-light) .btn-ghost {
 
     if (Array.isArray(solicitacoesOrcamento)) solicitacoesOrcamento.forEach(s => {
       const d = (typeof dadosSolicitacaoCliente === 'function') ? dadosSolicitacaoCliente(s) : {nome:s.nome || 'Cliente', produto:s.produto || ''};
-      if (s.prazo && s.prazo < hoje) add('critica', 'Solicitação atrasada', `${d.nome || 'Cliente'} • Prazo ${formatDateSafe(s.prazo)}`, 'fa-triangle-exclamation', `<button class="btn btn-danger btn-sm" onclick="irParaSolicitacaoEditar(${s.id}); fecharDropdownNotificacoes();">Abrir</button>`);
+      if (s.prazo && s.prazo < hoje) add('critica', 'Solicitação atrasada', `${d.nome || 'Cliente'} • Prazo de envio ${formatDateSafe(s.prazo)}`, 'fa-triangle-exclamation', `<button class="btn btn-danger btn-sm" onclick="irParaSolicitacaoEditar(${s.id}); fecharDropdownNotificacoes();">Abrir</button>`);
       else if (s.prazo === hoje) add('atencao', 'Solicitação para hoje', `${d.nome || 'Cliente'} • ${s.produto || d.produto || 'Sem produto informado'}`, 'fa-clipboard-list', `<button class="btn btn-warning btn-sm" onclick="irParaSolicitacaoEditar(${s.id}); fecharDropdownNotificacoes();">Abrir</button>`);
       if (!s.clienteId) add('info', 'Solicitação sem cliente vinculado', `${d.nome || 'Cliente'} • revise o cadastro/vínculo`, 'fa-user-slash', `<button class="btn btn-ghost btn-sm" onclick="irParaSolicitacaoEditar(${s.id}); fecharDropdownNotificacoes();">Vincular</button>`);
     });
@@ -10946,7 +10892,7 @@ body:not(.theme-light) .btn-ghost {
       const key = `s${s.id}-${hoje}`;
       if (s.prazo === hoje && horario <= agora && !alarmeJaTratado(key) && !itemSonecado(key)) {
         const d = (typeof dadosSolicitacaoCliente === 'function') ? dadosSolicitacaoCliente(s) : {nome:s.nome || 'Cliente'};
-        novos.push({tipo:'solicitacao', item:s, key, clienteId:s.clienteId, cliente:d.nome, icon:'fa-clipboard-list', titulo:'Prazo de solicitação chegou!', pushTitulo:'📋 Solicitação para hoje', obs:`${d.nome || 'Cliente'} — ${s.produto || 'Sem produto informado'}. ${s.descricao || ''}`});
+        novos.push({tipo:'solicitacao', item:s, key, clienteId:s.clienteId, cliente:d.nome, icon:'fa-clipboard-list', titulo:'Prazo de envio chegou!', pushTitulo:'📋 Solicitação para hoje', obs:`${d.nome || 'Cliente'} — ${s.produto || 'Sem produto informado'}. ${s.descricao || ''}`});
       }
     });
     propostasAcompanhamentoSafe().forEach(p => {
@@ -11395,7 +11341,7 @@ body.theme-light .client-summary-card, body.theme-light .client-timeline-entry{ 
     el.innerHTML = [
       chk('retornos','Retornos agendados','Alarme para retornos do dia.'),
       chk('recorrentes','Orçamentos recorrentes','Alarme para recorrentes vencendo.'),
-      chk('solicitacoesHoje','Solicitações para hoje','Prazo de orçamento chegando hoje.'),
+      chk('solicitacoesHoje','Solicitações para hoje','Prazo de envio chegando hoje.'),
       chk('propostasSemResposta','Propostas sem resposta','Cobrança de follow-up comercial.'),
       chk('propostasAjuste','Propostas com ajuste','Lembrete para revisar proposta.'),
       chk('som','Som do alarme','Tocar alerta sonoro no navegador.'),
@@ -11828,7 +11774,7 @@ body.theme-light .hist-event-icon{ background:rgba(37,99,199,.08); border-color:
     });
     (solicitacoesOrcamento||[]).forEach(s=>{
       const d = typeof dadosSolicitacaoCliente === 'function' ? dadosSolicitacaoCliente(s) : {nome:s.nome||'Cliente não cadastrado'};
-      arr.push(eventoBase({ id:'sol-'+s.id, tipo:'solicitacao', data:s.dataSolicitacao||s.criadoEm||s.prazo||todayFinal(), clienteId:s.clienteId||null, title:'Solicitação de orçamento aberta', desc:`${s.produto||'Produto/serviço não informado'}\n${s.descricao||''}`, icon:'fa-clipboard-list', sourceId:s.id, sourceTipo:'solicitacao', extra:`Etapa: ${typeof etapaSolicitacaoLabel === 'function' ? etapaSolicitacaoLabel(s.etapa||'nova') : (s.etapa||'nova')} • Prazo: ${fmtFinal(s.prazo)}`, badges:[s.prioridade||'normal', d.nome] }));
+      arr.push(eventoBase({ id:'sol-'+s.id, tipo:'solicitacao', data:s.dataSolicitacao||s.criadoEm||s.prazo||todayFinal(), clienteId:s.clienteId||null, title:'Solicitação de orçamento aberta', desc:`${s.produto||'Produto/serviço não informado'}\n${s.descricao||''}`, icon:'fa-clipboard-list', sourceId:s.id, sourceTipo:'solicitacao', extra:`Etapa: ${typeof etapaSolicitacaoLabel === 'function' ? etapaSolicitacaoLabel(s.etapa||'nova') : (s.etapa||'nova')} • Prazo de envio: ${fmtFinal(s.prazo)}`, badges:[s.prioridade||'normal', d.nome] }));
     });
     (typeof listaPropostasHistorico === 'function' ? listaPropostasHistorico() : []).forEach(p=>{
       arr.push(eventoBase({ id:'prop-'+p.ref, tipo:'proposta', data:p.data||todayFinal(), clienteId:p.clienteId||null, title:'Proposta enviada', desc:`${p.origem||''}\nStatus: ${statusLabelFinal(p.status)}${p.pecas||p.servico?`\nNº orçamento: ${p.pecas?`Peças ${p.pecas}`:''}${p.pecas&&p.servico?' • ':''}${p.servico?`Serviço ${p.servico}`:''}`:''}\n${p.descricao||''}`, icon:'fa-file-signature', status:p.status||'aguardando_retorno', ref:p.ref, sourceTipo:'proposta', extra:`Status: ${statusLabelFinal(p.status)}`, badges:[statusLabelFinal(p.status)] }));
@@ -13398,22 +13344,16 @@ body.theme-light .hist-event-icon{ background:rgba(37,99,199,.08); border-color:
 
   window.renderPropostaKanbanCard = function(p){
     const status = p.status || 'aguardando_retorno';
-    const rows = p.controleVendas || [];
-    const controleHtml = rows.length ? `<div class="proposta-kanban-cv">${rows.map(r => `<div class="proposta-kanban-cv-row">
-      <div class="proposta-kanban-cv-top"><strong>${escFinal(r.numeroProposta || 'Sem nº')} • ${tipoOrcamentoLabelFinal(r.tipoOrcamento)}</strong><span class="cv-status-pill cv-status-${r.statusPedido || 'ag_aprovacao'}">${statusPedidoLabelFinal(r.statusPedido)}</span></div>
-      <div class="proposta-valor"><small>Valor da proposta</small><strong>${moedaBRFinal(r.valor)}</strong></div>
-      ${r.contato ? `<div class="proposta-kanban-meta"><strong>Contato:</strong> ${escFinal(r.contato)}</div>` : ''}
-      ${r.resumo ? `<div class="proposta-itens"><strong>Itens / resumo</strong><div>${escFinal(r.resumo)}</div></div>` : ''}
-      ${r.observacao ? `<div class="proposta-observacao"><strong>Observações</strong><div>${escFinal(r.observacao)}</div></div>` : ''}
-    </div>`).join('')}</div>` : `<div class="proposta-kanban-cv"><div class="proposta-kanban-cv-row"><div class="proposta-kanban-cv-top"><strong>Controle de vendas</strong><span class="cv-status-pill cv-status-ag_aprovacao">Pendente</span></div><div class="proposta-kanban-cv-top"><span>Sem linha administrativa</span><span></span></div></div></div>`;
-    const nome = String(p.nome || 'Cliente não cadastrado').toLocaleUpperCase('pt-BR');
-    return `<div class="proposta-kanban-card ${typeof propostaStatusClasse==='function'?propostaStatusClasse(status):''}" draggable="true" data-proposta-ref="${escFinal(p.ref)}" ondblclick="abrirAtualizarStatusProposta('${escFinal(p.ref)}')" ondragstart="dragPropostaKanban(event,'${escFinal(p.ref)}')" ondragend="dragEndPropostaKanban(event)" title="Duplo clique para atualizar o status">
-      <div class="proposta-kanban-card-top"><div style="min-width:0;flex:1"><div class="proposta-kanban-title">${escFinal(nome)}</div>${p.empresa?`<div class="proposta-kanban-meta">${escFinal(p.empresa)}</div>`:''}</div><span class="proposta-kanban-status">${statusPropostaLabelFinal(status)}</span></div>
-      <div class="proposta-kanban-meta"><strong>Enviada em:</strong> ${typeof fmtDate==='function'?fmtDate(p.data):escFinal(p.data)} • ${escFinal(p.origem || 'Proposta enviada')}</div>
-      ${controleHtml}
-      ${p.descricao?`<div class="proposta-kanban-desc"><strong>Descrição do envio</strong><div>${escFinal(p.descricao)}</div></div>`:''}
-      ${p.observacaoAtualizacao ? `<div class="proposta-observacao"><strong>Última atualização</strong><div>${escFinal(p.observacaoAtualizacao)}</div></div>` : ''}
-      <div class="proposta-kanban-actions">
+    const rows = linhasEdicaoProposta(p);
+    const source = propostaSourceFromRef(p.ref)?.item;
+    const resumo = source?.produto || rows.map(r => r.resumo).filter(Boolean).join(' / ') || p.descricao || 'Não informado';
+    return `<div class="proposta-kanban-card proposal-mini" draggable="true" data-proposta-ref="${escFinal(p.ref)}" ondblclick="abrirAtualizarStatusProposta('${escFinal(p.ref)}')" ondragstart="dragPropostaKanban(event,'${escFinal(p.ref)}')" ondragend="dragEndPropostaKanban(event)">
+      <div class="mini-heading"><div class="proposta-kanban-title">${escFinal(p.nome)}</div><div class="mini-proposal-numbers">${rows.map(r => `<div><small>Proposta ${escFinal(r.numeroProposta || 'Sem nº')}</small><strong>${moedaBRFinal(r.valor)}</strong></div>`).join('')}</div></div>
+      <div class="mini-item"><small>Item / resumo da proposta</small><strong>${escFinal(resumo)}</strong></div>
+      <div class="mini-requester">Status: ${statusPropostaLabelFinal(status)}</div>
+      ${rows.filter(r => r.statusPedido).map(r => `<div class="mini-requester">${tipoOrcamentoLabelFinal(r.tipoOrcamento)}: ${statusPedidoLabelFinal(r.statusPedido)}</div>`).join('')}
+      ${p.observacaoAtualizacao ? `<div class="mini-requester">Última atualização: ${escFinal(p.observacaoAtualizacao)}</div>` : ''}
+      <div class="proposta-kanban-actions"><button class="btn btn-ghost btn-sm" onclick="abrirEditarProposta('${escFinal(p.ref)}'); event.stopPropagation();"><i class="fa-solid fa-pen"></i> Editar</button>
         <button class="btn btn-primary btn-sm" onclick="abrirAtualizarStatusProposta('${escFinal(p.ref)}'); event.stopPropagation();"><i class="fa-solid fa-sliders"></i> Status</button>
         ${p.clienteId?`<button class="btn btn-ghost btn-sm" onclick="registrarContatoFromProposta('${escFinal(p.ref)}'); event.stopPropagation();"><i class="fa-solid fa-phone"></i> Contato</button><button class="btn btn-warning btn-sm" onclick="agendarRetornoFromProposta('${escFinal(p.ref)}'); event.stopPropagation();"><i class="fa-regular fa-calendar-plus"></i> Retorno</button>`:''}
         <button class="btn btn-success btn-sm" onclick="atualizarStatusPropostaRapido('${escFinal(p.ref)}','aprovada'); event.stopPropagation();"><i class="fa-solid fa-check"></i> Aprovada</button>
@@ -16040,5 +15980,7 @@ body.theme-light .brand-logo-header .logo-lightmode { filter:drop-shadow(0 2px 5
     #view-solicitacoes .propostas-kanban-wrap { padding: 10px !important; }
   }
 </style>
+<link rel="stylesheet" href="requests-revision.css">
+<script src="requests-revision.js"></script>
 </body>
 </html>
