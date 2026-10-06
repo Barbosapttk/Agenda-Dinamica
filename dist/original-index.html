@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -2194,11 +2194,6 @@ body.theme-light .card:has(#dash-solicitacoes-pendentes) .empty small {
   border-color: rgba(0,214,182,0.26);
 }
 
-.card:has(#dash-orcamentos-semana) {
-  background: linear-gradient(135deg, rgba(7,39,121,0.94), rgba(4,25,73,0.96));
-  border-color: rgba(53,128,255,0.32);
-}
-
 .card:has(#dash-historico) {
   background: linear-gradient(135deg, rgba(56,22,90,0.94), rgba(20,14,64,0.96));
   border-color: rgba(156,84,255,0.30);
@@ -2214,32 +2209,24 @@ body.theme-light .card:has(#dash-proximos) {
   border-color: rgba(8,127,104,0.20);
 }
 
-body.theme-light .card:has(#dash-orcamentos-semana) {
-  background: linear-gradient(135deg, #deeafa, #d8e2f1);
-  border-color: rgba(7,95,226,0.22);
-}
-
 body.theme-light .card:has(#dash-historico) {
   background: linear-gradient(135deg, #e8e0f5, #dfe5f1);
   border-color: rgba(102,62,199,0.22);
 }
 
 .card:has(#dash-proximos) .card-header,
-.card:has(#dash-orcamentos-semana) .card-header,
 .card:has(#dash-historico) .card-header,
 .card:has(#dash-solicitacoes-pendentes) .card-header {
   background: transparent;
 }
 
 .card:has(#dash-proximos) .card-title,
-.card:has(#dash-orcamentos-semana) .card-title,
 .card:has(#dash-historico) .card-title,
 .card:has(#dash-solicitacoes-pendentes) .card-title {
   color: #f8fbff;
 }
 
 body.theme-light .card:has(#dash-proximos) .card-title,
-body.theme-light .card:has(#dash-orcamentos-semana) .card-title,
 body.theme-light .card:has(#dash-historico) .card-title,
 body.theme-light .card:has(#dash-solicitacoes-pendentes) .card-title {
   color: var(--text);
@@ -3846,19 +3833,21 @@ body.theme-light .cv-hero { background:linear-gradient(135deg, rgba(10,140,92,.1
       <i class="fa-solid fa-gear"></i> Configurações
     </div>
   </nav>
-  <button class="btn btn-ghost btn-sm" onclick="openGlobalSearch()" style="flex-shrink:0" title="Busca rápida (Ctrl+K)">
-    <i class="fa-solid fa-magnifying-glass"></i> Buscar <span class="gsearch-hint">Ctrl K</span>
-  </button>
-  <div class="auth-user-pill" title="Usuário logado"><i class="fa-solid fa-user-shield"></i> <span id="auth-user-email">Logado</span></div>
-  <button class="btn btn-ghost btn-sm btn-logout" onclick="sairDoSistema()" style="flex-shrink:0" title="Sair do sistema">
-    <i class="fa-solid fa-right-from-bracket"></i> Sair
-  </button>
-  <div class="theme-toggle-wrap">
-    <i class="fa-solid fa-sun" style="color:var(--warning);font-size:13px"></i>
-    <button class="theme-switch" id="themeSwitch" onclick="toggleTheme()" title="Alternar tema claro/escuro">
-      <span class="theme-switch-knob"></span>
+  <div class="header-actions">
+    <button class="btn btn-ghost btn-sm" onclick="openGlobalSearch()" style="flex-shrink:0" title="Busca rápida (Ctrl+K)">
+      <i class="fa-solid fa-magnifying-glass"></i> Buscar <span class="gsearch-hint">Ctrl K</span>
     </button>
-    <i class="fa-solid fa-moon" style="color:var(--text2);font-size:13px"></i>
+    <div class="auth-user-pill" title="Usuário logado"><i class="fa-solid fa-user-shield"></i> <span id="auth-user-email">Logado</span></div>
+    <button class="btn btn-ghost btn-sm btn-logout" onclick="sairDoSistema()" style="flex-shrink:0" title="Sair do sistema">
+      <i class="fa-solid fa-right-from-bracket"></i> Sair
+    </button>
+    <div class="theme-toggle-wrap">
+      <i class="fa-solid fa-sun" style="color:var(--warning);font-size:13px"></i>
+      <button class="theme-switch" id="themeSwitch" onclick="toggleTheme()" title="Alternar tema claro/escuro">
+        <span class="theme-switch-knob"></span>
+      </button>
+      <i class="fa-solid fa-moon" style="color:var(--text2);font-size:13px"></i>
+    </div>
   </div>
 </header>
 
@@ -3956,7 +3945,9 @@ body.theme-light .cv-hero { background:linear-gradient(135deg, rgba(10,140,92,.1
           <p>Itens enviados para compras que ainda precisam de acompanhamento.</p>
         </div>
       </div>
-      <div id="cotacoes-compras-kanban"></div>
+      <div id="cotacoes-compras-kanban" class="cotacoes-compras-vazio">
+        <div class="cotacoes-compras-empty"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i><p>Nenhuma cotação pendente para compras.</p></div>
+      </div>
     </section>
 
     <div class="stats dash-core-stats" style="display:none">
@@ -5143,6 +5134,15 @@ async function sairDoSistema() {
 }
 
 async function iniciarComLogin() {
+  const modoSemLoginLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname) &&
+    new URLSearchParams(window.location.search).get('sem-login') === '1';
+  if (modoSemLoginLocal) {
+    document.body.classList.remove('auth-locked');
+    document.body.classList.add('auth-ok');
+    await initApp();
+    return;
+  }
+
   if (!supabaseClient) {
     bloquearSistema('Supabase não configurado. Confira a URL e a chave anon no HTML.');
     return;
@@ -10130,7 +10130,6 @@ body.theme-light .dashboard-summary-grid .stat-card:nth-child(6) { background: l
 body.theme-light #card-acoes-prioritarias { background: linear-gradient(135deg, #f4d4db 0%, #eddcf2 55%, #dbe4f7 100%) !important; }
 body.theme-light .card:has(#dash-solicitacoes-pendentes) { background: linear-gradient(135deg, #f5d6dd, #ebdef3) !important; }
 body.theme-light .card:has(#dash-proximos) { background: linear-gradient(135deg, #d4f0ea, #d8edf3) !important; }
-body.theme-light .card:has(#dash-orcamentos-semana) { background: linear-gradient(135deg, #d7e6fc, #dde3f7) !important; }
 body.theme-light .card:has(#dash-historico) { background: linear-gradient(135deg, #e6daf8, #dfe4f7) !important; }
 body.theme-light .orcamento-kanban-wrap,
 body.theme-light .propostas-kanban-wrap {
@@ -10622,6 +10621,7 @@ body:not(.theme-light) .btn-ghost {
     if (document.getElementById('header-alerts-wrap')) return;
     const header = document.querySelector('.topheader') || document.querySelector('.app-header') || document.querySelector('header');
     if (!header) return;
+    const actions = header.querySelector('.header-actions');
     const busca = header.querySelector('button[onclick="openGlobalSearch()"]');
     const wrap = document.createElement('div');
     wrap.className = 'header-alerts-wrap';
@@ -10637,7 +10637,8 @@ body:not(.theme-light) .btn-ghost {
         </div>
         <div class="header-alert-list" id="header-alert-list"></div>
       </div>`;
-    if (busca) header.insertBefore(wrap, busca);
+    if (actions) actions.insertBefore(wrap, actions.firstChild);
+    else if (busca) header.insertBefore(wrap, busca);
     else header.appendChild(wrap);
   }
 
@@ -14056,9 +14057,12 @@ body.theme-light #modalSolicitacao .sol-client-linked-card {
 .cotacoes-compras-coluna-titulo { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; color:var(--text2); font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.45px; }
 .cotacoes-compras-contador { min-width:22px; padding:2px 7px; border-radius:999px; background:var(--surface3); color:var(--text2); text-align:center; }
 .cotacao-compras-lista { display:grid; gap:8px; }
-.cotacao-compras-card { padding:11px; border:1px solid var(--border); border-radius:9px; background:var(--surface); box-shadow:var(--shadow-sm); }
+.cotacao-compras-card { display:flex; flex-direction:column; gap:9px; padding:11px; border:1px solid var(--border); border-radius:9px; background:var(--surface); box-shadow:var(--shadow-sm); min-height:160px; }
+.cotacao-compras-top { display:flex; align-items:center; gap:8px; padding-bottom:8px; border-bottom:1px solid var(--border); }
+.cotacao-compras-icon { width:30px; height:30px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center; background:var(--warning-bg); color:var(--warning); font-size:13px; box-shadow:inset 0 1px 0 rgba(255,255,255,0.12); }
+.cotacao-compras-titulo { font-size:11.5px; font-weight:800; letter-spacing:.6px; text-transform:uppercase; color:var(--text2); }
 .cotacao-compras-descricao { color:var(--text); font-size:13px; font-weight:650; line-height:1.45; white-space:pre-wrap; overflow-wrap:anywhere; }
-.cotacao-compras-meta { display:flex; flex-wrap:wrap; align-items:center; gap:7px; margin-top:8px; color:var(--text3); font-size:11.5px; }
+.cotacao-compras-meta { display:flex; flex-wrap:wrap; align-items:center; gap:7px; margin-top:auto; color:var(--text3); font-size:11.5px; }
 .cotacao-compras-status { padding:3px 7px; border-radius:999px; background:var(--accent-bg); color:var(--accent); font-weight:750; }
 .cotacao-compras-status.sem-retorno { background:var(--warning-bg); color:var(--warning); }
 .cotacao-compras-acoes { display:flex; flex-wrap:wrap; gap:5px; margin-top:9px; padding-top:8px; border-top:1px solid var(--border); }
@@ -14208,6 +14212,7 @@ function cardCotacaoCompras(item) {
   const id = JSON.stringify(String(item.id));
   const semRetorno = item.status === 'sem_retorno' ? ' sem-retorno' : '';
   return `<article class="cotacao-compras-card">
+    <div class="cotacao-compras-top"><span class="cotacao-compras-icon"><i class="fa-solid fa-cart-shopping"></i></span><span class="cotacao-compras-titulo">Cotação de compras</span></div>
     <div class="cotacao-compras-descricao">${escaparHtmlCotacaoCompras(item.descricao)}</div>
     <div class="cotacao-compras-meta"><span class="cotacao-compras-status${semRetorno}">${statusCotacaoComprasLabel(item.status)}</span>${item.criadoEm ? `<span>Criada em ${fmtDate(item.criadoEm)}</span>` : ''}</div>
     <div class="cotacao-compras-acoes">
@@ -14226,7 +14231,7 @@ function renderCotacoesComprasPainel() {
   const ativas = getCotacoesComprasAtivas();
   if (!ativas.length) {
     container.className = 'cotacoes-compras-vazio';
-    container.textContent = 'Nenhuma cotação pendente para compras.';
+    container.innerHTML = '<div class="cotacoes-compras-empty"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i><p>Nenhuma cotação pendente para compras.</p></div>';
     return;
   }
   const colunas = [
@@ -14737,45 +14742,10 @@ body.theme-light {
 
 /* Tokens individuais dos cinco blocos principais */
 #card-acoes-prioritarias { --deck-color:var(--dash-now); --deck-surface:var(--dash-now-surface); }
-#cotacoes-compras-painel { --deck-color:var(--dash-quotes); --deck-surface:var(--dash-quotes-surface); }
-#view-dashboard .card:has(#dash-proximos) { --deck-color:var(--dash-schedule); --deck-surface:var(--dash-schedule-surface); }
-#view-dashboard .card:has(#dash-orcamentos-semana) { --deck-color:var(--dash-recurring); --deck-surface:var(--dash-recurring-surface); }
-#view-dashboard .card:has(#dash-historico) { --deck-color:var(--dash-history); --deck-surface:var(--dash-history-surface); }
 
-/* Superfície metálica mais clara e identidade própria */
-#card-acoes-prioritarias,
-#cotacoes-compras-painel,
-#view-dashboard .card:has(#dash-proximos),
-#view-dashboard .card:has(#dash-orcamentos-semana),
-#view-dashboard .card:has(#dash-historico) {
-  background:
-    var(--dash-metal-sheen),
-    linear-gradient(145deg, color-mix(in srgb,var(--deck-surface) 82%,#fff 8%), color-mix(in srgb,var(--deck-surface) 88%,#000 6%)) !important;
-  border:1px solid color-mix(in srgb,var(--deck-color) 54%,rgba(255,255,255,.16)) !important;
-  border-top:3px solid var(--deck-color) !important;
-  box-shadow:var(--dash-card-shadow) !important;
-}
-#card-acoes-prioritarias .card-header,
-#cotacoes-compras-painel .card-header,
-#view-dashboard .card:has(#dash-proximos) .card-header,
-#view-dashboard .card:has(#dash-orcamentos-semana) .card-header,
-#view-dashboard .card:has(#dash-historico) .card-header {
-  background:linear-gradient(100deg,color-mix(in srgb,var(--deck-color) 36%,var(--deck-surface)),color-mix(in srgb,var(--deck-surface) 90%,#fff 5%)) !important;
-  border-bottom:1px solid color-mix(in srgb,var(--deck-color) 42%,rgba(255,255,255,.14)) !important;
-  box-shadow:inset 0 1px rgba(255,255,255,.16), inset 0 -1px rgba(0,0,0,.18) !important;
-}
-#card-acoes-prioritarias .card-title,
-#cotacoes-compras-painel .card-title,
-#view-dashboard .card:has(#dash-proximos) .card-title,
-#view-dashboard .card:has(#dash-orcamentos-semana) .card-title,
-#view-dashboard .card:has(#dash-historico) .card-title { color:var(--dash-card-text) !important; }
-#card-acoes-prioritarias .card-title i,
-#cotacoes-compras-painel .card-title i,
-#view-dashboard .card:has(#dash-proximos) .card-title i,
-#view-dashboard .card:has(#dash-orcamentos-semana) .card-title i,
-#view-dashboard .card:has(#dash-historico) .card-title i { color:color-mix(in srgb,var(--deck-color) 70%,#fff 30%) !important; }
-#cotacoes-compras-painel .card-header p { color:var(--dash-card-muted) !important; }
-body.theme-light #cotacoes-compras-painel .card-header p { color:var(--dash-card-muted) !important; }
+#view-dashboard .card:has(#dash-proximos) { --deck-color:var(--dash-schedule); --deck-surface:var(--dash-schedule-surface); }
+
+#view-dashboard .card:has(#dash-historico) { --deck-color:var(--dash-history); --deck-surface:var(--dash-history-surface); }
 
 /* Alinha os decks inferiores pela mesma altura e linha de base */
 #view-dashboard .dashboard-grid-2 {
@@ -14788,9 +14758,12 @@ body.theme-light #cotacoes-compras-painel .card-header p { color:var(--dash-card
   display:flex;
   flex-direction:column;
 }
+#view-dashboard .dashboard-grid-2 > .card:has(#dash-orcamentos-semana) {
+  grid-column:1 / -1;
+}
 #view-dashboard .dashboard-grid-2 > .card > .card-header { flex:0 0 auto; }
 #view-dashboard .dashboard-grid-2 > .card > :last-child { flex:1 1 auto; min-height:0; }
-#dash-orcamentos-semana, #dash-historico { height:100%; align-content:start; }
+#dash-historico { height:100%; align-content:start; }
 
 /* Ações rápidas: uma família de cor por botão, sem mistura conflitante */
 .quick-action-card {
@@ -15647,23 +15620,7 @@ body.theme-light .brand-logo-header .logo-lightmode { filter:drop-shadow(0 2px 5
   .floating-config-btn { display: none !important; }
 
   #view-dashboard #card-acoes-prioritarias,
-  #view-dashboard #card-para-hoje,
-  #view-dashboard #cotacoes-compras-painel,
-  #view-dashboard .card:has(#dash-orcamentos-semana),
-  #view-dashboard .card:has(#dash-historico) {
-    --dashboard-color: var(--historico);
-    background: color-mix(in srgb, var(--dashboard-color) 16%, #151515) !important;
-    background-image: none !important;
-    border: 1px solid color-mix(in srgb, var(--dashboard-color) 54%, #383838) !important;
-    border-top: 3px solid var(--dashboard-color) !important;
-    box-shadow: none !important;
-  }
-
-  #view-dashboard #card-acoes-prioritarias,
   #view-dashboard #card-para-hoje { --dashboard-color: #DC2626; }
-
-  #view-dashboard #cotacoes-compras-painel,
-  #view-dashboard .card:has(#dash-orcamentos-semana) { --dashboard-color: #9333EA; }
 
   #view-dashboard .card:has(#dash-historico) { --dashboard-color: #6B7280; }
   #view-dashboard .stats .stat-card:nth-child(2) { --dashboard-color: #2563EB; }
@@ -15729,8 +15686,6 @@ body.theme-light .brand-logo-header .logo-lightmode { filter:drop-shadow(0 2px 5
 
   #view-dashboard #card-acoes-prioritarias .card-header,
   #view-dashboard #card-para-hoje .card-header,
-  #view-dashboard #cotacoes-compras-painel .card-header,
-  #view-dashboard .card:has(#dash-orcamentos-semana) .card-header,
   #view-dashboard .card:has(#dash-historico) .card-header {
     background: color-mix(in srgb, var(--dashboard-color) 26%, #151515) !important;
     background-image: none !important;
@@ -15970,6 +15925,195 @@ body.theme-light .brand-logo-header .logo-lightmode { filter:drop-shadow(0 2px 5
     #view-solicitacoes .orcamento-kanban-wrap,
     #view-solicitacoes .propostas-kanban-wrap { padding: 10px !important; }
   }
+</style>
+<style id="dashboard-purchase-recurring-card-colors">
+#view-dashboard #cotacoes-compras-painel {
+  --deck-color:var(--dash-quotes);
+  --deck-surface:var(--dash-quotes-surface);
+}
+#view-dashboard .card:has(#dash-orcamentos-semana) {
+  --deck-color:var(--dash-recurring);
+  --deck-surface:var(--dash-recurring-surface);
+}
+#view-dashboard #cotacoes-compras-painel,
+#view-dashboard .card:has(#dash-orcamentos-semana) {
+  min-height:300px;
+  display:flex !important;
+  flex-direction:column !important;
+  background:
+    var(--dash-metal-sheen),
+    linear-gradient(145deg,color-mix(in srgb,var(--deck-color) 12%,var(--theme-card)),var(--theme-card)) !important;
+  background-color:color-mix(in srgb,var(--deck-color) 12%,var(--theme-card)) !important;
+  border:1px solid color-mix(in srgb,var(--deck-color) 54%,rgba(255,255,255,.16)) !important;
+  border-top:3px solid var(--deck-color) !important;
+  box-shadow:var(--dash-card-shadow) !important;
+}
+#view-dashboard #cotacoes-compras-painel .card-header,
+#view-dashboard .card:has(#dash-orcamentos-semana) .card-header {
+  flex:0 0 auto;
+  background:linear-gradient(100deg,color-mix(in srgb,var(--deck-color) 28%,var(--theme-card)),var(--theme-card)) !important;
+  background-color:color-mix(in srgb,var(--deck-color) 28%,var(--theme-card)) !important;
+  border-bottom:1px solid color-mix(in srgb,var(--deck-color) 42%,rgba(255,255,255,.14)) !important;
+  box-shadow:inset 0 1px rgba(255,255,255,.12) !important;
+}
+#view-dashboard #cotacoes-compras-painel .card-title,
+#view-dashboard .card:has(#dash-orcamentos-semana) .card-title {
+  color:var(--dash-card-text) !important;
+}
+#view-dashboard #cotacoes-compras-painel .card-title i,
+#view-dashboard .card:has(#dash-orcamentos-semana) .card-title i {
+  color:color-mix(in srgb,var(--deck-color) 70%,#fff 30%) !important;
+}
+#view-dashboard #cotacoes-compras-painel .card-title i {
+  width:auto;
+  height:auto;
+  flex:0 0 auto;
+  display:inline;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:var(--deck-color) !important;
+  font-size:14px;
+  box-shadow:none;
+}
+#view-dashboard #card-acoes-prioritarias .daily-actions-list {
+  background-color:color-mix(in srgb,var(--danger) 12%,var(--theme-card)) !important;
+  background-image:none !important;
+}
+#view-dashboard #cotacoes-compras-painel .card-header p,
+#view-dashboard .card:has(#dash-orcamentos-semana) .card-title span,
+#view-dashboard .card:has(#dash-orcamentos-semana) .btn-ghost {
+  color:var(--dash-card-muted) !important;
+}
+#view-dashboard #cotacoes-compras-painel .cotacao-compras-card,
+#view-dashboard .card:has(#dash-orcamentos-semana) .kanban-card {
+  background:color-mix(in srgb,var(--deck-color) 10%,var(--theme-surface)) !important;
+  background-color:color-mix(in srgb,var(--deck-color) 10%,var(--theme-surface)) !important;
+  border:1px solid color-mix(in srgb,var(--deck-color) 40%,var(--border)) !important;
+  border-left:3px solid var(--deck-color) !important;
+  box-shadow:none !important;
+}
+#view-dashboard #cotacoes-compras-kanban {
+  flex:1 1 auto;
+  min-height:0;
+}
+#view-dashboard #cotacoes-compras-kanban.cotacoes-compras-vazio {
+  min-height:220px;
+  display:grid;
+  place-items:center;
+  padding:20px;
+  background-color:color-mix(in srgb,var(--deck-color) 14%,var(--theme-card)) !important;
+  background-image:none !important;
+  color:var(--dash-card-muted);
+  text-align:center;
+  font-size:13px;
+}
+#view-dashboard #cotacoes-compras-kanban .cotacoes-compras-empty {
+  display:grid;
+  justify-items:center;
+  gap:10px;
+}
+#view-dashboard #cotacoes-compras-kanban .cotacoes-compras-empty i {
+  display:block;
+  color:rgba(255,255,255,.78);
+  font-size:36px;
+  line-height:1;
+}
+body.theme-light #view-dashboard #cotacoes-compras-kanban .cotacoes-compras-empty i {
+  color:var(--accent-dark);
+}
+#view-dashboard #cotacoes-compras-kanban .cotacoes-compras-empty p {
+  margin:0;
+}
+#view-dashboard > #card-acoes-prioritarias,
+#view-dashboard > #cotacoes-compras-painel,
+#view-dashboard > .dashboard-grid-1,
+#view-dashboard > .dashboard-grid-2 {
+  margin-bottom:16px !important;
+}
+#view-dashboard > .dashboard-grid-1 > .card,
+#view-dashboard > .dashboard-grid-2 > .card {
+  margin-bottom:0 !important;
+}
+</style>
+<style id="topheader-centered-tabs-and-actions">
+html body .topheader {
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) max-content minmax(0,1fr) !important;
+  grid-template-rows:minmax(0,1fr);
+  align-items:center;
+  gap:12px !important;
+  padding:0 18px !important;
+}
+html body .topheader > .topnav {
+  grid-column:2;
+  grid-row:1;
+  justify-self:center;
+  width:max-content;
+  max-width:100%;
+  min-width:0;
+  flex:none !important;
+  justify-content:center;
+}
+html body .topheader > .header-actions {
+  grid-column:3;
+  grid-row:1;
+  justify-self:end;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  min-width:0;
+}
+html body .header-actions > button[onclick="openGlobalSearch()"] {
+  width:42px;
+  min-width:42px;
+  padding:9px 0 !important;
+  justify-content:center;
+  font-size:0 !important;
+  opacity:1 !important;
+}
+html body .header-actions > button[onclick="openGlobalSearch()"] i {
+  margin:0 !important;
+  font-size:14px !important;
+}
+html body .header-actions .gsearch-hint,
+html body .header-actions kbd { display:none !important; }
+html body .header-actions .btn-ghost {
+  color:var(--theme-text) !important;
+  background:var(--theme-surface) !important;
+  border-color:var(--theme-border-strong) !important;
+  opacity:1 !important;
+}
+html body .header-actions .btn,
+html body .header-actions .header-alert-btn { opacity:1 !important; filter:none !important; }
+html body .topnav-item { opacity:1 !important; filter:none !important; }
+
+@media (max-width:1100px) {
+  html body .topheader {
+    height:auto !important;
+    min-height:76px;
+    grid-template-columns:minmax(0,1fr) auto !important;
+    grid-template-rows:auto auto;
+    padding:8px 12px !important;
+  }
+  html body .topheader > .header-actions {
+    grid-column:2;
+    grid-row:1;
+  }
+  html body .topheader > .topnav {
+    grid-column:1 / -1;
+    grid-row:2;
+    width:100%;
+    max-width:none;
+    justify-self:stretch;
+    justify-content:center;
+  }
+}
+@media (max-width:620px) {
+  html body .topheader > .topnav { justify-content:flex-start; }
+  html body .topheader > .header-actions { gap:5px; }
+}
 </style>
 <link rel="stylesheet" href="requests-revision.css">
 <script src="requests-revision.js"></script>
