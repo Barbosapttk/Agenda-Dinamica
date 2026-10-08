@@ -1,3 +1,15 @@
+# Revisão de 08/10/2026
+
+- Corrigido o acesso ao bloco removido `dash-historico`, que interrompia a atualização do Painel e das compras.
+- Atualizações de compras renderizam diretamente sua própria lista, sem depender da renderização completa do Painel.
+- Interface renomeada para “Solicitações enviadas para compras”; chaves e registros existentes foram preservados.
+- Login temporariamente desabilitado por `LOGIN_HABILITADO = false`. Sessões existentes são preservadas; acesso sem sessão não altera permissões no Supabase. Botão Sair oculto e sincronização automática permitida sem login na interface.
+- Inicialização adiada até `DOMContentLoaded` para garantir disponibilidade dos scripts complementares.
+- `node tests/browser-regression.mjs --compras`: passou, com inclusão, edição, mudança de status, recarga, conclusão, exclusão, acesso automático sem login e nenhuma exceção JavaScript. SDK Supabase simulado; não valida permissões reais do servidor.
+- `npm.cmd run build`: passou.
+- Regressão geral: compras passaram; interrompida na asserção de exibição da observação após conclusão de proposta, fora do fluxo alterado.
+- Publicação autorizada pelo usuário em 08/10/2026 após confirmar o funcionamento. Build final passou antes do envio à branch `main` para deploy automático na Vercel.
+
 # Revisão de 09/09/2026
 
 ## Correção da publicação em 10/09/2026

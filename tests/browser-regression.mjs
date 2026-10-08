@@ -36,13 +36,17 @@ const mock = `window.supabase={createClient(){return {
  from(){return {async select(){return {data:JSON.parse(sessionStorage.getItem('test-rows')||'[]'),error:null}},async upsert(rows){sessionStorage.setItem('test-rows',JSON.stringify(rows));return {error:null}}}},
  channel(){return {on(){return this},subscribe(){return this}}}
 }}};`;
+await call('Page.navigate', {url:'about:blank'});
+for(let i=0;i<100;i++){ if(await evaluate("location.href === 'about:blank'")) break; await new Promise(r=>setTimeout(r,50)); }
 await call('Runtime.enable');
 await call('Fetch.enable',{patterns:[{urlPattern:'*supabase*'}]});
 await call('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
 async function load() {
   await call('Page.navigate',{url:'http://127.0.0.1:3000/original-index.html'});
   for(let i=0;i<100;i++){ await new Promise(r=>setTimeout(r,100)); if(await evaluate("document.readyState==='complete' && typeof renderCotacoesComprasPainel==='function'")) break; }
-  await evaluate("carregarDadosSupabase().then(()=>{appLoaded=true; liberarSistema({email:'teste@example.com'}); renderizarDadosSincronizados();})");
+  for(let i=0;i<100;i++){ if(await evaluate("appLoaded && document.body.classList.contains('auth-ok')")) break; await new Promise(r=>setTimeout(r,100)); }
+  assert.equal(await evaluate("document.body.classList.contains('auth-ok') && !document.body.classList.contains('auth-locked')"), true, 'Acesso automático sem login');
+  assert.equal(await evaluate("getComputedStyle(document.querySelector('.btn-logout')).display"), 'none');
 }
 try {
  await load();
@@ -59,6 +63,11 @@ try {
  await evaluate("window.confirm=()=>true; excluirCotacaoCompras(getCotacoesCompras()[0].id)");
  assert.equal(await evaluate("getCotacoesCompras().length"),0);
  console.log('Compras: criar, editar, recarregar, mover, concluir e excluir OK');
+ if (process.argv.includes('--compras')) {
+  assert.equal(await evaluate("document.getElementById('cotacoes-compras-titulo').textContent.trim()"), 'Solicitações enviadas para compras');
+  assert.deepEqual(errors, []);
+  console.log('Acesso sem login, nomenclatura e console sem exceções OK');
+ } else {
  await evaluate(`abrirConcluirSolicitacao(11)`);
  await new Promise(r=>setTimeout(r,200));
  await evaluate(`document.getElementById('concluir-status-proposta').value='recusada'; document.getElementById('concluir-obs').value='Envio inicial'; document.querySelector('.cv-line-numero').value='TESTE-001'; document.querySelector('.cv-line-valor').value='150,00'; confirmarConclusao();`);
@@ -123,4 +132,5 @@ try {
  }
  assert.deepEqual(errors,[]);
  console.log('Console: sem exceções JavaScript. Capturas em 1440, 900 e 600px, ambos os temas.');
+ }
 } finally { ws.close(); }

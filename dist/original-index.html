@@ -3878,7 +3878,7 @@ body.theme-light .cv-hero { background:linear-gradient(135deg, rgba(10,140,92,.1
     </button>
     <button class="quick-action-card qa-cotacao" onclick="abrirModalCotacaoCompras()" type="button">
       <span class="quick-action-icon"><i class="fa-solid fa-cart-shopping"></i></span>
-      <span><strong>Cotação</strong><small>Itens para compras</small></span>
+      <span><strong>Solicitação para compras</strong><small>Itens para compras</small></span>
     </button>
     <button class="quick-action-card qa-config" onclick="showView('configuracoes')" title="Configurações, backup e exportações" type="button">
       <span class="quick-action-icon"><i class="fa-solid fa-gear"></i></span>
@@ -3941,12 +3941,12 @@ body.theme-light .cv-hero { background:linear-gradient(135deg, rgba(10,140,92,.1
     <section class="card cotacoes-compras-card" id="cotacoes-compras-painel" aria-labelledby="cotacoes-compras-titulo">
       <div class="card-header cotacoes-compras-header">
         <div>
-          <div class="card-title" id="cotacoes-compras-titulo"><i class="fa-solid fa-cart-shopping"></i> Cotações enviadas para compras</div>
+          <div class="card-title" id="cotacoes-compras-titulo"><i class="fa-solid fa-cart-shopping"></i> Solicitações enviadas para compras</div>
           <p>Itens enviados para compras que ainda precisam de acompanhamento.</p>
         </div>
       </div>
       <div id="cotacoes-compras-kanban" class="cotacoes-compras-vazio">
-        <div class="cotacoes-compras-empty"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i><p>Nenhuma cotação pendente para compras.</p></div>
+        <div class="cotacoes-compras-empty"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i><p>Nenhuma solicitação pendente para compras.</p></div>
       </div>
     </section>
 
@@ -5048,6 +5048,8 @@ const supabaseClient = SUPABASE_CONFIGURADO
   : null;
 
 
+// Temporário: altere para true para voltar a exigir a tela de login.
+const LOGIN_HABILITADO = false;
 let usuarioLogado = null;
 
 function mostrarErroLogin(msg) {
@@ -5121,6 +5123,7 @@ async function fazerLogin(event) {
 }
 
 async function sairDoSistema() {
+  if (!LOGIN_HABILITADO) return;
   if (!supabaseClient) return;
   clearTimeout(sincronizacaoTimer);
   clearInterval(sincronizacaoInterval);
@@ -5134,6 +5137,21 @@ async function sairDoSistema() {
 }
 
 async function iniciarComLogin() {
+  if (!LOGIN_HABILITADO) {
+    const logout = document.querySelector('.btn-logout');
+    if (logout) logout.style.display = 'none';
+    // Preserva uma sessão existente para acesso aos dados protegidos no Supabase.
+    let user = null;
+    try {
+      const session = await supabaseClient?.auth.getSession();
+      user = session?.data?.session?.user || null;
+    } catch (error) {
+      console.error('Erro ao verificar sessão existente:', error);
+    }
+    liberarSistema(user);
+    await initApp();
+    return;
+  }
   const modoSemLoginLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname) &&
     new URLSearchParams(window.location.search).get('sem-login') === '1';
   if (modoSemLoginLocal) {
@@ -5525,7 +5543,7 @@ function renderizarDadosSincronizados() {
 }
 
 async function sincronizarDadosRemotos() {
-  if (!appLoaded || !usuarioLogado || document.hidden) return;
+  if (!appLoaded || (LOGIN_HABILITADO && !usuarioLogado) || document.hidden) return;
   if (saveTimer || salvandoDados) {
     agendarSincronizacaoRemota(700);
     return;
@@ -7829,7 +7847,7 @@ function renderDashboard() {
   const canalIcon={telefone:'fa-phone',whatsapp:'fa-brands fa-whatsapp',email:'fa-envelope',presencial:'fa-handshake',videochamada:'fa-video'};
   const recentContatos=[...contatos].sort((a,b)=>b.data.localeCompare(a.data)).slice(0,4);
   const dashHist=document.getElementById('dash-historico');
-  dashHist.innerHTML=recentContatos.length?recentContatos.map(ct=>{
+  if (dashHist) dashHist.innerHTML=recentContatos.length?recentContatos.map(ct=>{
     const c=clientes.find(x=>x.id===ct.clienteId);
     return `<div style="display:flex;align-items:flex-start;gap:14px;padding:14px 20px;border-bottom:1px solid var(--border)">
       <div class="avatar ${c?avColor(c.id):'av-blue'}" style="width:32px;height:32px;font-size:12px;flex-shrink:0;margin-top:2px">${c?initials(c.nome):'?'}</div>
@@ -8846,7 +8864,8 @@ async function initApp() {
   iniciarSincronizacaoAutomatica();
 }
 
-iniciarComLogin();
+// Os complementos do Painel são definidos nos scripts ao final do documento.
+document.addEventListener('DOMContentLoaded', iniciarComLogin, { once: true });
 
 
 // ===== AJUSTES: CONTATO OPCIONAL, PROPOSTAS ENVIADAS E HISTÓRICO =====
@@ -14084,7 +14103,7 @@ body.theme-light .cotacao-compras-card { background:#fff; }
 <div class="modal-overlay" id="modalCotacaoCompras">
   <div class="modal" style="width:540px">
     <div class="modal-header">
-      <div class="modal-title" id="modal-cotacao-compras-title"><i class="fa-solid fa-cart-shopping" style="color:var(--warning);margin-right:8px"></i>Nova Cotação de Compras</div>
+      <div class="modal-title" id="modal-cotacao-compras-title"><i class="fa-solid fa-cart-shopping" style="color:var(--warning);margin-right:8px"></i>Nova solicitação para compras</div>
       <button class="modal-close" type="button" onclick="closeModal('modalCotacaoCompras')"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body">
@@ -14103,7 +14122,7 @@ body.theme-light .cotacao-compras-card { background:#fff; }
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" type="button" onclick="closeModal('modalCotacaoCompras')">Cancelar</button>
-      <button class="btn btn-primary" type="button" onclick="salvarCotacaoCompras()"><i class="fa-solid fa-floppy-disk"></i> Salvar cotação</button>
+      <button class="btn btn-primary" type="button" onclick="salvarCotacaoCompras()"><i class="fa-solid fa-floppy-disk"></i> Salvar solicitação</button>
     </div>
   </div>
 </div>
@@ -14140,9 +14159,9 @@ function abrirModalCotacaoCompras(id = null) {
     modal.dataset.editId = String(item.id);
     document.getElementById('cotacao-compras-descricao').value = item.descricao || '';
     document.getElementById('cotacao-compras-status').value = item.status || 'enviado';
-    titulo.innerHTML = '<i class="fa-solid fa-pen" style="color:var(--warning);margin-right:8px"></i>Editar Cotação de Compras';
+    titulo.innerHTML = '<i class="fa-solid fa-pen" style="color:var(--warning);margin-right:8px"></i>Editar solicitação para compras';
   } else {
-    titulo.innerHTML = '<i class="fa-solid fa-cart-shopping" style="color:var(--warning);margin-right:8px"></i>Nova Cotação de Compras';
+    titulo.innerHTML = '<i class="fa-solid fa-cart-shopping" style="color:var(--warning);margin-right:8px"></i>Nova solicitação para compras';
   }
   openModal('modalCotacaoCompras');
   setTimeout(() => document.getElementById('cotacao-compras-descricao')?.focus(), 30);
@@ -14150,7 +14169,6 @@ function abrirModalCotacaoCompras(id = null) {
 
 function atualizarCotacoesCompras() {
   save();
-  renderDashboard();
   renderCotacoesComprasPainel();
 }
 
@@ -14159,7 +14177,7 @@ function salvarCotacaoCompras() {
   const descricao = document.getElementById('cotacao-compras-descricao').value.trim();
   const status = document.getElementById('cotacao-compras-status').value;
   if (!descricao) {
-    notify('Informe a descrição dos itens para salvar a cotação.', '#7a1a1a');
+    notify('Informe a descrição dos itens para salvar a solicitação.', '#7a1a1a');
     document.getElementById('cotacao-compras-descricao').focus();
     return;
   }
@@ -14180,7 +14198,7 @@ function salvarCotacaoCompras() {
   closeModal('modalCotacaoCompras');
   limparModalCotacaoCompras();
   atualizarCotacoesCompras();
-  notify('✓ Cotação salva.', '#0d3d2a');
+  notify('✓ Solicitação salva.', '#0d3d2a');
 }
 
 function editarCotacaoCompras(id) { abrirModalCotacaoCompras(id); }
@@ -14198,10 +14216,10 @@ function alterarStatusCotacaoCompras(id, status) {
 function concluirCotacaoCompras(id) { alterarStatusCotacaoCompras(id, 'concluido'); }
 
 function excluirCotacaoCompras(id) {
-  if (!confirm('Excluir definitivamente esta cotação de compras?')) return;
+  if (!confirm('Excluir definitivamente esta solicitação para compras?')) return;
   cotacoesCompras = getCotacoesCompras().filter(item => String(item.id) !== String(id));
   atualizarCotacoesCompras();
-  notify('✓ Cotação excluída.', '#0d3d2a');
+  notify('✓ Solicitação excluída.', '#0d3d2a');
 }
 
 function escaparHtmlCotacaoCompras(valor) {
@@ -14212,7 +14230,7 @@ function cardCotacaoCompras(item) {
   const id = JSON.stringify(String(item.id));
   const semRetorno = item.status === 'sem_retorno' ? ' sem-retorno' : '';
   return `<article class="cotacao-compras-card">
-    <div class="cotacao-compras-top"><span class="cotacao-compras-icon"><i class="fa-solid fa-cart-shopping"></i></span><span class="cotacao-compras-titulo">Cotação de compras</span></div>
+    <div class="cotacao-compras-top"><span class="cotacao-compras-icon"><i class="fa-solid fa-cart-shopping"></i></span><span class="cotacao-compras-titulo">Solicitação para compras</span></div>
     <div class="cotacao-compras-descricao">${escaparHtmlCotacaoCompras(item.descricao)}</div>
     <div class="cotacao-compras-meta"><span class="cotacao-compras-status${semRetorno}">${statusCotacaoComprasLabel(item.status)}</span>${item.criadoEm ? `<span>Criada em ${fmtDate(item.criadoEm)}</span>` : ''}</div>
     <div class="cotacao-compras-acoes">
@@ -14231,7 +14249,7 @@ function renderCotacoesComprasPainel() {
   const ativas = getCotacoesComprasAtivas();
   if (!ativas.length) {
     container.className = 'cotacoes-compras-vazio';
-    container.innerHTML = '<div class="cotacoes-compras-empty"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i><p>Nenhuma cotação pendente para compras.</p></div>';
+    container.innerHTML = '<div class="cotacoes-compras-empty"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i><p>Nenhuma solicitação pendente para compras.</p></div>';
     return;
   }
   const colunas = [
