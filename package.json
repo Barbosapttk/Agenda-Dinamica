@@ -15,5 +15,7 @@
     "react-dom": "latest",
     "@supabase/supabase-js": "latest"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.8"
+  }
 }

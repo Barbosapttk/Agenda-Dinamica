@@ -2,6 +2,8 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import assert from 'node:assert/strict';
 
+const baseUrl = process.env.AGENDA_TEST_BASE_URL || 'http://127.0.0.1:3000';
+
 const html = fs.readFileSync('public/original-index.html', 'utf8');
 let scripts = 0;
 for (const match of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
@@ -14,10 +16,15 @@ await new Promise(r => ws.addEventListener('open', r, { once:true }));
 let seq = 0;
 const pending = new Map();
 const errors = [];
+const consoleErrors = [];
+let expectedConsoleError = false;
 ws.addEventListener('message', async ({data}) => {
   const m = JSON.parse(data);
   if (m.id) { const p = pending.get(m.id); pending.delete(m.id); m.error ? p.reject(m.error) : p.resolve(m.result); }
   if (m.method === 'Runtime.exceptionThrown') errors.push(m.params.exceptionDetails.exception?.description || m.params.exceptionDetails.text);
+  if (m.method === 'Runtime.consoleAPICalled' && m.params.type === 'error' && !expectedConsoleError) {
+    consoleErrors.push(m.params.args.map(arg => arg.value || arg.description || '').join(' '));
+  }
   if (m.method === 'Fetch.requestPaused') {
     const {requestId, request} = m.params;
     if (request.url.includes('supabase-js')) await call('Fetch.fulfillRequest', {requestId,responseCode:200,responseHeaders:[{name:'Content-Type',value:'application/javascript'}],body:Buffer.from(mock).toString('base64')});
@@ -31,10 +38,11 @@ async function evaluate(expression) {
   if(r.exceptionDetails) throw new Error(r.exceptionDetails.exception?.description || r.exceptionDetails.text);
   return r.result.value;
 }
-const mock = `window.supabase={createClient(){return {
- auth:{async getSession(){return {data:{session:null},error:null}},onAuthStateChange(){return {data:{subscription:{unsubscribe(){}}}}}},
- from(){return {async select(){return {data:JSON.parse(sessionStorage.getItem('test-rows')||'[]'),error:null}},async upsert(rows){sessionStorage.setItem('test-rows',JSON.stringify(rows));return {error:null}}}},
- channel(){return {on(){return this},subscribe(){return this}}}
+const mock = `window.__supabaseTest={clients:0,reads:0,writes:0,channels:0,sessions:0,failLoad:false,failSave:false,batches:[],pauseNextWrite:false,releaseWrite:null};
+window.supabase={createClient(){window.__supabaseTest.clients++;return {
+ auth:{async getSession(){window.__supabaseTest.sessions++;return {data:{session:null},error:null}},onAuthStateChange(){return {data:{subscription:{unsubscribe(){}}}}}},
+ from(){return {async select(){window.__supabaseTest.reads++;if(window.__supabaseTest.failLoad)return {data:null,error:{message:'Falha de carga simulada'}};return {data:JSON.parse(sessionStorage.getItem('test-rows')||'[]'),error:null}},async upsert(rows){const copy=JSON.parse(JSON.stringify(rows));window.__supabaseTest.writes++;window.__supabaseTest.batches.push(copy);if(window.__supabaseTest.pauseNextWrite){window.__supabaseTest.pauseNextWrite=false;await new Promise(resolve=>{window.__supabaseTest.releaseWrite=resolve})}if(window.__supabaseTest.failSave)return {error:{message:'Falha de escrita simulada'}};const merged=new Map(JSON.parse(sessionStorage.getItem('test-rows')||'[]').map(row=>[row.key,row]));copy.forEach(row=>merged.set(row.key,row));sessionStorage.setItem('test-rows',JSON.stringify([...merged.values()]));return {error:null}}}},
+ channel(){return {on(){return this},subscribe(){window.__supabaseTest.channels++;return this}}}
 }}};`;
 await call('Page.navigate', {url:'about:blank'});
 for(let i=0;i<100;i++){ if(await evaluate("location.href === 'about:blank'")) break; await new Promise(r=>setTimeout(r,50)); }
@@ -42,7 +50,7 @@ await call('Runtime.enable');
 await call('Fetch.enable',{patterns:[{urlPattern:'*supabase*'}]});
 await call('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
 async function load() {
-  await call('Page.navigate',{url:'http://127.0.0.1:3000/original-index.html'});
+  await call('Page.navigate',{url:`${baseUrl}/original-index.html`});
   for(let i=0;i<100;i++){ await new Promise(r=>setTimeout(r,100)); if(await evaluate("document.readyState==='complete' && typeof renderCotacoesComprasPainel==='function'")) break; }
   for(let i=0;i<100;i++){ if(await evaluate("appLoaded && document.body.classList.contains('auth-ok')")) break; await new Promise(r=>setTimeout(r,100)); }
   assert.equal(await evaluate("document.body.classList.contains('auth-ok') && !document.body.classList.contains('auth-locked')"), true, 'Acesso automático sem login');
@@ -50,12 +58,12 @@ async function load() {
 }
 try {
  await load();
- await evaluate(`sessionStorage.removeItem('test-rows'); clientes=[{id:1,nome:'Cliente Teste',empresa:'Razão Social Teste',telefone:'11999999999',email:'teste@example.com',produto:'Peças',status:'ativo'}]; solicitacoesOrcamento=[{id:11,clienteId:1,solicitante:'Maria Teste',produto:'Rolamento',descricao:'Peça para manutenção',dataSolicitacao:today(),prazo:today(),etapa:'nova',prioridade:'normal'}]; cotacoesCompras=[]; contatos=[]; concluidos=[]; controleVendas=[]; agendamentos=[]; orcamentos=[]; renderizarDadosSincronizados();`);
+ await evaluate(`sessionStorage.removeItem('test-rows'); clientes=[{id:1,nome:'Cliente Teste',empresa:'Razão Social Teste',telefone:'11999999999',email:'teste@example.com',produto:'Peças',status:'ativo'}]; produtosSolicitacoes=['Rolamento']; solicitacoesOrcamento=[{id:11,clienteId:1,solicitante:'Maria Teste',produto:'Rolamento',descricao:'Peça para manutenção',dataSolicitacao:today(),prazo:today(),etapa:'nova',prioridade:'normal'}]; cotacoesCompras=[]; contatos=[]; concluidos=[]; controleVendas=[]; agendamentos=[]; orcamentos=[]; renderizarDadosSincronizados();`);
  await evaluate(`abrirModalCotacaoCompras(); document.getElementById('cotacao-compras-descricao').value='Compra teste'; salvarCotacaoCompras();`);
  assert.equal(await evaluate("document.querySelectorAll('.cotacao-compras-card').length"),1);
  await evaluate(`window.testQuote=getCotacoesCompras()[0].id; alterarStatusCotacaoCompras(testQuote,'sem_retorno');`);
  assert.equal(await evaluate("document.querySelectorAll('.cotacoes-compras-coluna')[1].querySelectorAll('.cotacao-compras-card').length"),1);
- await evaluate("alterarStatusCotacaoCompras(testQuote,'enviado'); editarCotacaoCompras(testQuote); document.getElementById('cotacao-compras-descricao').value='Compra editada'; salvarCotacaoCompras(); persistirDadosSupabase()");
+ await evaluate("(async()=>{await alterarStatusCotacaoCompras(testQuote,'enviado'); editarCotacaoCompras(testQuote); document.getElementById('cotacao-compras-descricao').value='Compra editada'; await salvarCotacaoCompras(); await persistirDadosSupabase();})()");
  await load();
  assert.equal(await evaluate("getCotacoesCompras()[0].descricao"),'Compra editada');
  await evaluate("concluirCotacaoCompras(getCotacoesCompras()[0].id)");
@@ -63,10 +71,80 @@ try {
  await evaluate("window.confirm=()=>true; excluirCotacaoCompras(getCotacoesCompras()[0].id)");
  assert.equal(await evaluate("getCotacoesCompras().length"),0);
  console.log('Compras: criar, editar, recarregar, mover, concluir e excluir OK');
- if (process.argv.includes('--compras')) {
+ if (process.argv.includes('--compras') || process.argv.includes('--foundation') || process.argv.includes('--compras-pilot') || process.argv.includes('--identity')) {
   assert.equal(await evaluate("document.getElementById('cotacoes-compras-titulo').textContent.trim()"), 'Solicitações enviadas para compras');
   assert.deepEqual(errors, []);
   console.log('Acesso sem login, nomenclatura e console sem exceções OK');
+  if (process.argv.includes('--identity')) {
+   const { runIdentityBrowserChecks } = await import('./identity-browser-checks.mjs');
+   await runIdentityBrowserChecks({ evaluate, load, call, baseUrl, mock });
+   assert.deepEqual(errors, []);
+   assert.deepEqual(consoleErrors, []);
+   console.log('Identidade: contexto, eventos, reload e duas instâncias de navegador isoladas OK; locking remoto não implementado');
+  }
+  if (process.argv.includes('--compras-pilot')) {
+   const { runComprasBrowserChecks } = await import('./compras-browser-checks.mjs');
+   await runComprasBrowserChecks({ evaluate, call, baseUrl,
+    setExpectedConsoleError: value => { expectedConsoleError = value; } });
+   assert.deepEqual(errors, []);
+   assert.deepEqual(consoleErrors, []);
+   console.log('Piloto Compras: UI → Service → Repository → Supabase simulado → evento → renderização; uma gravação por operação e sem erros inesperados OK');
+  }
+  if (process.argv.includes('--foundation')) {
+   await evaluate('AgendaApplication.ready');
+   assert.equal(await evaluate("AgendaApplication.repositories.snapshot.getStatus().status"), 'READY');
+   assert.equal(await evaluate("AgendaApplication.state.getCollection('controleVendas') === controleVendas"), true);
+   assert.equal(await evaluate("AgendaApplication.state.getCollection('controleVendas') === window.controleVendas"), false);
+   const registeredSubscriptions = await evaluate('AgendaApplication.events.bus.getSubscriptions()');
+   assert.equal(registeredSubscriptions.length, 5, 'Somente handlers do piloto de Compras');
+   assert.equal(registeredSubscriptions.every(item=>item.subscriptionId === `compras:render:${item.eventType}`), true);
+   const before = await evaluate('({...__supabaseTest})');
+   assert.equal(await evaluate("import('/application/bootstrap.js').then(m => m.bootstrapApplication() === AgendaApplication)"), true);
+   await evaluate('AgendaApplication.start(); AgendaApplication.start();');
+   assert.deepEqual(await evaluate('({...__supabaseTest})'), before, 'Bootstrap repetido não repete SDK, carga ou subscriptions');
+   assert.equal(before.clients, 1);
+   assert.equal(before.channels, 1);
+   assert.equal(before.sessions, 1);
+   for(const view of ['dashboard','solicitacoes','clientes','agenda','orcamentos','controle-vendas','historico','configuracoes']) {
+    await evaluate(`showView('${view}')`);
+    assert.equal(await evaluate(`document.getElementById('view-${view}').classList.contains('active')`), true);
+   }
+   await evaluate("showView('dashboard'); abrirModalCotacaoCompras(); closeModal('modalCotacaoCompras'); applyTheme('light'); applyTheme('dark'); clearTimeout(saveTimer); saveTimer=null;");
+   assert.equal(await evaluate("document.body.classList.contains('theme-light')"), false);
+   await evaluate("window.__domainEvents=0; window.__offFoundation=Object.values(AgendaApplication.events.types).map(type=>AgendaApplication.events.bus.subscribe(type,()=>{__domainEvents++}));");
+   const saveResult = await evaluate("AgendaApplication.repositories.snapshot.save().then(r=>({ok:r.ok,operation:r.operation}))");
+   assert.deepEqual(saveResult, {ok:true,operation:'save'});
+   await evaluate('carregarDadosSupabase()');
+   assert.equal(await evaluate('__domainEvents'), 0, 'Persistência e reconciliação não publicam eventos comerciais');
+   assert.equal(await evaluate('AgendaApplication.repositories.snapshot.getConfirmedSnapshot().clientes[0].id'), 1);
+   await evaluate('__supabaseTest.failSave=true');
+   expectedConsoleError = true;
+   try { assert.equal(await evaluate('AgendaApplication.repositories.snapshot.save().then(r=>r.ok)'), false); }
+   finally { expectedConsoleError = false; }
+   await evaluate('__supabaseTest.failSave=false; __supabaseTest.failLoad=true; clearTimeout(saveTimer); saveTimer=null;');
+   assert.equal(await evaluate('AgendaApplication.repositories.snapshot.load().then(r=>r.ok)'), false);
+   assert.equal(await evaluate('AgendaApplication.repositories.snapshot.getStatus().status'), 'ERROR');
+   const writes = await evaluate('__supabaseTest.writes');
+   assert.equal(await evaluate('AgendaApplication.repositories.snapshot.save().then(r=>r.ok)'), false);
+   assert.equal(await evaluate('__supabaseTest.writes'), writes, 'Falha de carga bloqueia a nova API sem upsert');
+   await evaluate('__supabaseTest.failLoad=false');
+   assert.equal(await evaluate('AgendaApplication.repositories.snapshot.load().then(r=>r.ok)'), true);
+   await evaluate('__offFoundation.forEach(off=>off())');
+   assert.deepEqual(await evaluate('AgendaApplication.events.bus.getSubscriptions()'), registeredSubscriptions);
+   assert.deepEqual(errors, []);
+   assert.deepEqual(consoleErrors, [], 'Sem erros inesperados no console');
+   console.log('Fundação: bootstrap único, estado lexical, navegação, persistência confirmada, falhas, recuperação e ausência de eventos automáticos OK');
+   await call('Page.navigate', {url:`${baseUrl}/`});
+   for(let i=0;i<100;i++) {
+    await new Promise(r=>setTimeout(r,100));
+    if(await evaluate("Boolean(document.querySelector('iframe')?.contentWindow.AgendaApplication?.repositories.snapshot.getStatus().status === 'READY')")) break;
+   }
+   assert.equal(await evaluate("document.querySelector('iframe').contentWindow.AgendaApplication.repositories.snapshot.getStatus().status"), 'READY');
+   assert.equal(await evaluate("document.querySelector('iframe').contentDocument.body.classList.contains('auth-ok')"), true);
+   assert.deepEqual(errors, []);
+   assert.deepEqual(consoleErrors, [], 'Sem erros inesperados na entrada com iframe');
+   console.log('Entrada React/Vite → iframe → bootstrap → inicialização OK');
+  }
  } else {
  await evaluate(`abrirConcluirSolicitacao(11)`);
  await new Promise(r=>setTimeout(r,200));
@@ -80,6 +158,12 @@ try {
  assert.equal(await evaluate('controleVendas[0].observacao'),'Observação após concluir');
  await evaluate("showView('solicitacoes')");
  assert.equal(await evaluate("document.getElementById('propostas-acompanhamento-kanban').textContent.includes('Observação após concluir')"),true);
+ const { runPropostaObservacaoChecks } = await import('./proposta-observacao-browser-checks.mjs');
+ await runPropostaObservacaoChecks({ evaluate, load });
+ assert.deepEqual(errors, []);
+ assert.deepEqual(consoleErrors, []);
+ console.log('Observações de propostas: asserção original, edição, recarga, fontes conclusão/contato, fallback e texto escapado OK');
+ if (!process.argv.includes('--propostas-observacao')) {
  await evaluate("aplicarStatusProposta('cc-'+concluidos[0].id,'aprovada','Aprovou'); atualizarStatusPedidoControle(controleVendas[0].id,'faturado'); aplicarStatusProposta('cc-'+concluidos[0].id,'aprovada','Nota após faturamento');");
  assert.equal(await evaluate('controleVendas[0].statusPedido'),'faturado');
  assert.equal(await evaluate('controleVendas.length'),1);
@@ -131,6 +215,8 @@ try {
   }
  }
  assert.deepEqual(errors,[]);
+ assert.deepEqual(consoleErrors,[], 'Sem erros inesperados no console da regressão geral');
  console.log('Console: sem exceções JavaScript. Capturas em 1440, 900 e 600px, ambos os temas.');
+ }
  }
 } finally { ws.close(); }

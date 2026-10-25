@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -3773,6 +3773,7 @@ body.theme-light .cv-hero { background:linear-gradient(135deg, rgba(10,140,92,.1
 @media (max-width: 680px) { .cv-proposal-grid { grid-template-columns:1fr; } .cv-filters select, .cv-filters input { width:100%; } }
 
 </style>
+<link rel="stylesheet" href="quick-texts.css">
 </head>
 <body class="auth-locked">
 
@@ -3880,6 +3881,7 @@ body.theme-light .cv-hero { background:linear-gradient(135deg, rgba(10,140,92,.1
       <span class="quick-action-icon"><i class="fa-solid fa-cart-shopping"></i></span>
       <span><strong>Solicitação para compras</strong><small>Itens para compras</small></span>
     </button>
+    <button class="quick-action-card qa-tools" onclick="showView('ferramentas')" type="button"><span class="quick-action-icon"><i class="fa-solid fa-toolbox"></i></span><span><strong>Ferramentas</strong></span></button>
     <button class="quick-action-card qa-config" onclick="showView('configuracoes')" title="Configurações, backup e exportações" type="button">
       <span class="quick-action-icon"><i class="fa-solid fa-gear"></i></span>
       <span><strong>Configurações</strong></span>
@@ -3889,6 +3891,7 @@ body.theme-light .cv-hero { background:linear-gradient(135deg, rgba(10,140,92,.1
 
 <!-- MAIN -->
 <main class="main">
+  <div id="view-ferramentas" class="view"><div class="page-header"><h2>Central de Ferramentas</h2></div><div id="quick-tools"></div></div>
 
   <!-- DASHBOARD / AÇÕES DO DIA -->
   <div id="view-dashboard" class="view active">
@@ -5486,23 +5489,28 @@ async function carregarDadosSupabase() {
   applyTheme(appTheme, false);
 }
 
-async function persistirDadosSupabase() {
-  if (!appLoaded || !supabaseClient) return;
+async function persistirDadosSupabase(snapshot = null, { collections = null, silent = false } = {}) {
+  if (!appLoaded || !supabaseClient) return { ok: false, error: new Error('Persistência indisponível.') };
+  // O legado mantém o debounce; o Repository usa o mesmo escritor com snapshot explícito.
+  const estado = snapshot || { clientes, contatos, agendamentos, solicitacoesOrcamento, orcamentos,
+    concluidos, historicoClientes, controleVendas, cotacoesCompras, alarmedIds, produtosSolicitacoes, appTheme };
 
-  const rows = [
-    { key: STORAGE_KEYS.clientes, value: clientes },
-    { key: STORAGE_KEYS.contatos, value: contatos },
-    { key: STORAGE_KEYS.agendamentos, value: agendamentos },
-    { key: STORAGE_KEYS.solicitacoesOrcamento, value: solicitacoesOrcamento },
-    { key: STORAGE_KEYS.orcamentos, value: orcamentos },
-    { key: STORAGE_KEYS.concluidos, value: concluidos },
-    { key: STORAGE_KEYS.historicoClientes, value: historicoClientes },
-    { key: STORAGE_KEYS.controleVendas, value: controleVendas },
-    { key: STORAGE_KEYS.cotacoesCompras, value: cotacoesCompras },
-    { key: STORAGE_KEYS.alarmedIds, value: alarmedIds },
-    { key: STORAGE_KEYS.produtosSolicitacoes, value: produtosSolicitacoes },
-    { key: STORAGE_KEYS.theme, value: appTheme }
+  let rows = [
+    { key: STORAGE_KEYS.clientes, value: estado.clientes },
+    { key: STORAGE_KEYS.contatos, value: estado.contatos },
+    { key: STORAGE_KEYS.agendamentos, value: estado.agendamentos },
+    { key: STORAGE_KEYS.solicitacoesOrcamento, value: estado.solicitacoesOrcamento },
+    { key: STORAGE_KEYS.orcamentos, value: estado.orcamentos },
+    { key: STORAGE_KEYS.concluidos, value: estado.concluidos },
+    { key: STORAGE_KEYS.historicoClientes, value: estado.historicoClientes },
+    { key: STORAGE_KEYS.controleVendas, value: estado.controleVendas },
+    { key: STORAGE_KEYS.cotacoesCompras, value: estado.cotacoesCompras },
+    { key: STORAGE_KEYS.alarmedIds, value: estado.alarmedIds },
+    { key: STORAGE_KEYS.produtosSolicitacoes, value: estado.produtosSolicitacoes },
+    { key: STORAGE_KEYS.theme, value: estado.appTheme }
   ];
+  if (collections) rows = rows.filter(row => collections.some(name =>
+    row.key === STORAGE_KEYS[name === 'appTheme' ? 'theme' : name]));
 
   salvandoDados = true;
   try {
@@ -5512,8 +5520,10 @@ async function persistirDadosSupabase() {
 
     if (error) {
       console.error('Erro ao salvar no Supabase:', error);
-      notify('Erro ao salvar no Supabase. Verifique o console.', '#7a1a1a');
+      if (!silent) notify('Erro ao salvar no Supabase. Verifique o console.', '#7a1a1a');
+      return { ok: false, error };
     }
+    return { ok: true };
   } finally {
     salvandoDados = false;
   }
@@ -5544,7 +5554,7 @@ function renderizarDadosSincronizados() {
 
 async function sincronizarDadosRemotos() {
   if (!appLoaded || (LOGIN_HABILITADO && !usuarioLogado) || document.hidden) return;
-  if (saveTimer || salvandoDados) {
+  if (saveTimer || salvandoDados || window.AgendaApplication?.repositories.snapshot.getStatus().pendingSaves) {
     agendarSincronizacaoRemota(700);
     return;
   }
@@ -8864,8 +8874,7 @@ async function initApp() {
   iniciarSincronizacaoAutomatica();
 }
 
-// Os complementos do Painel são definidos nos scripts ao final do documento.
-document.addEventListener('DOMContentLoaded', iniciarComLogin, { once: true });
+// A entrada única está em application/bootstrap.js, após os complementos do Painel.
 
 
 // ===== AJUSTES: CONTATO OPCIONAL, PROPOSTAS ENVIADAS E HISTÓRICO =====
@@ -13364,6 +13373,7 @@ body.theme-light .hist-event-icon{ background:rgba(37,99,199,.08); border-color:
       <div class="mini-item"><strong>${escFinal(resumo)}</strong></div>
       <div class="mini-status-badge status-${status}">${statusPropostaLabelFinal(status)}</div>
       ${rows.filter(r => r.statusPedido).map(r => `<div class="mini-requester">${tipoOrcamentoLabelFinal(r.tipoOrcamento)}: ${statusPedidoLabelFinal(r.statusPedido)}</div>`).join('')}
+      ${p.observacaoAtualizacao ? `<div class="mini-requester">Última atualização: ${escFinal(p.observacaoAtualizacao)}</div>` : ''}
       <div class="proposta-kanban-actions"><button class="btn btn-ghost btn-sm" onclick="abrirEditarProposta('${escFinal(p.ref)}'); event.stopPropagation();"><i class="fa-solid fa-pen"></i> Editar</button>
         <button class="btn btn-primary btn-sm" onclick="abrirAtualizarStatusProposta('${escFinal(p.ref)}'); event.stopPropagation();"><i class="fa-solid fa-sliders"></i> Status</button>
         ${p.clienteId?`<button class="btn btn-ghost btn-sm" onclick="registrarContatoFromProposta('${escFinal(p.ref)}'); event.stopPropagation();"><i class="fa-solid fa-phone"></i> Contato</button><button class="btn btn-warning btn-sm" onclick="agendarRetornoFromProposta('${escFinal(p.ref)}'); event.stopPropagation();"><i class="fa-regular fa-calendar-plus"></i> Retorno</button>`:''}
@@ -14143,7 +14153,11 @@ function statusCotacaoComprasLabel(status) {
 
 function limparModalCotacaoCompras() {
   const modal = document.getElementById('modalCotacaoCompras');
-  if (modal) delete modal.dataset.editId;
+  if (modal) {
+    delete modal.dataset.editId;
+    delete modal.dataset.compraCommandId;
+    delete modal.dataset.compraCommandFingerprint;
+  }
   const descricao = document.getElementById('cotacao-compras-descricao');
   const status = document.getElementById('cotacao-compras-status');
   if (descricao) descricao.value = '';
@@ -14168,58 +14182,23 @@ function abrirModalCotacaoCompras(id = null) {
 }
 
 function atualizarCotacoesCompras() {
-  save();
   renderCotacoesComprasPainel();
 }
 
 function salvarCotacaoCompras() {
-  const modal = document.getElementById('modalCotacaoCompras');
-  const descricao = document.getElementById('cotacao-compras-descricao').value.trim();
-  const status = document.getElementById('cotacao-compras-status').value;
-  if (!descricao) {
-    notify('Informe a descrição dos itens para salvar a solicitação.', '#7a1a1a');
-    document.getElementById('cotacao-compras-descricao').focus();
-    return;
-  }
-  const statusValido = ['enviado','sem_retorno','concluido'].includes(status) ? status : 'enviado';
-  const editId = modal.dataset.editId;
-  const existente = editId ? getCotacoesCompras().find(item => String(item.id) === String(editId)) : null;
-  if (existente) {
-    existente.descricao = descricao;
-    existente.status = statusValido;
-    existente.concluida = statusValido === 'concluido';
-    existente.atualizadoEm = today();
-  } else {
-    getCotacoesCompras().push({
-      id: Date.now(), descricao, status: statusValido, concluida: statusValido === 'concluido',
-      criadoEm: today(), atualizadoEm: today()
-    });
-  }
-  closeModal('modalCotacaoCompras');
-  limparModalCotacaoCompras();
-  atualizarCotacoesCompras();
-  notify('✓ Solicitação salva.', '#0d3d2a');
+  return window.AgendaApplication.adapters.compras.save();
 }
 
 function editarCotacaoCompras(id) { abrirModalCotacaoCompras(id); }
 
 function alterarStatusCotacaoCompras(id, status) {
-  if (!['enviado','sem_retorno','concluido'].includes(status)) return;
-  const item = getCotacoesCompras().find(cotacao => String(cotacao.id) === String(id));
-  if (!item) return;
-  item.status = status;
-  item.concluida = status === 'concluido';
-  item.atualizadoEm = today();
-  atualizarCotacoesCompras();
+  return window.AgendaApplication.adapters.compras.alterarStatus(id, status);
 }
 
-function concluirCotacaoCompras(id) { alterarStatusCotacaoCompras(id, 'concluido'); }
+function concluirCotacaoCompras(id) { return window.AgendaApplication.adapters.compras.concluir(id); }
 
 function excluirCotacaoCompras(id) {
-  if (!confirm('Excluir definitivamente esta solicitação para compras?')) return;
-  cotacoesCompras = getCotacoesCompras().filter(item => String(item.id) !== String(id));
-  atualizarCotacoesCompras();
-  notify('✓ Solicitação excluída.', '#0d3d2a');
+  return window.AgendaApplication.adapters.compras.excluir(id);
 }
 
 function escaparHtmlCotacaoCompras(valor) {
@@ -16135,5 +16114,7 @@ html body .topnav-item { opacity:1 !important; filter:none !important; }
 </style>
 <link rel="stylesheet" href="requests-revision.css">
 <script src="requests-revision.js"></script>
+<script type="module" src="quick-texts.js"></script>
+<script type="module" src="application/bootstrap.js"></script>
 </body>
 </html>
