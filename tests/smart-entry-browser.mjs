@@ -26,7 +26,9 @@ try {
  assert.equal(await evaluate("document.querySelectorAll('#quick-tools > button').length"),6);
  assert.equal(await evaluate("document.querySelectorAll('#tools-dropdown button').length"),6);
  assert.equal(await evaluate("document.getElementById('budget-desk')"),null);
- await click('.qa-tools');assert.equal(await evaluate("document.getElementById('tools-dropdown').hidden"),false);
+ await click('.qa-tools');assert.equal(await evaluate("document.getElementById('tools-dropdown').hidden"),true);
+ assert.equal(await evaluate("document.querySelector('#view-ferramentas').classList.contains('active')"),true);
+ await click('#tools-menu-toggle');assert.equal(await evaluate("document.getElementById('tools-dropdown').hidden"),false);
  await click('.tools-central-link');assert.equal(await evaluate("document.getElementById('tools-dropdown').hidden"),true);
  await open('sale-price');
  assert.equal(await evaluate("document.getElementById('sp-margin').value"),'40,00%');
@@ -59,7 +61,7 @@ try {
   await call('Emulation.setPageScaleFactor',{pageScaleFactor:1});
   for(const theme of ['light','dark']) {
    await evaluate('applyTheme('+JSON.stringify(theme)+',false);showView("dashboard");window.scrollTo(0,0)');
-   await click('.qa-tools',width===375);
+   await click('#tools-menu-toggle',width===375);
    if(width===1440){const heights=await evaluate("({tools:document.querySelector('.tools-quick-group').getBoundingClientRect().height,peer:document.querySelector('.qa-cotacao').getBoundingClientRect().height})");assert.equal(heights.tools,heights.peer);}
    assert.equal(await evaluate("document.getElementById('tools-dropdown').hidden"),false);
    assert.equal(await evaluate("(()=>{const menu=document.getElementById('tools-dropdown').getBoundingClientRect(),button=document.querySelector('.tools-quick-group').getBoundingClientRect();return menu.top>=button.bottom&&menu.left>=0&&menu.right<=innerWidth+1})()"),true);

@@ -2,7 +2,6 @@
 #quick-tools [hidden] { display: none !important; }
 #quick-tools .btn-ghost { background: var(--surface2) !important; color: var(--text) !important; }
 .sidebar .quick-action-card.qa-tools { --action-color: #2563EB; }
-#quick-texts h2 { margin: 20px 0 8px; }
 #quick-texts p { color: var(--text2); }
 .qt-toolbar, .qt-actions { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
 .qt-toolbar { margin-top: 20px; }
@@ -116,6 +115,20 @@
   html body .sidebar .quick-action-grid .tools-quick-group .qa-tools > span:not(.quick-action-icon) { display:none !important; }
   .tools-menu-toggle { flex:0 0 auto; min-height:32px; border:1px solid var(--border); border-radius:0 0 6px 6px; }
 }
+.tools-hub-header[hidden] { display:none !important; }
+.tools-hub-header p { margin:8px 0 0; color:var(--text2); line-height:1.6; }
+.tool-page { min-width:0; }
+.tool-page-header { padding:0 0 20px; border-bottom:1px solid var(--border); margin:0 0 20px; }
+.tool-back { display:inline-flex; padding:6px 0; margin:0 0 14px; border:0; background:none; color:var(--text2); font:inherit; font-size:13px; cursor:pointer; }
+.tool-back:hover { color:var(--text); text-decoration:underline; }
+.tool-title-row { display:flex; align-items:center; gap:10px; min-width:0; }
+.tool-title-row h2 { margin:0; font-size:22px; line-height:1.35; overflow-wrap:anywhere; min-width:0; }
+.tool-title-row h2:focus { outline:none; }
+.tools-quick-group:has(.tools-menu-toggle[aria-expanded=true]), html body .sidebar .quick-action-grid .tools-quick-group:has(.tools-menu-toggle[aria-expanded=true]) .qa-tools { background:#115E59 !important; }
+.tool-page-icon { flex:0 0 auto; font-size:24px; line-height:1; }
+#quick-tools .tool-page-description { margin:8px 0 0; color:var(--text2); font-size:14px; line-height:1.6; }
+.tool-page-content { min-width:0; }
+@media(max-width:600px) { .tool-title-row { align-items:flex-start; } .tool-title-row h2 { font-size:20px; } .tool-page-header { padding-bottom:16px; margin-bottom:16px; } }
 #quick-notes label { display:grid; gap:6px; min-width:0; margin:10px 0; }
 #quick-notes :is(input,textarea) { box-sizing:border-box; width:100%; min-width:0; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--surface); color:var(--text); padding:10px; font:inherit; }
 #quick-notes textarea { resize:vertical; }

@@ -8,6 +8,7 @@ import { setupToolsNavigation } from './tools-navigation.js';
 import { mountSalePrice } from './sale-price.js';
 import { mountSizeSettings } from './size-settings.js';
 import { mountQuickNotes } from './quick-notes.js';
+import { toolPageHeader } from './tool-page-layout.js';
 let edits = loadTextEdits();
 const models = () => QUICK_TEXTS.map(model => {
   const edit = edits[model.id];
@@ -19,9 +20,7 @@ const root = document.getElementById('quick-tools');
 
 root.innerHTML = `<button type="button" class="btn btn-primary" id="open-quick-texts">📝 Textos Rápidos</button>
   <section id="quick-texts" hidden aria-labelledby="quick-texts-title">
-    <button type="button" class="btn btn-ghost" id="close-quick-texts">← Central de Ferramentas</button>
-    <h2 id="quick-texts-title" tabindex="-1">Textos Rápidos</h2>
-    <p>Seus modelos de e-mail para visualizar, editar e copiar.</p>
+    ${toolPageHeader('quick-texts')}
     <button type="button" class="btn btn-ghost" id="quick-open-freight">Cotação de Frete</button>
     <div class="qt-toolbar"><label>Buscar texto<input id="qt-search" type="search" placeholder="Buscar texto..."></label></div>
     <p id="qt-feedback" role="status" aria-live="polite"></p><div id="qt-cards"></div>

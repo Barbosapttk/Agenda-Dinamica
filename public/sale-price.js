@@ -2,6 +2,7 @@ import { SALE_DEFAULTS, calculatePurchaseCost, calculateSalePrice } from './sale
 import { parseServiceNumber } from './service-calculator-math.js';
 import { toolMoney } from './tools-common.js';
 import { attachSmartNumberInput } from './smart-number-input.js';
+import { toolPageHeader } from './tool-page-layout.js';
 const purchaseFields=[['quantity','Quantidade'],['purchase','Preço de compra (R$)'],['buyPis','PIS/COFINS (%)'],['buyIcms','ICMS de compra (%)'],['buyIpi','IPI (%)'],['freight','Custo total do frete (R$)']];
 const saleFields=[['margin','Margem (%)'],['sellIpi','IPI (%)'],['sellIcms','ICMS (%)'],['sellPis','PIS/COFINS (%)']];
 const currencyKeys=['purchase','freight'];
@@ -11,9 +12,7 @@ export function mountSalePrice(root) {
   const fields=items=>items.map(([key,label])=>`<label>${label}<input id="sp-${key}" inputmode="decimal" ${key==='quantity'?'placeholder="Não informada"':''}></label>`).join('');
   root.insertAdjacentHTML('beforeend',`<button type="button" class="btn btn-primary" id="open-sale-price">🧮 Calculadora de Valor de Venda</button>
     <section id="sale-price" hidden aria-labelledby="sp-title">
-      <button type="button" class="btn btn-ghost" id="close-sale-price">← Central de Ferramentas</button>
-      <h2 id="sp-title" tabindex="-1">Calculadora de Valor de Venda</h2>
-      <p>Calcule o custo por item e forme o preço de venda com a margem desejada.</p>
+      ${toolPageHeader('sale-price')}
       <form id="sp-form"><div class="sc-layout">
         <div class="card sc-panel"><h3>🛒 Custo de compra</h3><div class="sp-fields">${fields(purchaseFields)}</div>
           <p id="sp-cost-status" role="status"></p><dl id="sp-cost-details" class="sp-details"></dl>

@@ -1,12 +1,8 @@
+import { TOOL_PAGES,applyToolPageLayouts } from './tool-page-layout.js';
 export function setupToolsNavigation(root, renderTexts) {
-  const tools = [
-    ['sale-price','sp-title','Calculadora de Valor de Venda','🧮','Forme o preço de venda com custos, frete, impostos e margem.'],
-    ['service-calculator','sc-title','Calculadora de Valor de Serviço','🧮','Calcule os custos de um atendimento e seu valor final.'],
-    ['freight-quote','freight-title','Cotação de Frete','🚚','Prepare e copie os dados de coleta, entrega e carga.'],
-    ['quick-texts','quick-texts-title','Textos Rápidos','📝','Encontre, edite e copie seus modelos de e-mail.'],
-    ['size-table','size-title','Tabela de Tamanhos','📦','Consulte e copie dimensões e pesos dos volumes.'],
-    ['quick-notes','notes-title','Anotações Rápidas','📝','Guarde, encontre e copie referências do dia a dia.'],
-  ];
+  const tools=TOOL_PAGES.map(page=>[page.id,page.titleId,page.name,page.icon,page.summary]);
+  applyToolPageLayouts(root);
+  const hubHeader=document.querySelector('#view-ferramentas > .page-header');
   for(const [id,,name,icon,description] of tools) {
     const button=root.querySelector('#open-'+id);
     button.className='tool-launch-card'; button.replaceChildren();
@@ -18,6 +14,7 @@ export function setupToolsNavigation(root, renderTexts) {
   root.prepend(...tools.map(([id])=>root.querySelector('#open-'+id)));
   function show(id) {
     root.classList.toggle('tools-hub',!id);
+    hubHeader.hidden=Boolean(id);
     for (const [tool, title] of tools) {
       root.querySelector('#' + tool).hidden = tool !== id;
       root.querySelector('#open-' + tool).hidden = Boolean(id);
@@ -38,7 +35,7 @@ export function setupToolsNavigation(root, renderTexts) {
     toggle.setAttribute('aria-label','Abrir ferramentas');toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-controls','tools-dropdown');group.append(toggle);
     const menu=document.createElement('div');menu.id='tools-dropdown';menu.hidden=true;menu.setAttribute('popover','manual');menu.setAttribute('aria-label','Acesso rápido às ferramentas');document.body.append(menu);
     function closeMenu(focus=false) {
-      if(menu.matches(':popover-open'))menu.hidePopover();menu.hidden=true;toggle.setAttribute('aria-expanded','false');main.setAttribute('aria-expanded','false');if(focus)toggle.focus();
+      if(menu.matches(':popover-open'))menu.hidePopover();menu.hidden=true;toggle.setAttribute('aria-expanded','false');if(focus)toggle.focus();
     }
     function position() {
       const rect=group.getBoundingClientRect();const width=Math.min(320,innerWidth-16);
@@ -51,10 +48,10 @@ export function setupToolsNavigation(root, renderTexts) {
     function toggleMenu() {
       if(!menu.hidden){closeMenu();return;}
       position();menu.hidden=false;menu.showPopover();toggle.setAttribute('aria-expanded','true');
-      main.setAttribute('aria-expanded','true');
     }
-    main.title='Ferramentas';main.setAttribute('aria-controls','tools-dropdown');main.setAttribute('aria-expanded','false');
-    main.onclick=toggleMenu;toggle.onclick=toggleMenu;
+    main.title='Central de Ferramentas';
+    main.onclick=()=>{closeMenu();window.showView('ferramentas');show(null);};
+    toggle.onclick=event=>{event.stopPropagation();toggleMenu();};
     const central=document.createElement('a');central.href='#view-ferramentas';central.className='tools-central-link';central.textContent='Central de Ferramentas';
     central.onclick=event=>{event.preventDefault();closeMenu();window.showView('ferramentas');show(null);};menu.append(central);
     toggle.onkeydown=event=>{if(event.key==='ArrowDown'){event.preventDefault();if(menu.hidden)toggle.click();menu.querySelector('button').focus();}};

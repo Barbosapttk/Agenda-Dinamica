@@ -2,12 +2,12 @@ import { SENDER, RECIPIENT_FIELDS, CARGO_FIELDS, identifyRecipient, validCnpj, v
 import { copyPlainText } from './tools-common.js';
 import { parseServiceNumber } from './service-calculator-math.js';
 import { attachSmartNumberInput } from './smart-number-input.js';
+import { toolPageHeader } from './tool-page-layout.js';
 
 export function mountFreightQuote(root) {
   root.insertAdjacentHTML('beforeend', `<button type="button" class="btn btn-primary" id="open-freight-quote">🚚 Cotação de Frete</button>
     <section id="freight-quote" hidden aria-labelledby="freight-title">
-      <button type="button" class="btn btn-ghost" id="close-freight-quote">← Central de Ferramentas</button>
-      <h2 id="freight-title" tabindex="-1">Cotação de Frete</h2>
+      ${toolPageHeader('freight-quote')}
       <div class="card sc-panel"><h3>Colar dados da proposta</h3>
         <label for="freight-source">Cole o trecho com os dados do destinatário</label>
         <textarea id="freight-source" rows="6" placeholder="Razão social, CNPJ, endereço, bairro, cidade e CEP"></textarea>

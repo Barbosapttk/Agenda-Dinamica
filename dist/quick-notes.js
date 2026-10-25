@@ -1,14 +1,13 @@
 import { createToolStateStorage } from './tool-state-storage.js';
 import { NOTES_STORAGE_KEY,validateNotes,saveNote,findNotes } from './quick-notes-data.js';
 import { copyPlainText } from './tools-common.js';
+import { toolPageHeader } from './tool-page-layout.js';
 export function mountQuickNotes(root) {
   const storage=createToolStateStorage(NOTES_STORAGE_KEY,[],validateNotes);
   let notes=storage.read(),editingId=null;
   root.insertAdjacentHTML('beforeend',`<button type="button" id="open-quick-notes">📝 Anotações Rápidas</button>
     <section id="quick-notes" hidden aria-labelledby="notes-title">
-      <button type="button" class="btn btn-ghost" id="close-quick-notes">← Central de Ferramentas</button>
-      <h2 id="notes-title" tabindex="-1">Anotações Rápidas</h2>
-      <p>Referências do dia a dia, salvas neste navegador. As criadas ou editadas por último aparecem primeiro.</p>
+      ${toolPageHeader('quick-notes')}
       <button type="button" class="btn btn-primary" id="notes-new">+ NOVA ANOTAÇÃO</button>
       <div class="qt-toolbar"><label>Buscar anotação<input type="search" id="notes-search" placeholder="🔎 Buscar anotação..."></label></div>
       <p id="notes-feedback" role="status" aria-live="polite"></p>

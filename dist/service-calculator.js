@@ -1,13 +1,12 @@
 import { calculateService, parseServiceNumber, CHEMICALS } from './service-calculator-math.js';
 import { toolMoney as money } from './tools-common.js';
 import { attachSmartNumberInput } from './smart-number-input.js';
+import { toolPageHeader } from './tool-page-layout.js';
 
 export function mountServiceCalculator(root) {
   root.insertAdjacentHTML('beforeend', `<button type="button" class="btn btn-primary" id="open-service-calculator">🧮 Calculadora de Valor de Serviço</button>
     <section id="service-calculator" hidden aria-labelledby="sc-title">
-      <button type="button" class="btn btn-ghost" id="close-service-calculator">← Central de Ferramentas</button>
-      <h2 id="sc-title" tabindex="-1">Calculadora de Valor de Serviço</h2>
-      <p>Informe os dados para calcular o serviço externo.</p>
+      ${toolPageHeader('service-calculator')}
       <div class="sc-layout"><form id="sc-inputs" class="card sc-panel" novalidate>
         <h3>Entradas</h3>
         <label>Salário mensal do técnico (R$)<input id="sc-salary" inputmode="decimal" value="R$ 0,00" required></label>

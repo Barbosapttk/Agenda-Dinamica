@@ -1,5 +1,45 @@
 # Arquitetura incremental da Agenda Dinâmica
 
+## Layout unificado das seis ferramentas (25/10/2026)
+
+Inventário: antes desta etapa, navegação e CSS eram compartilhados, mas cada
+módulo repetia seu cabeçalho em uma seção independente. O padrão agora parte de
+`tool-page-layout.js`: metadados estáticos em `TOOL_PAGES`, cabeçalho em
+`toolPageHeader` e container em `applyToolPageLayouts`.
+
+| Ferramenta | Módulo | Estrutura atual | Parte compartilhada |
+|---|---|---|---|
+| Valor de Venda | `sale-price.js` | seção, cabeçalho, conteúdo com calculadora/PDV | `tool-page-layout.js` |
+| Valor de Serviço | `service-calculator.js` | seção, cabeçalho, conteúdo com entradas/custos | `tool-page-layout.js` |
+| Cotação de Frete | `freight-quote.js` | seção, cabeçalho, conteúdo com identificação/carga/prévia | `tool-page-layout.js` |
+| Textos Rápidos | `quick-texts.js` | seção, cabeçalho, conteúdo com busca/cards/editor | `tool-page-layout.js` |
+| Tabela de Tamanhos | `size-table.js` | seção, cabeçalho, conteúdo com busca/filtros/cards | `tool-page-layout.js` |
+| Anotações Rápidas | `quick-notes.js` | seção, cabeçalho, conteúdo com busca/editor/cards | `tool-page-layout.js` |
+
+Todas usam retorno discreto “← Ferramentas”, ícone, título, descrição e conteúdo
+após uma divisória. O container move os nós existentes, sem recriar controles ou
+listeners. IDs, formulários, estado, máscaras e persistência foram preservados.
+As funções matemáticas, banco e regras comerciais não foram alterados.
+
+Central possui título e descrição próprios (“Ferramentas para agilizar suas
+atividades comerciais.”), exibidos somente na seleção dos seis cards. Nas telas
+de trabalho, esse cabeçalho fica oculto. Não há retorno com a legenda antiga nem
+título duplicado em nenhuma das seis ferramentas. Títulos e descrições da Central,
+menu e telas usam o mesmo catálogo, mantendo ordem e nomenclatura consistentes.
+
+Corpo de Ferramentas passa a abrir diretamente a Central e fechar o menu. Seta
+continua abrindo somente o dropdown; eventos não se propagam entre as duas áreas.
+Retorno das telas abre somente a Central e devolve foco ao respectivo card.
+A funcionalidade cancelada permanece ausente.
+
+Validação: 119/119 testes Node e 10 scripts de navegador aprovados, incluindo
+regressão geral, cálculos, entrada inteligente, clipboard real, CRUD de notas e
+tamanhos. `tool-page-layout-browser.mjs` abre cada ferramenta pelos dois caminhos,
+confere o cabeçalho e o retorno, sem overflow em 1440/900/375px e nos dois temas.
+42 capturas documentam Central e todas as seis telas; inspeção visual realizada.
+Auditoria final: 0 ferramentas com o layout antigo. Supabase simulado nos testes,
+sem acesso remoto real. Build Vite aprovado. Sem commit, push ou publicação.
+
 ## Usabilidade dos campos e navegação — estado atual (25/10/2026)
 
 A funcionalidade cancelada foi removida: módulos, imports, seção, card, atalhos,

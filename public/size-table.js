@@ -1,13 +1,13 @@
 import { findSizes, formatSizeDimensions, formatSizeWeight, formatarTamanhoParaCopia } from './size-table-data.js';
 import { copyPlainText } from './tools-common.js';
 import { getSizeCatalog } from './size-catalog-store.js';
+import { toolPageHeader } from './tool-page-layout.js';
 
 export function mountSizeTable(root) {
   const catalog = getSizeCatalog();
   root.insertAdjacentHTML('beforeend', `<button type="button" class="btn btn-primary" id="open-size-table">📦 Tabela de Tamanhos</button>
     <section id="size-table" hidden aria-labelledby="size-title">
-      <button type="button" class="btn btn-ghost" id="close-size-table">← Central de Ferramentas</button>
-      <h2 id="size-title" tabindex="-1">Tabela de Tamanhos</h2>
+      ${toolPageHeader('size-table')}
       <div class="qt-toolbar"><label>Buscar tamanho<input type="search" id="size-search" placeholder="🔎 Buscar tamanho..."></label>
       <label>Tipo<select id="size-type"><option value="">Todos</option><option>Sacos</option><option>Caixas</option><option>Pallet</option></select></label></div>
       <p>Consulte e copie as dimensões em cm: L (largura) x A (altura) x C (comprimento). — indica medida não informada.</p>
