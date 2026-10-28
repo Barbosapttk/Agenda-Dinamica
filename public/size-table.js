@@ -9,7 +9,8 @@ export function mountSizeTable(root) {
     <section id="size-table" hidden aria-labelledby="size-title">
       ${toolPageHeader('size-table')}
       <div class="qt-toolbar"><label>Buscar tamanho<input type="search" id="size-search" placeholder="🔎 Buscar tamanho..."></label>
-      <label>Tipo<select id="size-type"><option value="">Todos</option><option>Sacos</option><option>Caixas</option><option>Pallet</option></select></label></div>
+      <label>Tipo<select id="size-type"><option value="">Todos</option><option>Sacos</option><option>Caixas</option><option>Pallet</option></select></label>
+      <button type="button" class="btn btn-ghost" id="size-manage-open" aria-controls="size-settings" aria-expanded="false"><i class="fa-solid fa-sliders" aria-hidden="true"></i> Configurar tamanhos</button></div>
       <p>Consulte e copie as dimensões em cm: L (largura) x A (altura) x C (comprimento). — indica medida não informada.</p>
       <p id="size-count" role="status"></p>
       <p id="size-feedback" role="status" aria-live="polite"></p>

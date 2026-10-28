@@ -71,7 +71,7 @@ function configurarModalConclusao(tipo, item) {
   if (tipo === 'solicitacao_orcamento') {
     title.innerHTML = '<i class="fa-solid fa-file-signature" style="color:var(--success);margin-right:8px"></i>Registrar proposta enviada';
     label.textContent = 'Observação sobre a proposta enviada (opcional)';
-    obs.placeholder = 'Ex: proposta enviada conforme solicitado, cliente pediu retorno amanhã, faltou algum item, aguardando aprovação...';
+    obs.placeholder = 'Ex.: proposta enviada conforme solicitado, cliente pediu retorno amanhã, faltou algum item, aguardando aprovação...';
     canalWrap.style.display = 'none';
     canal.value = item?.canal || 'whatsapp';
     if (budgetWrap) budgetWrap.style.display = 'block';
@@ -88,7 +88,7 @@ function configurarModalConclusao(tipo, item) {
   } else if (tipo === 'orcamento') {
     title.innerHTML = '<i class="fa-solid fa-repeat" style="color:var(--purple);margin-right:8px"></i>Registrar proposta recorrente enviada';
     label.textContent = 'Observação sobre a proposta recorrente enviada (opcional)';
-    obs.placeholder = 'Ex: orçamento recorrente enviado, combinar novo retorno, cliente pediu ajuste...';
+    obs.placeholder = 'Ex.: orçamento recorrente enviado, combinar novo retorno, cliente pediu ajuste...';
     canalWrap.style.display = 'none';
     canal.value = 'whatsapp';
     if (budgetWrap) budgetWrap.style.display = 'block';
@@ -243,7 +243,7 @@ function confirmarConclusao() {
       if (document.getElementById('concluir-agendar-novo').checked) {
         const novaData = document.getElementById('concluir-novo-data').value;
         if (novaData) agendamentos.push({ id: Date.now()+1, clienteId: item.clienteId, data: novaData, horario: document.getElementById('concluir-novo-horario').value || '09:00', motivo: formatarTextoSistema(document.getElementById('concluir-novo-motivo').value) || 'Retorno agendado', prioridade: 'normal', criadoEm: today() });
-        else notify('Conclusão salva, mas o próximo retorno não foi agendado (data vazia)', '#854f0b');
+        else notify('Conclusão salva, mas o próximo retorno não foi agendado (data vazia).', '#854f0b');
       }
     }
     save(); closeModal('modalConcluir'); renderAgenda(); renderDashboard(); renderOrcamentosTabela(); renderSolicitacoesTabela(); renderHistorico(); renderClientes();
@@ -3383,158 +3383,6 @@ body.theme-light .sol-attachment-card { background:rgba(255,255,255,0.52); }
 }
 
 
-/* TESTE DE PALETA - NOVA SOLICITAÇÃO / MODO ESCURO */
-body:not(.theme-light) #modalSolicitacao .modal-solicitacao-landscape {
-  background:
-    radial-gradient(circle at 18% 0%, rgba(29,214,165,0.16), transparent 30%),
-    radial-gradient(circle at 88% 12%, rgba(124,92,255,0.18), transparent 34%),
-    linear-gradient(145deg, #06142c 0%, #081b3b 45%, #071126 100%) !important;
-  border: 1px solid rgba(93,154,255,0.36) !important;
-  box-shadow: 0 26px 90px rgba(0,0,0,0.62), 0 0 0 1px rgba(255,255,255,0.035) inset !important;
-}
-
-body:not(.theme-light) #modalSolicitacao .sol-modal-header {
-  background:
-    linear-gradient(90deg, rgba(18,96,220,0.30), rgba(20,184,166,0.14), rgba(124,92,255,0.20));
-  border-bottom: 1px solid rgba(93,154,255,0.28);
-}
-
-body:not(.theme-light) #modalSolicitacao .sol-modal-subtitle {
-  color: rgba(219,232,255,0.78);
-}
-
-body:not(.theme-light) #modalSolicitacao .sol-form-section {
-  position: relative;
-  overflow: hidden;
-  border-color: rgba(93,154,255,0.24);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.045);
-}
-
-body:not(.theme-light) #modalSolicitacao .sol-form-section::before {
-  content: '';
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 4px;
-  border-radius: 14px 0 0 14px;
-  background: linear-gradient(180deg, rgba(29,214,165,0.95), rgba(13,102,232,0.85));
-}
-
-body:not(.theme-light) #modalSolicitacao .sol-client-section {
-  background:
-    linear-gradient(145deg, rgba(11,116,150,0.20), rgba(9,31,70,0.58)),
-    rgba(5,19,43,0.82) !important;
-}
-
-body:not(.theme-light) #modalSolicitacao .sol-request-section {
-  background:
-    linear-gradient(145deg, rgba(99,76,255,0.18), rgba(9,31,70,0.56)),
-    rgba(5,19,43,0.82) !important;
-}
-
-body:not(.theme-light) #modalSolicitacao .sol-request-section::before {
-  background: linear-gradient(180deg, rgba(124,92,255,0.95), rgba(13,102,232,0.85));
-}
-
-body:not(.theme-light) #modalSolicitacao .sol-section-head {
-  border-bottom-color: rgba(148,184,255,0.18);
-}
-
-body:not(.theme-light) #modalSolicitacao .sol-section-head strong {
-  color: #f5f9ff;
-}
-
-body:not(.theme-light) #modalSolicitacao .sol-section-head strong i {
-  color: #22d3ee;
-  filter: drop-shadow(0 0 10px rgba(34,211,238,0.20));
-}
-
-body:not(.theme-light) #modalSolicitacao .sol-request-section .sol-section-head strong i {
-  color: #a78bfa;
-  filter: drop-shadow(0 0 10px rgba(167,139,250,0.24));
-}
-
-body:not(.theme-light) #modalSolicitacao .sol-client-link-panel {
-  background: linear-gradient(135deg, rgba(29,214,165,0.11), rgba(13,102,232,0.13));
-  border-color: rgba(29,214,165,0.26);
-}
-
-body:not(.theme-light) #modalSolicitacao .sol-client-search-input input,
-body:not(.theme-light) #modalSolicitacao input,
-body:not(.theme-light) #modalSolicitacao select,
-body:not(.theme-light) #modalSolicitacao textarea {
-  background: rgba(2,10,28,0.72) !important;
-  border-color: rgba(126,164,255,0.25) !important;
-}
-
-body:not(.theme-light) #modalSolicitacao .sol-client-search-input input:focus,
-body:not(.theme-light) #modalSolicitacao input:focus,
-body:not(.theme-light) #modalSolicitacao select:focus,
-body:not(.theme-light) #modalSolicitacao textarea:focus {
-  border-color: rgba(29,214,165,0.72) !important;
-  box-shadow: 0 0 0 3px rgba(29,214,165,0.12), 0 0 18px rgba(29,214,165,0.07) !important;
-}
-
-body:not(.theme-light) #modalSolicitacao .sol-client-result-card {
-  background: linear-gradient(135deg, rgba(10,51,90,0.88), rgba(5,19,43,0.92));
-  border-color: rgba(34,211,238,0.24);
-}
-
-body:not(.theme-light) #modalSolicitacao .sol-description-highlight {
-  background:
-    linear-gradient(135deg, rgba(245,166,35,0.18), rgba(255,122,61,0.10)),
-    rgba(50,28,6,0.42) !important;
-  border-color: rgba(245,166,35,0.42) !important;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.04);
-}
-
-body:not(.theme-light) #modalSolicitacao .sol-description-highlight label {
-  color: #ffe2a6;
-}
-
-body:not(.theme-light) #modalSolicitacao .sol-description-highlight textarea {
-  background: rgba(8,14,30,0.82) !important;
-  border-color: rgba(245,166,35,0.34) !important;
-}
-
-body:not(.theme-light) #modalSolicitacao .sol-attachments-box,
-body:not(.theme-light) #modalSolicitacao .sol-obs-box {
-  padding: 14px;
-  border-radius: 14px;
-  border: 1px solid rgba(93,154,255,0.18);
-  background: rgba(2,12,30,0.34);
-}
-
-body:not(.theme-light) #modalSolicitacao .sol-attachments-box {
-  background: linear-gradient(135deg, rgba(14,165,233,0.12), rgba(13,102,232,0.07));
-  border-color: rgba(14,165,233,0.24);
-}
-
-body:not(.theme-light) #modalSolicitacao .sol-obs-box {
-  background: linear-gradient(135deg, rgba(124,92,255,0.13), rgba(13,102,232,0.06));
-  border-color: rgba(167,139,250,0.22);
-}
-
-body:not(.theme-light) #modalSolicitacao .attach-drop {
-  background: linear-gradient(135deg, rgba(14,165,233,0.16), rgba(29,214,165,0.10));
-  border-color: rgba(34,211,238,0.30);
-  color: rgba(234,244,255,0.92);
-}
-
-body:not(.theme-light) #modalSolicitacao .attach-drop i {
-  color: #22d3ee;
-}
-
-body:not(.theme-light) #modalSolicitacao .sol-attachment-card {
-  background: linear-gradient(135deg, rgba(10,51,90,0.84), rgba(5,19,43,0.94));
-  border-color: rgba(34,211,238,0.22);
-}
-
-body:not(.theme-light) #modalSolicitacao .sol-modal-footer {
-  background: linear-gradient(90deg, rgba(6,20,44,0.96), rgba(8,30,65,0.96));
-  border-top-color: rgba(93,154,255,0.22);
-}
-
-
 /* MELHORIA: CONCLUSÃO COMO PROPOSTA ENVIADA */
 .proposta-status-card {
   background: linear-gradient(135deg, rgba(29,214,165,0.11), rgba(13,102,232,0.06));
@@ -3789,11 +3637,11 @@ body.theme-light .cv-hero { background:linear-gradient(135deg, rgba(10,140,92,.1
     <form class="auth-form" onsubmit="fazerLogin(event)">
       <div class="form-group">
         <label>E-mail</label>
-        <input type="email" id="auth-email" placeholder="seuemail@empresa.com" autocomplete="email" required>
+        <input type="email" id="auth-email" placeholder="Ex.: email@exemplo.com" autocomplete="email" required>
       </div>
       <div class="form-group">
         <label>Senha</label>
-        <input type="password" id="auth-password" placeholder="Digite sua senha" autocomplete="current-password" required>
+        <input type="password" id="auth-password" placeholder="Digite sua senha." autocomplete="current-password" required>
       </div>
       <div class="auth-error" id="auth-error"></div>
       <button class="btn btn-primary" id="auth-submit" type="submit" style="width:100%;justify-content:center;padding:11px 16px">
@@ -4401,21 +4249,21 @@ body.theme-light .cv-hero { background:linear-gradient(135deg, rgba(10,140,92,.1
 <!-- ===== MODALS ===== -->
 
 <!-- MODAL CLIENTE -->
-<div class="modal-overlay" id="modalCliente">
+<div class="modal-overlay entry-modal" id="modalCliente">
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title" id="modal-cliente-title"><i class="fa-solid fa-user-plus" style="color:var(--accent);margin-right:8px"></i>Novo Cliente</div>
-      <button class="modal-close" onclick="closeModal('modalCliente')"><i class="fa-solid fa-xmark"></i></button>
+      <button class="modal-close" aria-label="Fechar janela" onclick="closeModal('modalCliente')"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body">
       <div class="form-grid">
-        <div class="form-group"><label>Cliente / Apelido *</label><input type="text" id="c-nome" placeholder="Ex: HOSPITAL SÃO LUCAS, CLÍNICA ALFA"></div>
-        <div class="form-group"><label>Empresa / Razão Social</label><input type="text" id="c-empresa" placeholder="Ex: Razão social da empresa"></div>
-        <div class="form-group"><label>Solicitante</label><input type="text" id="c-funcao" placeholder="Ex: PATRICK BARBOSA, JOÃO DO FINANCEIRO"></div>
-        <div class="form-group"><label>Setor</label><input type="text" id="c-setor" placeholder="Ex: COMPRAS, MANUTENÇÃO, UTI..."></div>
-        <div class="form-group"><label>CNPJ</label><input type="text" id="c-cnpj" placeholder="00.000.000/0001-00" maxlength="18" oninput="maskCNPJ(this)"></div>
-        <div class="form-group"><label>Telefone</label><input type="text" id="c-tel" placeholder="99-99999-9999" maxlength="13" oninput="maskTelefone(this)"></div>
-        <div class="form-group"><label>E-mail</label><input type="email" id="c-email" placeholder="email@empresa.com"></div>
+        <div class="form-group"><label>Cliente / Apelido *</label><input type="text" id="c-nome" placeholder="Ex.: nome do cliente"></div>
+        <div class="form-group"><label>Empresa / Razão Social</label><input type="text" id="c-empresa" placeholder="Ex.: razão social da empresa"></div>
+        <div class="form-group"><label>Solicitante</label><input type="text" id="c-funcao" placeholder="Ex.: nome do solicitante"></div>
+        <div class="form-group"><label>Setor</label><input type="text" id="c-setor" placeholder="Ex.: departamento responsável"></div>
+        <div class="form-group"><label>CNPJ</label><input type="text" id="c-cnpj" placeholder="Ex.: 00.000.000/0000-00" maxlength="18" oninput="maskCNPJ(this)"></div>
+        <div class="form-group"><label>Telefone</label><input type="text" id="c-tel" placeholder="Ex.: (00) 00000-0000" maxlength="13" oninput="maskTelefone(this)"></div>
+        <div class="form-group"><label>E-mail</label><input type="email" id="c-email" placeholder="Ex.: email@exemplo.com"></div>
         <div class="form-group"><label>Segmento</label>
           <select id="c-segmento">
             <option value="">Selecione...</option>
@@ -4423,7 +4271,7 @@ body.theme-light .cv-hero { background:linear-gradient(135deg, rgba(10,140,92,.1
             <option value="Industrial">Industrial</option>
           </select>
         </div>
-        <div class="form-group"><label>Cidade</label><input type="text" id="c-cidade" placeholder="Ex: SÃO PAULO"></div>
+        <div class="form-group"><label>Cidade</label><input type="text" id="c-cidade" placeholder="Ex.: cidade"></div>
         <div class="form-group"><label>Estado</label>
           <select id="c-estado">
             <option value="">Selecione...</option>
@@ -4465,7 +4313,7 @@ body.theme-light .cv-hero { background:linear-gradient(135deg, rgba(10,140,92,.1
           <label>Equipamentos do Cliente</label>
           <textarea id="c-equipamentos" placeholder="Descreva os equipamentos do cliente, se necessário..."></textarea>
         </div>
-        <div class="form-group full"><label>Observação Importante Fixa</label><textarea id="c-obs-importante" placeholder="Ex: Só fala com financeiro; pedir pedido de compra antes de faturar; exige orçamento formal em PDF..."></textarea></div>
+        <div class="form-group full"><label>Observação Importante Fixa</label><textarea id="c-obs-importante" placeholder="Ex.: informe uma observação importante."></textarea></div>
         <div class="form-group full"><label>Observações</label><textarea id="c-obs" placeholder="Campo opcional. Preencha apenas se houver informação adicional."></textarea></div>
         <div class="form-group full optional-flow-box">
           <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:13px;color:var(--text);cursor:pointer">
@@ -4492,11 +4340,11 @@ body.theme-light .cv-hero { background:linear-gradient(135deg, rgba(10,140,92,.1
 </div>
 
 <!-- MODAL CONTATO -->
-<div class="modal-overlay" id="modalContato">
+<div class="modal-overlay entry-modal" id="modalContato">
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title"><i class="fa-solid fa-phone" style="color:var(--accent);margin-right:8px"></i>Registrar Contato</div>
-      <button class="modal-close" onclick="closeModal('modalContato')"><i class="fa-solid fa-xmark"></i></button>
+      <button class="modal-close" aria-label="Fechar janela" onclick="closeModal('modalContato')"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body">
       <div class="form-grid">
@@ -4528,7 +4376,7 @@ body.theme-light .cv-hero { background:linear-gradient(135deg, rgba(10,140,92,.1
           <div id="ct-proposta-campos" class="form-grid" style="display:none;margin-top:10px">
             <div class="form-group"><label>Nº orçamento de peças</label><input type="text" id="ct-numero-pecas" placeholder="Opcional"></div>
             <div class="form-group"><label>Nº orçamento de serviço</label><input type="text" id="ct-numero-servico" placeholder="Opcional"></div>
-            <div class="form-group full"><label>Observação da proposta</label><textarea id="ct-proposta-obs" placeholder="Ex: Proposta enviada por e-mail, aguardando aprovação..."></textarea></div>
+            <div class="form-group full"><label>Observação da proposta</label><textarea id="ct-proposta-obs" placeholder="Ex.: proposta enviada por e-mail, aguardando aprovação..."></textarea></div>
           </div>
         </div>
         <div class="form-group full">
@@ -4544,7 +4392,7 @@ body.theme-light .cv-hero { background:linear-gradient(135deg, rgba(10,140,92,.1
           </div>
         </div>
         <div class="form-group"><label>Horário do alarme</label><input type="time" id="ct-horario-alarme" value="09:00"></div>
-        <div class="form-group"><label>Lembrete do Retorno</label><input type="text" id="ct-lembrete" placeholder="Ex: Enviar proposta..."></div>
+        <div class="form-group"><label>Lembrete do Retorno</label><input type="text" id="ct-lembrete" placeholder="Ex.: enviar proposta..."></div>
       </div>
     </div>
     <div class="modal-footer">
@@ -4586,7 +4434,7 @@ body.theme-light .cv-hero { background:linear-gradient(135deg, rgba(10,140,92,.1
           </select>
         </div>
         <div class="form-group"><label>Horário do alarme</label><input type="time" id="ag-horario-alarme" value="09:00"></div>
-        <div class="form-group full"><label>Motivo / O que fazer</label><textarea id="ag-motivo" placeholder="Ex: Dar retorno sobre proposta, confirmar pedido..."></textarea></div>
+        <div class="form-group full"><label>Motivo / O que fazer</label><textarea id="ag-motivo" placeholder="Ex.: dar retorno sobre proposta, confirmar pedido..."></textarea></div>
       </div>
     </div>
     <div class="modal-footer">
@@ -4617,7 +4465,7 @@ body.theme-light .cv-hero { background:linear-gradient(135deg, rgba(10,140,92,.1
           </select>
         </div>
         <div class="form-group full"><label>O que foi tratado *</label><textarea id="edit-descricao"></textarea></div>
-        <div class="form-group full"><label>Motivo da Edição</label><input type="text" id="edit-motivo" placeholder="Ex: Corrigi informação sobre o pedido..."></div>
+        <div class="form-group full"><label>Motivo da Edição</label><input type="text" id="edit-motivo" placeholder="Ex.: corrigi informação sobre o pedido..."></div>
       </div>
     </div>
     <div class="modal-footer">
@@ -4628,14 +4476,14 @@ body.theme-light .cv-hero { background:linear-gradient(135deg, rgba(10,140,92,.1
 </div>
 
 <!-- MODAL SOLICITAÇÃO DE ORÇAMENTO -->
-<div class="modal-overlay" id="modalSolicitacao">
+<div class="modal-overlay entry-modal" id="modalSolicitacao">
   <div class="modal modal-solicitacao-landscape">
     <div class="modal-header sol-modal-header">
       <div>
         <div class="modal-title" id="modal-solicitacao-title"><i class="fa-solid fa-clipboard-list" style="color:var(--warning);margin-right:8px"></i>Nova Solicitação</div>
         <div class="sol-modal-subtitle">Registre primeiro os dados do cliente/contato e depois detalhe exatamente o que foi solicitado.</div>
       </div>
-      <button class="modal-close" onclick="closeModal('modalSolicitacao')"><i class="fa-solid fa-xmark"></i></button>
+      <button class="modal-close" aria-label="Fechar janela" onclick="closeModal('modalSolicitacao')"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body sol-modal-body">
       <div id="sol-edit-top-actions" class="modal-top-action-bar" style="display:none">
@@ -4671,12 +4519,12 @@ body.theme-light .cv-hero { background:linear-gradient(135deg, rgba(10,140,92,.1
           </div>
 
           <div class="sol-client-fields-grid">
-            <div class="form-group"><label>Cliente / Apelido *</label><input type="text" id="sol-nome" spellcheck="true" lang="pt-BR" oninput="renderDuplicidadeSolicitacao(); filtrarClientesSolicitacao(true)" placeholder="Ex: Hospital São Lucas / Clínica Alfa"></div>
-            <div class="form-group"><label>Solicitante</label><input type="text" id="sol-solicitante" spellcheck="true" lang="pt-BR" oninput="renderDuplicidadeSolicitacao(); filtrarClientesSolicitacao(true)" placeholder="Ex: João do financeiro"></div>
-            <div class="form-group"><label>Empresa / Razão Social</label><input type="text" id="sol-empresa" spellcheck="true" lang="pt-BR" oninput="renderDuplicidadeSolicitacao(); filtrarClientesSolicitacao(true)" placeholder="Ex: RAZÃO SOCIAL DA EMPRESA"></div>
-            <div class="form-group"><label>CNPJ</label><input type="text" id="sol-cnpj" placeholder="00.000.000/0001-00" maxlength="18" oninput="maskCNPJ(this); renderDuplicidadeSolicitacao(); filtrarClientesSolicitacao(true)"></div>
-            <div class="form-group"><label>Telefone</label><input type="text" id="sol-telefone" placeholder="99-99999-9999" maxlength="13" oninput="maskTelefone(this); renderDuplicidadeSolicitacao(); filtrarClientesSolicitacao(true)"></div>
-            <div class="form-group"><label>E-mail</label><input type="email" id="sol-email" oninput="renderDuplicidadeSolicitacao(); filtrarClientesSolicitacao(true)" placeholder="email@empresa.com"></div>
+            <div class="form-group"><label>Cliente / Apelido *</label><input type="text" id="sol-nome" spellcheck="true" lang="pt-BR" oninput="renderDuplicidadeSolicitacao(); filtrarClientesSolicitacao(true)" placeholder="Ex.: nome do cliente"></div>
+            <div class="form-group"><label>Solicitante</label><input type="text" id="sol-solicitante" spellcheck="true" lang="pt-BR" oninput="renderDuplicidadeSolicitacao(); filtrarClientesSolicitacao(true)" placeholder="Ex.: nome do solicitante"></div>
+            <div class="form-group"><label>Empresa / Razão Social</label><input type="text" id="sol-empresa" spellcheck="true" lang="pt-BR" oninput="renderDuplicidadeSolicitacao(); filtrarClientesSolicitacao(true)" placeholder="Ex.: razão social da empresa"></div>
+            <div class="form-group"><label>CNPJ</label><input type="text" id="sol-cnpj" placeholder="Ex.: 00.000.000/0000-00" maxlength="18" oninput="maskCNPJ(this); renderDuplicidadeSolicitacao(); filtrarClientesSolicitacao(true)"></div>
+            <div class="form-group"><label>Telefone</label><input type="text" id="sol-telefone" placeholder="Ex.: (00) 00000-0000" maxlength="13" oninput="maskTelefone(this); renderDuplicidadeSolicitacao(); filtrarClientesSolicitacao(true)"></div>
+            <div class="form-group"><label>E-mail</label><input type="email" id="sol-email" oninput="renderDuplicidadeSolicitacao(); filtrarClientesSolicitacao(true)" placeholder="Ex.: email@exemplo.com"></div>
           </div>
         </section>
 
@@ -4737,7 +4585,7 @@ body.theme-light .cv-hero { background:linear-gradient(135deg, rgba(10,140,92,.1
             </div>
             <div class="form-group sol-obs-box">
               <label>Observações internas</label>
-              <textarea id="sol-obs" spellcheck="true" lang="pt-BR" placeholder="Ex: pediu retorno ainda hoje, precisa de condição especial, enviar por e-mail..."></textarea>
+              <textarea id="sol-obs" spellcheck="true" lang="pt-BR" placeholder="Ex.: pediu retorno ainda hoje, precisa de condição especial, enviar por e-mail..."></textarea>
             </div>
           </div>
         </section>
@@ -4876,7 +4724,7 @@ body.theme-light .cv-hero { background:linear-gradient(135deg, rgba(10,140,92,.1
                 <button type="button" class="quick-day-btn" onclick="calcRetorno('concluir-novo-data', 5)">+5 dias</button>
               </div>
             </div>
-            <input type="text" id="concluir-novo-motivo" placeholder="Motivo do próximo retorno (opcional)">
+            <input type="text" id="concluir-novo-motivo" placeholder="Motivo do próximo retorno (opcional).">
           </div>
         </div>
       </div>
@@ -5878,7 +5726,7 @@ function calcRetorno(inputId, dias, clienteSelectId) {
 // ===== CLIENTES =====
 async function salvarCliente() {
   const nome = formatarNomeSistema(document.getElementById('c-nome')?.value || '');
-  if (!nome) { notify('Informe o nome do cliente','#7a1a1a'); return; }
+  if (!nome) { notify('Informe o nome do cliente.','#7a1a1a'); return; }
   const finalVal = document.querySelector('input[name="c-final"]:checked')?.value || 'nao';
   const ieVal = document.querySelector('input[name="c-ie"]:checked')?.value || 'nao';
   const pedidoVal = document.querySelector('input[name="c-pedido"]:checked')?.value || 'nao';
@@ -5988,7 +5836,7 @@ async function handlePdfUpload(event) {
   const input = event.target;
   input.disabled = true;
   for (const file of files) {
-    if (file.type !== 'application/pdf') { notify('Apenas arquivos PDF são aceitos','#7a1a1a'); continue; }
+    if (file.type !== 'application/pdf') { notify('Apenas arquivos PDF são aceitos.','#7a1a1a'); continue; }
     if (file.size > SUPABASE_ANEXOS_MAX_MB_CLIENTE * 1024 * 1024) { notify(`"${file.name}" é maior que ${SUPABASE_ANEXOS_MAX_MB_CLIENTE}MB e não pôde ser anexado`,'#7a1a1a'); continue; }
     try {
       notify(`Enviando "${file.name}" para o Storage...`, '#0f3a6e');
@@ -6048,9 +5896,9 @@ async function handleSolicitacaoArquivoUpload(event) {
   input.disabled = true;
   for (const file of files) {
     const tipoOk = file.type === 'application/pdf' || file.type.startsWith('image/');
-    if (!tipoOk) { notify('Apenas imagens e PDF são aceitos na solicitação','#7a1a1a'); continue; }
+    if (!tipoOk) { notify('Apenas imagens e PDF são aceitos na solicitação.','#7a1a1a'); continue; }
     if (file.size > SUPABASE_ANEXOS_MAX_MB_SOLICITACAO * 1024 * 1024) { notify(`"${file.name}" é maior que ${SUPABASE_ANEXOS_MAX_MB_SOLICITACAO}MB e não pôde ser anexado`,'#7a1a1a'); continue; }
-    if (arquivosTempSolicitacao.length >= 10) { notify('Limite de 10 arquivos por solicitação','#7a1a1a'); continue; }
+    if (arquivosTempSolicitacao.length >= 10) { notify('Limite de 10 arquivos por solicitação.','#7a1a1a'); continue; }
     try {
       notify(`Enviando "${file.name}" para o Storage...`, '#0f3a6e');
       const anexo = await criarAnexoDeArquivo(file, 'solicitacoes');
@@ -6319,7 +6167,7 @@ function scrollClientHistory() { document.getElementById('cliente-historico-anch
 function salvarContato() {
   const clienteId = +document.getElementById('ct-cliente').value;
   const descricao = formatarTextoSistema(document.getElementById('ct-descricao').value);
-  if (!clienteId || !descricao) { notify('Preencha cliente e descrição','#7a1a1a'); return; }
+  if (!clienteId || !descricao) { notify('Preencha cliente e descrição.','#7a1a1a'); return; }
   const retorno = document.getElementById('ct-retorno').value;
   const lembrete = formatarTextoSistema(document.getElementById('ct-lembrete').value);
   const horario = document.getElementById('ct-horario-alarme').value || '09:00';
@@ -6411,7 +6259,7 @@ function editarContato(id) {
 function salvarEdicao() {
   const id = +document.getElementById('edit-id').value;
   const descricao = formatarTextoSistema(document.getElementById('edit-descricao').value);
-  if (!descricao) { notify('A descrição não pode estar vazia','#7a1a1a'); return; }
+  if (!descricao) { notify('A descrição não pode estar vazia.','#7a1a1a'); return; }
   const ct = contatos.find(x=>x.id===id);
   if (!ct) return;
   if (!ct.edicoes) ct.edicoes = [];
@@ -6427,7 +6275,7 @@ function salvarEdicao() {
 function salvarAgendamento() {
   const clienteId = +document.getElementById('ag-cliente').value;
   const data = document.getElementById('ag-data').value;
-  if (!clienteId || !data) { notify('Selecione cliente e data','#7a1a1a'); return; }
+  if (!clienteId || !data) { notify('Selecione cliente e data.','#7a1a1a'); return; }
   const horario = document.getElementById('ag-horario-alarme').value || '09:00';
   const editId = document.getElementById('modalAgendamento').dataset.editId;
   if (editId) {
@@ -6725,9 +6573,9 @@ async function salvarSolicitacaoOrcamento() {
   const dataSolicitacao = document.getElementById('sol-data').value;
   const prazo = document.getElementById('sol-prazo').value;
   const descricao = formatarTextoSistema(document.getElementById('sol-descricao').value);
-  if (!nome) { notify('Informe o cliente/empresa da solicitação','#7a1a1a'); return; }
-  if (!dataSolicitacao || !prazo) { notify('Informe a data da solicitação e o prazo','#7a1a1a'); return; }
-  if (!descricao) { notify('Descreva o que foi solicitado','#7a1a1a'); return; }
+  if (!nome) { notify('Informe o cliente/empresa da solicitação.','#7a1a1a'); return; }
+  if (!dataSolicitacao || !prazo) { notify('Informe a data da solicitação e o prazo.','#7a1a1a'); return; }
+  if (!descricao) { notify('Descreva o que foi solicitado.','#7a1a1a'); return; }
 
   const dados = {
     clienteId,
@@ -7197,7 +7045,7 @@ function criarClienteFromSolicitacao(id) {
 function salvarOrcamento() {
   const clienteId = +document.getElementById('or-cliente').value;
   const data = document.getElementById('or-data').value;
-  if (!clienteId || !data) { notify('Selecione cliente e data','#7a1a1a'); return; }
+  if (!clienteId || !data) { notify('Selecione cliente e data.','#7a1a1a'); return; }
   const horario = document.getElementById('or-horario-alarme').value || '09:00';
   const repetir = document.querySelector('input[name="or-repetir"]:checked')?.value === 'sim';
   const editId = document.getElementById('modalOrcamento').dataset.editId;
@@ -7252,7 +7100,7 @@ function configurarModalConclusao(tipo, item) {
   if (tipo === 'solicitacao_orcamento') {
     title.innerHTML = '<i class="fa-solid fa-file-invoice-dollar" style="color:var(--success);margin-right:8px"></i>Registrar proposta enviada';
     label.textContent = 'Observação sobre a proposta enviada (opcional)';
-    obs.placeholder = 'Ex: cliente pediu retorno amanhã, faltou algum item, enviado conforme solicitado...';
+    obs.placeholder = 'Ex.: cliente pediu retorno amanhã, faltou algum item, enviado conforme solicitado...';
     canalWrap.style.display = 'none';
     canal.value = item?.canal || 'whatsapp';
     if (budgetWrap) budgetWrap.style.display = 'block';
@@ -7265,7 +7113,7 @@ function configurarModalConclusao(tipo, item) {
   } else if (tipo === 'orcamento') {
     title.innerHTML = '<i class="fa-solid fa-repeat" style="color:var(--purple);margin-right:8px"></i>Concluir orçamento recorrente';
     label.textContent = 'Observação sobre o orçamento recorrente feito/enviado (opcional)';
-    obs.placeholder = 'Ex: orçamento recorrente enviado, combinar novo retorno, cliente pediu ajuste...';
+    obs.placeholder = 'Ex.: orçamento recorrente enviado, combinar novo retorno, cliente pediu ajuste...';
     canalWrap.style.display = 'none';
     canal.value = 'whatsapp';
     if (budgetWrap) budgetWrap.style.display = 'block';
@@ -7364,7 +7212,7 @@ Observação do envio: ${obsConclusao}` : ''}`,
             criadoEm: today()
           });
         } else {
-          notify('Conclusão salva, mas o próximo retorno não foi agendado (data vazia)','#854f0b');
+          notify('Conclusão salva, mas o próximo retorno não foi agendado (data vazia).','#854f0b');
         }
       }
     }
@@ -7493,7 +7341,7 @@ function filtrarDia(iso) {
   const sols=solicitacoesOrcamento.filter(sol=>sol.prazo===iso && agendaFiltroAtivo('cal-filter-solicitacoes') && (agendaFiltroAtivo('cal-filter-atrasados') || sol.prazo >= todayISO) && passaFiltroPrioridadeAgenda(sol));
   const ors=orcamentos.filter(o=>o.data===iso && agendaFiltroAtivo('cal-filter-orcamentos') && (agendaFiltroAtivo('cal-filter-atrasados') || o.data >= todayISO));
   const concl=concluidos.filter(cc => agendaFiltroAtivo('cal-filter-concluidos') && (cc.concluidoEm === iso || cc.dataOriginal === iso));
-  if(!ags.length && !sols.length && !ors.length && !concl.length){notify('Nenhum item neste dia com os filtros atuais');return;}
+  if(!ags.length && !sols.length && !ors.length && !concl.length){notify('Nenhum item neste dia com os filtros atuais.');return;}
   const elR=document.getElementById('agenda-lista');
   const elO=document.getElementById('orcamentos-agenda-lista');
   elR.innerHTML=(ags.length||sols.length||concl.length)?`<div style="padding:10px 16px;font-size:11.5px;color:var(--text3);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.5px">Itens de ${fmtDate(iso)}</div>${ags.length?renderKanbanItems(ags):''}${sols.length?renderSolicitacaoCards(sols):''}${concl.length?renderConcluidoCards(concl):''}`:`<div class="empty"><i class="fa-regular fa-calendar"></i><p>Nenhum retorno, solicitação ou concluído neste dia</p></div>`;
@@ -8319,7 +8167,7 @@ function exportarExcel() {
 
   if (tipo === 'contatos') {
     let lista = filtrarPorRange([...contatos], 'data', range).sort((a,b)=>b.data.localeCompare(a.data));
-    if (!lista.length) { notify('Nenhum contato no período selecionado','#7a1a1a'); return; }
+    if (!lista.length) { notify('Nenhum contato no período selecionado.','#7a1a1a'); return; }
     downloadCSV(`historico_contatos_${today()}.csv`, contatosParaRows(lista)); closeModal('modalExportarPdf'); notify('✓ Exportado!','#0d3d2a'); return;
   }
   if (tipo === 'retornos') {
@@ -8650,12 +8498,12 @@ function enviarPushNotificacao(titulo, corpo, icone) {
 }
 
 function exportarClientesCSV() {
-  if (!clientes.length) { notify('Nenhum cliente para exportar','#7a1a1a'); return; }
+  if (!clientes.length) { notify('Nenhum cliente para exportar.','#7a1a1a'); return; }
   downloadCSV(`clientes_agenda_dinamica_${today()}.csv`, clientesParaRows());
   notify('✓ Clientes exportados!','#0d3d2a');
 }
 function exportarHistoricoCSV() {
-  if (!contatos.length) { notify('Nenhum contato para exportar','#7a1a1a'); return; }
+  if (!contatos.length) { notify('Nenhum contato para exportar.','#7a1a1a'); return; }
   downloadCSV(`historico_contatos_${today()}.csv`, contatosParaRows([...contatos].sort((a,b)=>b.data.localeCompare(a.data))));
   notify('✓ Histórico exportado!','#0d3d2a');
 }
@@ -8677,7 +8525,7 @@ function pdfPeriodoRange() {
   if (periodo === 'custom') {
     const ini = document.getElementById('pdf-data-ini').value;
     const fim = document.getElementById('pdf-data-fim').value;
-    if (!ini || !fim) { notify('Informe data inicial e final','#7a1a1a'); return undefined; }
+    if (!ini || !fim) { notify('Informe data inicial e final.','#7a1a1a'); return undefined; }
     return [ini, fim];
   }
   const dias = parseInt(periodo, 10);
@@ -8730,7 +8578,7 @@ function resumoMensalRows(range) {
 
 function exportarFichaClientePDF(clienteId) {
   const c = clientes.find(x=>x.id===clienteId);
-  if (!c) { notify('Cliente não encontrado','#7a1a1a'); return; }
+  if (!c) { notify('Cliente não encontrado.','#7a1a1a'); return; }
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({orientation:'portrait', unit:'mm', format:'a4'});
   pdfHeader(doc, `Ficha do Cliente — ${c.nome}`);
@@ -8772,7 +8620,7 @@ function exportarPdf() {
   const doc = new jsPDF({orientation:'landscape', unit:'mm', format:'a4'});
 
   if (tipo === 'clientes') {
-    if (!clientes.length) { notify('Nenhum cliente para exportar','#7a1a1a'); return; }
+    if (!clientes.length) { notify('Nenhum cliente para exportar.','#7a1a1a'); return; }
     pdfHeader(doc, 'Relatório de Clientes');
     const body = clientes.map(c => {
       const uc = ultimoContato(c.id);
@@ -8785,7 +8633,7 @@ function exportarPdf() {
 
   if (tipo === 'contatos') {
     let lista = filtrarPorRange([...contatos], 'data', range);
-    if (!lista.length) { notify('Nenhum contato no período selecionado','#7a1a1a'); return; }
+    if (!lista.length) { notify('Nenhum contato no período selecionado.','#7a1a1a'); return; }
     lista.sort((a,b)=>b.data.localeCompare(a.data));
     pdfHeader(doc, 'Relatório de Contatos' + (range?` (${fmtDate(range[0])} a ${fmtDate(range[1])})`:''));
     const body = lista.map(ct => { const c = clientes.find(x=>x.id===ct.clienteId); return [fmtDate(ct.data), c?c.nome:'—', c?c.empresa||'—':'—', ct.canal, ct.semResposta?'Sim':'Não', ct.descricao]; });
@@ -8795,7 +8643,7 @@ function exportarPdf() {
 
   if (tipo === 'retornos') {
     let lista = filtrarPorRange([...agendamentos], 'data', range);
-    if (!lista.length) { notify('Nenhum retorno no período selecionado','#7a1a1a'); return; }
+    if (!lista.length) { notify('Nenhum retorno no período selecionado.','#7a1a1a'); return; }
     lista.sort((a,b)=>a.data.localeCompare(b.data));
     pdfHeader(doc, 'Relatório de Retornos Agendados' + (range?` (${fmtDate(range[0])} a ${fmtDate(range[1])})`:''));
     const body = lista.map(a => { const c = clientes.find(x=>x.id===a.clienteId); return [fmtDate(a.data), a.horario||'09:00', c?c.nome:'—', c?c.empresa||'—':'—', a.prioridade||'normal', a.motivo||'—']; });
@@ -8805,7 +8653,7 @@ function exportarPdf() {
 
   if (tipo === 'solicitacoes') {
     let lista = filtrarPorRange([...solicitacoesOrcamento], 'prazo', range);
-    if (!lista.length) { notify('Nenhuma solicitação no período selecionado','#7a1a1a'); return; }
+    if (!lista.length) { notify('Nenhuma solicitação no período selecionado.','#7a1a1a'); return; }
     lista.sort((a,b)=>a.prazo.localeCompare(b.prazo));
     pdfHeader(doc, 'Relatório de Solicitações de Orçamento' + (range?` (${fmtDate(range[0])} a ${fmtDate(range[1])})`:''));
     const body = lista.map(sol => { const d = dadosSolicitacaoCliente(sol); return [fmtDate(sol.prazo), fmtDate(sol.dataSolicitacao), d.nome, d.solicitante||'—', sol.telefone||'—', sol.email||'—', d.empresa||'—', d.produto||'—', sol.prioridade||'normal', sol.descricao||'—']; });
@@ -8815,7 +8663,7 @@ function exportarPdf() {
 
   if (tipo === 'orcamentos') {
     let lista = filtrarPorRange([...orcamentos], 'data', range);
-    if (!lista.length) { notify('Nenhum orçamento no período selecionado','#7a1a1a'); return; }
+    if (!lista.length) { notify('Nenhum orçamento no período selecionado.','#7a1a1a'); return; }
     lista.sort((a,b)=>a.data.localeCompare(b.data));
     pdfHeader(doc, 'Relatório de Orçamentos Recorrentes' + (range?` (${fmtDate(range[0])} a ${fmtDate(range[1])})`:''));
     const body = lista.map(o => { const c = clientes.find(x=>x.id===o.clienteId); return [fmtDate(o.data), o.horario||'09:00', c?c.nome:'—', c?c.empresa||'—':'—', o.repetir?'Sim':'Não', o.obs||'—']; });
@@ -8843,7 +8691,7 @@ function exportarPdf() {
 function abrirWhatsappAlarme() {
   if (!alarmAtivo) return;
   const c = clientes.find(x=>x.id===alarmAtivo.item.clienteId);
-  if (!c || !c.telefone) { notify('Cliente sem telefone cadastrado','#7a1a1a'); return; }
+  if (!c || !c.telefone) { notify('Cliente sem telefone cadastrado.','#7a1a1a'); return; }
   const tipo = alarmAtivo.tipo === 'orcamento' ? 'enviar o orçamento' : 'fazer o retorno';
   const motivo = alarmAtivo.tipo === 'orcamento' ? (alarmAtivo.item.obs||'') : (alarmAtivo.item.motivo||'');
   const msg = encodeURIComponent(`Lembrete: ${tipo} para ${c.nome}${c.empresa?' ('+c.empresa+')':''}. ${motivo}`);
@@ -8856,7 +8704,7 @@ async function initApp() {
   try {
     await carregarDadosSupabase();
     appLoaded = true;
-    notify('✓ Dados carregados do Supabase', '#0d3d2a');
+    notify('✓ Dados carregados do Supabase.', '#0d3d2a');
   } catch (error) {
     console.error('Erro ao carregar dados do Supabase:', error);
     appLoaded = true;
@@ -8903,7 +8751,7 @@ function prepararContatoAposCliente(clienteId, texto='') {
 
 async function salvarCliente() {
   const nome = formatarNomeSistema(document.getElementById('c-nome')?.value || '');
-  if (!nome) { notify('Informe o nome do cliente','#7a1a1a'); return; }
+  if (!nome) { notify('Informe o nome do cliente.','#7a1a1a'); return; }
   const abrirContatoDepois = editClienteId === null && (document.getElementById('c-registrar-contato')?.checked || false);
   const finalVal = document.querySelector('input[name="c-final"]:checked')?.value || 'nao';
   const ieVal = document.querySelector('input[name="c-ie"]:checked')?.value || 'nao';
@@ -8990,7 +8838,7 @@ async function salvarCliente() {
 function salvarContato() {
   const clienteId = +document.getElementById('ct-cliente').value;
   const descricao = formatarTextoSistema(document.getElementById('ct-descricao').value);
-  if (!clienteId || !descricao) { notify('Preencha cliente e descrição','#7a1a1a'); return; }
+  if (!clienteId || !descricao) { notify('Preencha cliente e descrição.','#7a1a1a'); return; }
   const retorno = document.getElementById('ct-retorno').value;
   const lembrete = formatarTextoSistema(document.getElementById('ct-lembrete').value);
   const horario = document.getElementById('ct-horario-alarme').value || '09:00';
@@ -9174,7 +9022,7 @@ function configurarModalConclusao(tipo, item) {
     const isSolicitacao = tipo === 'solicitacao_orcamento';
     title.innerHTML = `<i class="fa-solid fa-file-invoice-dollar" style="color:var(--success);margin-right:8px"></i>Registrar proposta enviada`;
     label.textContent = 'Observação sobre a proposta enviada (opcional)';
-    obs.placeholder = 'Ex: enviada conforme solicitado, cliente pediu retorno amanhã, faltou algum item, proposta enviada por e-mail/WhatsApp...';
+    obs.placeholder = 'Ex.: enviada conforme solicitado, cliente pediu retorno amanhã, faltou algum item, proposta enviada por e-mail/WhatsApp...';
     if (canalWrap) canalWrap.style.display = 'none';
     if (canal) canal.value = item?.canal || 'whatsapp';
     if (budgetWrap) budgetWrap.style.display = 'block';
@@ -9383,7 +9231,7 @@ function confirmarConclusao() {
           criadoEm: today()
         });
       } else {
-        notify('Conclusão salva, mas o próximo retorno não foi agendado (data vazia)','#854f0b');
+        notify('Conclusão salva, mas o próximo retorno não foi agendado (data vazia).','#854f0b');
       }
     }
   }
@@ -9664,7 +9512,7 @@ criarAcoesDoDia = function() {
       </div>
       <div class="form-group">
         <label>Observação da atualização</label>
-        <textarea id="status-proposta-obs" placeholder="Ex: cliente pediu revisão, aguardando aprovação do financeiro, proposta aprovada, cliente recusou por preço..."></textarea>
+        <textarea id="status-proposta-obs" placeholder="Ex.: cliente pediu revisão, aguardando aprovação do financeiro, proposta aprovada, cliente recusou por preço..."></textarea>
       </div>
       <div class="field-note">A alteração será registrada no histórico do cliente, quando houver cliente vinculado.</div>
     </div>
@@ -11041,41 +10889,6 @@ body:not(.theme-light) .btn-ghost {
   const style = document.createElement('style');
   style.id = 'pacote-final-producao-css';
   style.textContent = `
-/* PALETA NOVA SOLICITACAO / MODO CLARO */
-body.theme-light #modalSolicitacao .modal-solicitacao-landscape{
-  background:
-    radial-gradient(circle at 16% 0%, rgba(20,184,166,.22), transparent 31%),
-    radial-gradient(circle at 86% 8%, rgba(124,92,255,.20), transparent 34%),
-    linear-gradient(145deg, #f8fbff 0%, #edf5ff 48%, #f8f5ff 100%) !important;
-  border:1px solid rgba(37,99,199,.24) !important;
-  box-shadow:0 26px 80px rgba(32,56,94,.24), inset 0 1px 0 rgba(255,255,255,.92) !important;
-}
-body.theme-light #modalSolicitacao .sol-modal-header{
-  background:linear-gradient(90deg, rgba(37,99,199,.16), rgba(20,184,166,.13), rgba(124,92,255,.13)) !important;
-  border-bottom:1px solid rgba(37,99,199,.18) !important;
-}
-body.theme-light #modalSolicitacao .sol-modal-subtitle{ color:#44607f !important; }
-body.theme-light #modalSolicitacao .sol-form-section{
-  position:relative; overflow:hidden; background:rgba(255,255,255,.70) !important;
-  border:1px solid rgba(65,96,145,.20) !important; box-shadow:0 14px 34px rgba(39,67,111,.09), inset 0 1px 0 rgba(255,255,255,.75) !important;
-}
-body.theme-light #modalSolicitacao .sol-form-section::before{ content:''; position:absolute; inset:0 auto 0 0; width:4px; border-radius:14px 0 0 14px; background:linear-gradient(180deg,#14b8a6,#2563c7); }
-body.theme-light #modalSolicitacao .sol-client-section{ background:linear-gradient(145deg, rgba(20,184,166,.16), rgba(255,255,255,.72)) !important; }
-body.theme-light #modalSolicitacao .sol-request-section{ background:linear-gradient(145deg, rgba(124,92,255,.13), rgba(255,255,255,.74)) !important; }
-body.theme-light #modalSolicitacao .sol-request-section::before{ background:linear-gradient(180deg,#7c5cff,#2563c7); }
-body.theme-light #modalSolicitacao .sol-description-highlight{ background:linear-gradient(145deg, rgba(245,166,35,.18), rgba(255,255,255,.76)) !important; border-color:rgba(185,104,14,.22) !important; }
-body.theme-light #modalSolicitacao .sol-description-highlight textarea{ background:rgba(255,255,255,.84) !important; border-color:rgba(185,104,14,.22) !important; }
-body.theme-light #modalSolicitacao .sol-attachments-box{ background:linear-gradient(145deg, rgba(8,126,163,.14), rgba(255,255,255,.70)) !important; border-color:rgba(8,126,163,.20) !important; }
-body.theme-light #modalSolicitacao .sol-obs-box{ background:linear-gradient(145deg, rgba(124,92,255,.11), rgba(255,255,255,.68)) !important; border-color:rgba(124,92,255,.18) !important; }
-body.theme-light #modalSolicitacao input,
-body.theme-light #modalSolicitacao select,
-body.theme-light #modalSolicitacao textarea{ background:#ffffff !important; border-color:rgba(65,96,145,.24) !important; color:#14213d !important; }
-body.theme-light #modalSolicitacao input:focus,
-body.theme-light #modalSolicitacao select:focus,
-body.theme-light #modalSolicitacao textarea:focus{ border-color:#14b8a6 !important; box-shadow:0 0 0 3px rgba(20,184,166,.16) !important; }
-body.theme-light #modalSolicitacao .attach-drop{ background:rgba(8,126,163,.10) !important; border-color:rgba(8,126,163,.34) !important; color:#17476b !important; }
-body.theme-light #modalSolicitacao .sol-modal-footer{ background:linear-gradient(90deg, rgba(37,99,199,.09), rgba(124,92,255,.08)) !important; border-top:1px solid rgba(37,99,199,.16) !important; }
-
 /* REFINO PROFISSIONAL DOS KANBANS */
 #view-solicitacoes .orcamento-kanban-wrap,
 #view-solicitacoes .propostas-kanban-wrap{
@@ -12467,8 +12280,8 @@ body.theme-light .hist-event-icon{ background:rgba(37,99,199,.08); border-color:
         <span class="badge badge-gray">${tipoOrcamentoLabel(tipo)}</span>
       </div>
       <div class="cv-proposal-grid">
-        <div class="form-group"><label>Nº proposta</label><input type="text" class="cv-line-numero" value="${esc(numero)}" placeholder="Ex: 1025"></div>
-        <div class="form-group"><label>Valor</label><input type="text" class="cv-line-valor" placeholder="Ex: 3.500,00"></div>
+        <div class="form-group"><label>Nº proposta</label><input type="text" class="cv-line-numero" value="${esc(numero)}" placeholder="Ex.: número da proposta"></div>
+        <div class="form-group"><label>Valor</label><input type="text" class="cv-line-valor" placeholder="Ex.: 3.500,00"></div>
         <div class="form-group"><label>Status do pedido</label><select class="cv-line-status">${statusPedidoOptionsHtml('ag_aprovacao')}</select></div>
         <div class="form-group"><label>Contato</label><input type="text" class="cv-line-contato" placeholder="Nome do contato"></div>
         <div class="form-group" style="grid-column:span 2"><label>Resumo da proposta</label><textarea class="cv-line-resumo" placeholder="Resumo curto do que foi enviado"></textarea></div>
@@ -13014,8 +12827,8 @@ body.theme-light .hist-event-icon{ background:rgba(37,99,199,.08); border-color:
         <span class="badge badge-gray">${tipoOrcamentoLabelFinal(tipo)}</span>
       </div>
       <div class="cv-proposal-grid">
-        <div class="form-group"><label>Nº proposta</label><input type="text" class="cv-line-numero" value="${escFinal(numero)}" placeholder="Ex: 1025"></div>
-        <div class="form-group"><label>Valor</label><input type="text" class="cv-line-valor" placeholder="Ex: 3.500,00"></div>
+        <div class="form-group"><label>Nº proposta</label><input type="text" class="cv-line-numero" value="${escFinal(numero)}" placeholder="Ex.: número da proposta"></div>
+        <div class="form-group"><label>Valor</label><input type="text" class="cv-line-valor" placeholder="Ex.: 3.500,00"></div>
         <div class="form-group"><label>Status do pedido</label><select class="cv-line-status">${statusPedidoOptionsFinal('ag_aprovacao')}</select></div>
         <div class="form-group"><label>Contato</label><input type="text" class="cv-line-contato" placeholder="Nome do contato"></div>
         <div class="form-group" style="grid-column:span 2"><label>Resumo da proposta</label><textarea class="cv-line-resumo" placeholder="Resumo curto do que foi enviado"></textarea></div>
@@ -13597,7 +13410,7 @@ input[type="time"]:hover::-webkit-calendar-picker-indicator { background-color: 
 #modalSolicitacao .sol-client-linked-card {
   display: none;
   border: 1px solid rgba(16,185,129,.28);
-  background: linear-gradient(135deg, rgba(16,185,129,.13), rgba(59,125,232,.08));
+  background: var(--surface2);
   border-radius: 12px;
   padding: 10px 12px;
   margin-top: 8px;
@@ -13634,7 +13447,7 @@ input[type="time"]:hover::-webkit-calendar-picker-indicator { background-color: 
 }
 #modalSolicitacao .sol-client-link-panel.cliente-vinculado:not(.modo-alterar) {
   padding: 10px 12px;
-  background: linear-gradient(135deg, rgba(16,185,129,.12), rgba(59,125,232,.055));
+  background: var(--surface2);
   border-color: rgba(16,185,129,.26);
 }
 #modalSolicitacao .sol-client-link-panel.cliente-vinculado:not(.modo-alterar) > .form-group > label,
@@ -13653,7 +13466,7 @@ input[type="time"]:hover::-webkit-calendar-picker-indicator { background-color: 
   margin-top: 10px;
 }
 body.theme-light #modalSolicitacao .sol-client-linked-card {
-  background: linear-gradient(135deg, rgba(16,185,129,.16), rgba(59,125,232,.10));
+  background: var(--surface2);
   border-color: rgba(16,185,129,.32);
 }
 @media (max-width: 820px) {
@@ -14119,7 +13932,7 @@ body.theme-light .cotacao-compras-card { background:#fff; }
     <div class="modal-body">
       <div class="form-group">
         <label for="cotacao-compras-descricao">Descrição dos itens <span style="color:var(--danger)">*</span></label>
-        <textarea id="cotacao-compras-descricao" required placeholder="Ex: Motor da bomba, bobina Danfoss 115V, união PEX 20mm..."></textarea>
+        <textarea id="cotacao-compras-descricao" required placeholder="Ex.: descreva os materiais solicitados."></textarea>
       </div>
       <div class="form-group">
         <label for="cotacao-compras-status">Status</label>
@@ -14426,7 +14239,7 @@ body.theme-light .topnav-item { background: var(--tab-color) !important; border-
 input, select, textarea, .form-control { color:var(--theme-text) !important; background:var(--theme-surface) !important; border-color:var(--theme-border-strong) !important; }
 input:hover, select:hover, textarea:hover { border-color:color-mix(in srgb,var(--theme-blue) 58%,var(--theme-border-strong)) !important; }
 input:focus, select:focus, textarea:focus, .form-control:focus { border-color:var(--theme-blue) !important; box-shadow:0 0 0 3px var(--focus-ring) !important; outline:0; }
-input::placeholder, textarea::placeholder { color:var(--theme-text-muted) !important; opacity:.88; }
+input::placeholder, textarea::placeholder { color:var(--theme-text-muted) !important; opacity:.88; text-transform:none !important; }
 input[type="date"], input[type="time"] { color-scheme:inherit; }
 
 /* Modais, tabelas e notificações */
@@ -15558,15 +15371,15 @@ body.theme-light .brand-logo-header .logo-lightmode { filter:drop-shadow(0 2px 5
   }
 
   .sidebar .qa-solicitacao { --action-color: #DC2626; }
-  .sidebar .qa-cliente,
-  .sidebar .qa-contato { --action-color: #2563EB; }
+  .sidebar .qa-cliente { --action-color: #2563EB; }
+  .sidebar .qa-contato { --action-color: #0F766E; }
   .sidebar .qa-retorno { --action-color: #EAB308; --action-ink: #111; display: flex !important; }
   .sidebar .qa-cotacao { --action-color: #9333EA; }
   .sidebar .qa-config { --action-color: #111; border-color: #4B5563 !important; }
 
   html body .sidebar .quick-action-grid .quick-action-card.qa-solicitacao { background: #DC2626 !important; }
-  html body .sidebar .quick-action-grid .quick-action-card.qa-cliente,
-  html body .sidebar .quick-action-grid .quick-action-card.qa-contato { background: #2563EB !important; }
+  html body .sidebar .quick-action-grid .quick-action-card.qa-cliente { background: #2563EB !important; }
+  html body .sidebar .quick-action-grid .quick-action-card.qa-contato { background: #0F766E !important; }
   html body .sidebar .quick-action-grid .quick-action-card.qa-retorno { background: #EAB308 !important; color: #111 !important; }
   html body .sidebar .quick-action-grid .quick-action-card.qa-cotacao { background: #9333EA !important; }
   html body .sidebar .quick-action-grid .quick-action-card.qa-config { background: #111 !important; }
@@ -16114,6 +15927,7 @@ html body .topnav-item { opacity:1 !important; filter:none !important; }
 </style>
 <link rel="stylesheet" href="requests-revision.css">
 <script src="requests-revision.js"></script>
+<link rel="stylesheet" href="entry-forms.css">
 <script type="module" src="quick-texts.js"></script>
 <script type="module" src="application/bootstrap.js"></script>
 </body>

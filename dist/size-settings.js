@@ -3,16 +3,15 @@ import { formatarTamanhoParaCopia } from './size-table-data.js';
 import { parseServiceNumber } from './service-calculator-math.js';
 import { attachSmartNumberInput } from './smart-number-input.js';
 
-export function mountSizeSettings() {
-  const grid=document.querySelector('#view-configuracoes .settings-grid');
-  if (!grid || document.getElementById('size-settings')) return;
+export function mountSizeSettings(host) {
+  if (!host || document.getElementById('size-settings')) return;
   const catalog=getSizeCatalog();
   const section=document.createElement('details');
   section.id='size-settings'; section.className='card size-settings-card';
-  section.open=true;
-  section.innerHTML=`<summary class="card-header"><span class="card-title">📦 Tamanhos</span></summary>
+  section.open=false;
+  section.innerHTML=`<summary class="card-header"><span class="card-title">Gerenciar tamanhos</span></summary>
     <div class="settings-card-body"><p>Cadastre os volumes da consulta rápida. As alterações ficam salvas neste navegador.</p>
-      <button type="button" class="btn btn-primary" id="size-new">+ NOVO TAMANHO</button>
+      <div class="settings-actions"><button type="button" class="btn btn-primary" id="size-new">+ NOVO TAMANHO</button><button type="button" class="btn btn-ghost" id="size-manage-close">Voltar à consulta</button></div>
       <p id="size-settings-status" role="status" aria-live="polite"></p>
       <form id="size-editor" hidden>
         <h3 id="size-editor-title">Novo tamanho</h3><div class="size-editor-grid">
@@ -22,12 +21,25 @@ export function mountSizeSettings() {
           <label>Altura (cm)<input id="size-edit-height" inputmode="decimal"></label>
           <label>Comprimento (cm)<input id="size-edit-length" inputmode="decimal"></label>
           <label>Peso (KG)<input id="size-edit-weight" inputmode="decimal"></label>
-          <label>Unidade do peso<input id="size-edit-weightUnit" placeholder="Ex.: Saco ou unidade"></label>
+          <label>Unidade do peso<input id="size-edit-weightUnit" placeholder="Ex.: saco ou unidade"></label>
         </div><p>Deixe em branco as medidas e o peso não informados.</p>
         <div class="settings-actions"><button class="btn btn-primary" type="submit">SALVAR</button><button class="btn btn-ghost" type="button" id="size-edit-cancel">CANCELAR</button></div>
       </form><div id="size-settings-list"></div>
     </div>`;
-  grid.before(section);
+  host.querySelector('#size-rows').before(section);
+  const manageButton=host.querySelector('#size-manage-open');
+  const syncExpanded=()=>manageButton.setAttribute('aria-expanded',String(section.open));
+  manageButton.onclick=()=>{
+    section.open=!section.open;
+    syncExpanded();
+    if(section.open)section.scrollIntoView({block:'nearest'});
+  };
+  section.addEventListener('toggle',syncExpanded);
+  section.querySelector('#size-manage-close').onclick=()=>{
+    section.open=false;
+    syncExpanded();
+    manageButton.focus();
+  };
   const form=section.querySelector('form');
   const status=section.querySelector('#size-settings-status');
   const input=key=>section.querySelector('#size-edit-'+key);

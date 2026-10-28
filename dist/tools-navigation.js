@@ -26,7 +26,6 @@ export function setupToolsNavigation(root, renderTexts) {
     root.querySelector('#open-' + id).onclick = () => show(id);
     root.querySelector('#close-' + id).onclick = () => { show(null); root.querySelector('#open-' + id).focus(); };
   }
-  root.querySelector('#quick-open-freight').onclick = () => show('freight-quote');
   const main=document.querySelector('.qa-tools');
   if(main) {
     main.setAttribute('aria-label','Ferramentas');main.title='Central de Ferramentas';

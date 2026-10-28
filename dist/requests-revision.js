@@ -142,7 +142,7 @@ function salvarEdicaoProposta(event) {
     const valor = Number(texto.includes(',') || /^\d{1,3}(?:\.\d{3})+$/.test(texto) ? texto.replaceAll('.', '').replace(',', '.') : texto);
     return { numero, valor, valido: valido && Number.isFinite(valor) && valor >= 0 && valor <= Number.MAX_SAFE_INTEGER / 100 };
   });
-  if (novas.some(n => !n.numero || !n.valido)) { notify('Informe número e valor válidos, por exemplo 7.500,00.', '#7a1a1a'); return; }
+  if (novas.some(n => !n.numero || !n.valido)) { notify('Informe um número e um valor válidos, por exemplo, 7.500,00.', '#7a1a1a'); return; }
   // Impede colisões com a chave que o Controle de Vendas utiliza para deduplicação.
   const norm = v => String(v || '').trim().toLocaleLowerCase('pt-BR');
   const keys = new Set();

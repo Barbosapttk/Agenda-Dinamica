@@ -35,13 +35,16 @@ try {
  assert.equal(compact(await text('real-cost')),'R$16,60');
  await fill({'sp-purchase':'-1'});assert.equal(await text('real-cost'),'—');assert.equal(await text('price'),'—');
  await evaluate("document.getElementById('sp-form').reset()");assert.equal(compact(await text('price')),'R$0,00');
- await evaluate("showView('configuracoes');document.getElementById('size-settings').open=true");
+ await evaluate("showView('ferramentas');document.getElementById('open-size-table').click();if(!document.getElementById('size-settings').open)document.getElementById('size-manage-open').click()");
+ assert.equal(await evaluate("document.getElementById('size-manage-open').textContent.trim()"),'Configurar tamanhos');
+ assert.equal(await evaluate("document.getElementById('size-manage-open').getAttribute('aria-expanded')"),'true');
+ assert.equal(await evaluate("document.querySelector('#view-configuracoes #size-settings')"),null);
  assert.equal(await evaluate("document.querySelectorAll('.size-admin-row').length"),12);
  await evaluate("document.getElementById('size-new').click()");
  await fill({'size-edit-name':'Volume teste de navegador','size-edit-type':'Caixas','size-edit-width':'12,5','size-edit-height':'20','size-edit-length':'30','size-edit-weight':'4','size-edit-weightUnit':'unidade'});
  await evaluate("document.getElementById('size-editor').requestSubmit()");
  assert.equal(await evaluate("document.querySelectorAll('.size-admin-row').length"),13);
- await load();await evaluate("showView('configuracoes');document.getElementById('size-settings').open=true");
+ await load();await evaluate("showView('ferramentas');document.getElementById('open-size-table').click();if(!document.getElementById('size-settings').open)document.getElementById('size-manage-open').click()");
  assert.equal(await evaluate("document.querySelectorAll('.size-admin-row').length"),13);
  await evaluate("[...document.querySelectorAll('.size-admin-row')].find(el=>el.textContent.includes('Volume teste de navegador')).querySelector('button').click()");
  await fill({'size-edit-name':'Volume editado','size-edit-width':'15'});await evaluate("document.getElementById('size-editor').requestSubmit()");
@@ -53,7 +56,7 @@ try {
  await call('Emulation.setFocusEmulationEnabled',{enabled:true});await call('Browser.grantPermissions',{origin:baseUrl,permissions:['clipboardReadWrite','clipboardSanitizedWrite']});
  await call('Runtime.evaluate',{expression:"document.querySelector('.size-card button').click()",userGesture:true});await new Promise(r=>setTimeout(r,100));
  assert.equal((await evaluate('navigator.clipboard.readText()')).replaceAll('\\r\\n','\\n'),'Volume editado: L 15 x A 20 x C 30 (4 KG por unidade)');
- await load();await evaluate("showView('configuracoes');document.getElementById('size-settings').open=true");
+ await load();await evaluate("showView('ferramentas');document.getElementById('open-size-table').click();if(!document.getElementById('size-settings').open)document.getElementById('size-manage-open').click()");
  assert.ok((await evaluate("document.getElementById('size-settings-list').textContent")).includes('Volume editado: L 15'));
  await call('Page.enable');
  async function remove(accept) {
@@ -62,12 +65,12 @@ try {
  }
  await remove(false);assert.equal(await evaluate("document.querySelectorAll('.size-admin-row').length"),13);
  await remove(true);assert.equal(await evaluate("document.querySelectorAll('.size-admin-row').length"),12);
- await load();await evaluate("showView('configuracoes');document.getElementById('size-settings').open=true");
+ await load();await evaluate("showView('ferramentas');document.getElementById('open-size-table').click();if(!document.getElementById('size-settings').open)document.getElementById('size-manage-open').click()");
  assert.equal(await evaluate("document.querySelectorAll('.size-admin-row').length"),12);
  await evaluate("window.checkAlarms=()=>{};window.checkAlarmsComerciais=()=>{};document.getElementById('alarmOverlay')?.remove()");
  for(const view of ['sale','settings']) {
   if(view==='sale')await evaluate("showView('ferramentas');document.getElementById('open-sale-price').click()");
-  else await evaluate("showView('configuracoes');document.getElementById('size-settings').open=true;document.getElementById('size-new').click()");
+  else await evaluate("showView('ferramentas');document.getElementById('open-size-table').click();if(!document.getElementById('size-settings').open)document.getElementById('size-manage-open').click();document.getElementById('size-new').click()");
   for(const width of [1440,900,375]) {
    await call('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width===375});
    for(const theme of ['light','dark']) {
@@ -78,6 +81,11 @@ try {
    }
   }
  }
+ await evaluate("document.getElementById('size-manage-close').click()");
+ assert.equal(await evaluate("document.getElementById('size-settings').open"),false);
+ assert.equal(await evaluate("document.getElementById('size-manage-open').getAttribute('aria-expanded')"),'false');
+ assert.equal(await evaluate("document.activeElement.id"),'size-manage-open');
+ assert.ok(await evaluate("document.querySelector('.size-card').getBoundingClientRect().height>0"));
  assert.deepEqual(errors,[]);assert.deepEqual(consoleErrors,[]);
  console.log('Venda: padrão/PDV, frete, quantidade, impostos editáveis, IPI, validação e limpar. Tamanhos: criar/editar/reload/cópia, cancelar/confirmar exclusão/reload. Desktop/mobile, claro/escuro, 12 capturas e console OK.');
 } finally {

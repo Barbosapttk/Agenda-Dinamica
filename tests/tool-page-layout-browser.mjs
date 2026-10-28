@@ -6,7 +6,7 @@ const checks=`
 try {
  await load();
  const pages=${JSON.stringify(TOOL_PAGES)};
- assert.equal(await evaluate("document.querySelectorAll('#quick-tools .tool-page-header').length"),6);
+ assert.equal(await evaluate("document.querySelectorAll('#quick-tools .tool-page-header').length"),7);
  async function audit(page) {
   const result=await evaluate('(()=>{const section=document.getElementById('+JSON.stringify(page.id)+'),header=section.querySelector(":scope > .tool-page-header");return {visible:!section.hidden,children:[...section.children].map(el=>el.className),backs:[...header.querySelectorAll("button")].map(el=>el.textContent),title:header.querySelector("h2").textContent,description:header.querySelector(".tool-page-description").textContent,icon:header.querySelector(".tool-page-icon").textContent,headings:section.querySelectorAll("h2").length,old:section.textContent.includes("Central de Ferramentas"),hubHidden:document.querySelector(".tools-hub-header").hidden,backPrimary:header.querySelector("button").classList.contains("btn-primary")}})()');
   assert.deepEqual(result,{visible:true,children:['tool-page-header','tool-page-content'],backs:['← Ferramentas'],title:page.name,description:page.description,icon:page.icon,headings:1,old:false,hubHidden:true,backPrimary:false});
@@ -14,7 +14,7 @@ try {
  async function back(page) {
   await evaluate('document.getElementById("close-'+page.id+'").click()');
   assert.equal(await evaluate("document.querySelector('.tools-hub-header').hidden"),false);
-  assert.equal(await evaluate("document.querySelectorAll('#quick-tools > button:not([hidden])').length"),6);
+  assert.equal(await evaluate("document.querySelectorAll('#quick-tools > button:not([hidden])').length"),7);
   assert.equal(await evaluate("document.querySelectorAll('#quick-tools > section:not([hidden])').length"),0);
   assert.equal(await evaluate("document.getElementById('tools-dropdown').hidden"),true);
  }
@@ -48,7 +48,7 @@ try {
   }
  }
  assert.deepEqual(errors,[]);assert.deepEqual(consoleErrors,[]);
- console.log('Layout: 6/6 ferramentas com cabeçalho compartilhado; 0 layouts antigos; corpo abre Central, seta somente menu; Central/dropdown/retorno testados individualmente para todas em 1440/900/375, claro/escuro; 42 capturas e zero overflow/erros.');
+ console.log('Layout: 7/7 ferramentas com cabeçalho compartilhado; 0 layouts antigos; corpo abre Central, seta somente menu; Central/dropdown/retorno testados individualmente para todas em 1440/900/375, claro/escuro; 48 capturas e zero overflow/erros.');
 } finally {ws.close();}
 `;
 fs.mkdirSync('test-results',{recursive:true});const runner=new URL('../test-results/tool-page-layout-runner.mjs',import.meta.url);fs.writeFileSync(runner,harness+checks);await import(runner.href);

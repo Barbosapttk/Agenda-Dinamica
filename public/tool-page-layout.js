@@ -2,9 +2,10 @@ export const TOOL_PAGES = [
   {id:'sale-price',titleId:'sp-title',name:'Calculadora de Valor de Venda',icon:'🧮',summary:'Forme o preço de venda com custos, frete, impostos e margem.',description:'Calcule o custo por item e forme o preço de venda com a margem desejada.'},
   {id:'service-calculator',titleId:'sc-title',name:'Calculadora de Valor de Serviço',icon:'🧮',summary:'Calcule os custos de um atendimento e seu valor final.',description:'Informe os dados para calcular o serviço externo.'},
   {id:'freight-quote',titleId:'freight-title',name:'Cotação de Frete',icon:'🚚',summary:'Prepare e copie os dados de coleta, entrega e carga.',description:'Prepare os dados da coleta, da entrega e da carga para copiar sua cotação.'},
-  {id:'quick-texts',titleId:'quick-texts-title',name:'Textos Rápidos',icon:'📝',summary:'Encontre, edite e copie seus modelos de e-mail.',description:'Seus modelos de e-mail para visualizar, editar e copiar.'},
-  {id:'size-table',titleId:'size-title',name:'Tabela de Tamanhos',icon:'📦',summary:'Consulte e copie dimensões e pesos dos volumes.',description:'Encontre os volumes e copie suas dimensões e pesos para a cotação.'},
+  {id:'quick-texts',titleId:'quick-texts-title',name:'Textos Rápidos',icon:'📝',summary:'Encontre, crie, edite e copie seus modelos de mensagem.',description:'Seus modelos de mensagem para visualizar, copiar, criar, editar e excluir.'},
+  {id:'size-table',titleId:'size-title',name:'Tabela de Tamanhos',icon:'📦',summary:'Consulte, copie e gerencie dimensões e pesos dos volumes.',description:'Encontre os volumes e copie suas dimensões e pesos para a cotação.'},
   {id:'quick-notes',titleId:'notes-title',name:'Anotações Rápidas',icon:'📝',summary:'Guarde, encontre e copie referências do dia a dia.',description:'Referências do dia a dia, salvas neste navegador. As criadas ou editadas por último aparecem primeiro.'},
+  {id:'reference-tables',titleId:'references-title',name:'Tabelas de Referência',icon:'🖼️',summary:'Guarde e consulte suas tabelas em imagens.',description:'Adicione imagens de tabelas para consultar e ampliar durante o trabalho.'},
 ];
 
 // Metadados estáticos; não recebe conteúdo editável pelo usuário.

@@ -1,0 +1,88 @@
+﻿/* Shared registration shell. Module accents keep the existing blue client identity. */
+.entry-modal { --entry-width:900px; --entry-accent:#2563eb; --entry-panel:#151c2c; --entry-field:#1e293b; --entry-muted:#aebcd0; background:rgba(0,0,0,.68) !important; backdrop-filter:none !important; }
+#modalContato { --entry-width:960px; --entry-accent:#0f766e; }
+#modalSolicitacao { --entry-width:1180px; --entry-accent:#dc2626; }
+body.theme-light .entry-modal { --entry-panel:#fff; --entry-field:#f1f5f9; --entry-muted:#526176; }
+html body :is(#modalCliente,#modalContato,#modalSolicitacao).entry-modal > .modal { box-sizing:border-box; width:min(var(--entry-width),96vw) !important; max-width:96vw; max-height:94dvh; display:flex; flex-direction:column; overflow:hidden; background:var(--entry-panel) !important; background-image:none !important; border:1px solid var(--border2) !important; border-top:3px solid var(--entry-accent) !important; border-radius:12px; box-shadow:0 20px 60px #0006 !important; backdrop-filter:none !important; }
+.entry-modal .modal-header, .entry-modal .modal-footer { flex-shrink:0; padding:12px 18px; background:var(--entry-panel) !important; background-image:none !important; }
+.entry-modal .modal-header { align-items:center; gap:12px; border-bottom:1px solid var(--border); }
+.entry-modal .modal-title { font-size:17px; }
+.entry-modal .modal-title i { color:var(--entry-accent) !important; }
+.entry-modal .modal-close { display:grid; place-items:center; flex:0 0 36px; width:36px; height:36px; padding:0; border:1px solid var(--border2); border-radius:8px; background:var(--entry-field) !important; color:var(--text) !important; opacity:1; }
+.entry-modal .modal-close:hover { border-color:var(--entry-accent); }
+.entry-modal .modal-body { min-height:0; overflow:auto; overscroll-behavior:contain; padding:14px 18px; background:var(--entry-panel) !important; }
+.entry-modal .modal-footer { display:flex; justify-content:flex-end; gap:8px; border-top:1px solid var(--border); }
+.entry-modal .modal-footer .btn-primary { background:var(--entry-accent) !important; border-color:var(--entry-accent) !important; color:white !important; box-shadow:none !important; }
+.entry-modal .modal-footer .btn-ghost { background:var(--entry-field) !important; color:var(--text) !important; border:1px solid var(--border2); }
+.entry-modal .form-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px 16px; }
+.entry-modal .form-group { min-width:0; margin:0; }
+.entry-modal .form-group > label { margin-bottom:5px; line-height:1.4; }
+html body .entry-modal:is(#modalCliente,#modalContato,#modalSolicitacao) :is(input:not([type=checkbox]):not([type=radio]):not([type=file]), select, textarea) { box-sizing:border-box; width:100%; min-width:0; min-height:38px; padding:8px 10px; border:1px solid var(--border2) !important; border-radius:7px; background:var(--entry-field) !important; color:var(--text) !important; font-size:13px; line-height:1.4; }
+.entry-modal textarea { min-height:72px; resize:vertical; }
+html body .entry-modal:is(#modalCliente,#modalContato,#modalSolicitacao) :is(input,textarea)::placeholder { color:var(--entry-muted) !important; opacity:1; text-transform:none !important; }
+html body .entry-modal:is(#modalCliente,#modalContato,#modalSolicitacao) :is(input,select,textarea,button):focus-visible { outline:2px solid var(--entry-accent) !important; outline-offset:2px; box-shadow:none !important; }
+html body .entry-modal:is(#modalCliente,#modalContato,#modalSolicitacao) :is(input[type=checkbox],input[type=radio]) { width:17px; height:17px; accent-color:var(--entry-accent); flex-shrink:0; }
+html body .entry-modal:is(#modalCliente,#modalContato,#modalSolicitacao) :is(.optional-flow-box,.sol-form-section,.sol-client-link-panel,.sol-client-linked-card,.sol-description-highlight,.sol-client-result-card,.sol-attachment-card) { background:var(--entry-field) !important; background-image:none !important; border:1px solid var(--border2) !important; box-shadow:none !important; border-radius:8px; padding:10px; }
+.entry-modal .attach-drop { padding:10px; background:var(--entry-field); }
+.entry-modal .radio-row { min-height:38px; align-items:center; }
+#modalCliente .form-group:has(> #c-equipamentos), #modalCliente .form-group:has(> #c-obs-importante) { grid-column:auto; }
+/* Keep contact entry in reading order, using four tracks on desktop. */
+#modalContato .modal-body > .form-grid { grid-template-columns:repeat(4,minmax(0,1fr)); }
+#modalContato .modal-body > .form-grid > .form-group { grid-column:span 2; }
+#modalContato .modal-body > .form-grid > .form-group:first-child, #modalContato .form-group:has(> #ct-descricao), #modalContato .proposta-contato-box { grid-column:1 / -1; }
+#modalContato .modal-body > .form-grid > .form-group:has(> #ct-data), #modalContato .modal-body > .form-grid > .form-group:has(> #ct-canal) { grid-column:span 1; }
+#modalContato .modal-body > .form-grid > .form-group:has(#ct-sem-resposta) { grid-column:span 2; padding:8px !important; background:var(--entry-field) !important; }
+#modalContato #ct-descricao { min-height:82px; }
+#modalContato .form-group:has(> #ct-retorno) { grid-column:1 / -1; display:grid; grid-template-columns:minmax(180px,1fr) 2fr; gap:5px 16px; align-items:center; }
+#modalContato .form-group:has(> #ct-retorno) > label { grid-column:1 / -1; }
+#modalSolicitacao .sol-landscape-form { gap:12px; }
+#modalSolicitacao .sol-section-head { margin-bottom:10px; padding-bottom:8px; }
+#modalSolicitacao .sol-client-fields-grid { gap:10px 12px; }
+#modalSolicitacao .sol-description-highlight textarea { min-height:105px; font-size:13px; }
+#modalSolicitacao .sol-obs-box textarea { min-height:80px; }
+#modalSolicitacao .sol-modal-subtitle { font-size:12px; }
+@media (max-width:700px) {
+ html body :is(#modalCliente,#modalContato,#modalSolicitacao).entry-modal > .modal { max-height:96dvh; }
+ .entry-modal .modal-header,.entry-modal .modal-footer { padding:10px 12px; }
+ .entry-modal .modal-body { padding:12px; }
+ .entry-modal .form-grid, #modalContato .modal-body > .form-grid, #modalSolicitacao :is(.sol-client-fields-grid,.sol-client-search-row,.sol-request-grid,.sol-bottom-grid) { grid-template-columns:minmax(0,1fr); }
+ #modalCliente .form-group, #modalContato .modal-body > .form-grid > .form-group { grid-column:1 / -1; }
+ #modalContato .form-group:has(> #ct-retorno) { display:block; }
+ .entry-modal .modal-footer { flex-wrap:wrap; }
+ .entry-modal .modal-footer .btn { min-height:40px; white-space:normal; }
+}
+
+
+#modalContato .modal-body > .form-grid > .proposta-contato-box { grid-column:1 / -1; }
+#modalSolicitacao .sol-client-search-input input { padding-left:32px; }
+#modalSolicitacao :is(.sol-section-head i,.attach-drop i) { color:var(--entry-accent); filter:none; }
+#modalSolicitacao :is(.sol-attachments-box,.sol-obs-box) { background:var(--entry-field); border:1px solid var(--border2); border-radius:8px; padding:10px; }
+
+/* Solicitações: campos longos têm trilhas próprias, sem comprimir datas e labels. */
+#modalSolicitacao .sol-request-grid { grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px 16px; align-items:start; }
+#modalSolicitacao .sol-produto-field { grid-column:span 2; }
+#modalSolicitacao .sol-tipo-orcamento-field { grid-column:span 2; }
+#modalSolicitacao .sol-request-grid > .form-group:last-child { grid-column:span 2; }
+#modalSolicitacao .sol-client-fields-grid { grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px 16px; }
+#modalSolicitacao .sol-form-section .form-group > label { display:block; min-height:18px; margin-bottom:6px; overflow-wrap:anywhere; }
+#modalSolicitacao .sol-section-head { gap:14px; align-items:flex-start; }
+#modalSolicitacao .sol-section-head > * { min-width:0; }
+#modalSolicitacao .sol-section-head span { line-height:1.5; }
+#modalSolicitacao .sol-client-search-row { grid-template-columns:minmax(0,1fr) minmax(220px,.7fr); gap:12px; }
+#modalSolicitacao .sol-client-search-input input { padding-left:34px !important; }
+#modalSolicitacao .sol-client-search-input i { pointer-events:none; }
+#modalSolicitacao :is(.sol-description-highlight,.sol-bottom-grid) { margin-top:16px; }
+#modalSolicitacao .sol-description-highlight { border-left:3px solid var(--entry-accent) !important; }
+#modalSolicitacao .sol-description-highlight textarea { min-height:120px; }
+#modalSolicitacao .attach-drop small { display:block; margin-top:6px; line-height:1.5; }
+@media(max-width:1000px) {
+ #modalSolicitacao .sol-request-grid, #modalSolicitacao .sol-client-fields-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+ #modalSolicitacao .sol-produto-field { grid-column:1 / -1; }
+ #modalSolicitacao .sol-tipo-orcamento-field { grid-column:auto; }
+ #modalSolicitacao .sol-request-grid > .form-group:last-child { grid-column:1 / -1; }
+}
+@media(max-width:700px) {
+ #modalSolicitacao :is(.sol-request-grid,.sol-client-fields-grid,.sol-client-search-row) { grid-template-columns:minmax(0,1fr); }
+ #modalSolicitacao .sol-request-grid > .form-group { grid-column:1 / -1; }
+ #modalSolicitacao .sol-section-head { flex-wrap:wrap; }
+}

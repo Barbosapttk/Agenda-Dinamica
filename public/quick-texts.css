@@ -48,15 +48,15 @@
 #size-table .size-dimensions { font-variant-numeric: tabular-nums; }
 #size-table .size-card button { margin-top: auto; max-width: 100%; white-space: normal; }
 #size-feedback:empty { display: none; }
-#size-settings { grid-column: 1 / -1; min-width: 0; margin-bottom:20px; }
+#size-settings { grid-column: 1 / -1; min-width: 0; margin-bottom:12px; }
 #size-settings summary { cursor: pointer; }
 #size-settings [hidden] { display: none !important; }
 #size-settings .btn-ghost { background: var(--surface2) !important; color: var(--text) !important; }
-#size-settings label, #sale-price label { display: grid; gap: 6px; min-width: 0; margin: 10px 0; }
-#size-settings :is(input,select), #sale-price input { width: 100%; min-width: 0; box-sizing: border-box; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); padding: 10px; font: inherit; }
-.size-editor-grid, .sp-fields { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 0 12px; }
-#size-editor { border: 1px solid var(--border); padding: 14px; border-radius: var(--radius-sm); margin: 12px 0; }
-.size-admin-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+#sale-price label { display: grid; gap: 6px; min-width: 0; margin: 10px 0; }
+#sale-price input { width: 100%; min-width: 0; box-sizing: border-box; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); padding: 10px; font: inherit; }
+.sp-fields { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 0 12px; }
+#size-editor { border:1px solid var(--border); padding:10px; border-radius:var(--radius-sm); margin:8px 0; }
+.size-admin-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 5px 0; border-bottom: 1px solid var(--border); }
 .size-admin-row p { margin: 0; overflow-wrap: anywhere; min-width: 0; }
 .size-admin-row .settings-actions { flex-shrink: 0; }
 #sale-price .sp-note, #sale-price > p { color: var(--text2); line-height: 1.6; font-size: 13px; }
@@ -71,7 +71,6 @@
 @media (max-width:600px) {
   .size-editor-grid, .sp-fields { grid-template-columns: minmax(0,1fr); }
   .size-admin-row { flex-direction: column; align-items: stretch; }
-  .body-row:has(#view-configuracoes.active #size-settings[open]) .sidebar { display:none !important; }
 }
 #size-table p, #freight-quote p, #freight-quote small { color: var(--text2); line-height: 1.6; }
 #freight-sender { white-space: pre-line; overflow-wrap: anywhere; }
@@ -156,4 +155,64 @@ html body .sidebar .quick-action-grid .tools-quick-group .qa-tools[aria-expanded
   html body .sidebar .quick-action-grid .tools-quick-group .qa-tools { flex:1 1 auto; padding:0 !important; gap:0 !important; }
   .tools-quick-group .tools-menu-toggle { flex:0 0 20px; min-height:46px; }
   html body .sidebar .quick-action-grid .tools-quick-group .qa-tools .quick-action-icon { width:26px !important; height:26px !important; margin:0; }
+}
+
+/* Compact size administration, isolated from the calculator. */
+#size-manage-open { align-self:flex-end; min-height:38px; white-space:normal; }
+#size-settings .card-header { padding:10px 14px; }
+#size-settings .settings-card-body { padding:10px 14px; }
+#size-settings .settings-card-body > p { margin:0 0 8px; font-size:12px; }
+#size-settings #size-settings-status:empty { display:none; }
+#size-settings .btn { min-height:32px; padding:6px 10px; font-size:11px; }
+#size-settings .settings-actions { margin:0; gap:6px; }
+#size-settings label { display:grid; gap:4px; min-width:0; margin:0; font-size:11px; }
+#size-settings :is(input,select) { box-sizing:border-box; width:100%; min-width:0; height:36px; padding:6px 8px; border:1px solid var(--border2); border-radius:6px; background:var(--surface); color:var(--text); font:inherit; }
+#size-settings .size-editor-grid { display:grid; grid-template-columns:2fr 1.2fr repeat(4,minmax(0,1fr)) 1.2fr; gap:8px; }
+#size-editor h3 { font-size:13px; margin:0 0 8px; }
+#size-editor p { margin:8px 0; font-size:12px; }
+.size-admin-row p { font-size:12px; line-height:1.4; }
+@media(max-width:1000px) { #size-settings .size-editor-grid { grid-template-columns:repeat(4,minmax(0,1fr)); } }
+@media(max-width:600px) {
+ #size-settings .size-editor-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+ #size-settings .size-editor-grid label:first-child { grid-column:1 / -1; }
+ .size-admin-row { gap:5px; padding:8px 0; }
+ .size-admin-row .settings-actions { align-self:flex-end; }
+}
+/* Textos e referências seguem os mesmos painéis locais das ferramentas existentes. */
+#qt-new-panel[hidden] { display:none; }
+#qt-new-panel form, #references-editor { display:grid; gap:12px; }
+#qt-new-panel label, #references-editor label { display:grid; gap:6px; min-width:0; }
+#qt-new-panel :is(input,textarea), #references-editor :is(input,textarea) { box-sizing:border-box; width:100%; min-width:0; padding:9px; border:1px solid var(--border2); border-radius:7px; color:var(--text); background:var(--surface2); font:inherit; }
+#qt-new-panel textarea, #references-editor textarea { resize:vertical; }
+#qt-new-panel h3 { margin:0 0 12px; }
+.qt-card .qt-delete { margin:8px 0 0 8px; }
+.qt-full-body { white-space:pre-wrap; overflow-wrap:anywhere; line-height:1.6; }
+.tool-local-note { color:var(--text2); font-size:12px; line-height:1.6; }
+#size-settings { margin-top:14px; }
+.reference-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr)); gap:12px; }
+.reference-card { min-width:0; padding:14px; }
+.reference-card > img { width:100%; height:180px; object-fit:contain; background:#fff; border:1px solid var(--border); border-radius:7px; }
+.reference-card h3 { margin:12px 0 6px; font-size:15px; overflow-wrap:anywhere; }
+.reference-card p { white-space:pre-wrap; overflow-wrap:anywhere; color:var(--text2); }
+#references-editor { margin:14px 0; padding:16px; }
+#references-editor h3 { margin:0; }
+#references-editor small { color:var(--text2); line-height:1.5; }
+#references-viewer { box-sizing:border-box; width:min(1200px,96vw); height:min(900px,94dvh); max-width:96vw; max-height:94dvh; padding:0; border:1px solid var(--border2); border-radius:12px; background:var(--surface); color:var(--text); }
+#references-viewer[open] { display:flex; flex-direction:column; }
+#references-viewer::backdrop { background:#000b; }
+#references-viewer > header { display:flex; align-items:center; justify-content:space-between; gap:14px; padding:12px 16px; border-bottom:1px solid var(--border); }
+#references-viewer-title { margin:0; font-size:16px; overflow-wrap:anywhere; }
+#references-viewer-close { flex-shrink:0; width:38px; height:38px; color:var(--text); background:var(--surface2); border:1px solid var(--border2); border-radius:7px; }
+.reference-zoom { display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:10px 16px; }
+.reference-zoom button { min-height:36px; padding:6px 10px; border:1px solid var(--border2); border-radius:6px; background:var(--surface2); color:var(--text); cursor:pointer; }
+#references-zoom-level { min-width:48px; text-align:center; font-variant-numeric:tabular-nums; }
+#references-viewer-description { margin:0; padding:0 16px 10px; white-space:pre-wrap; overflow-wrap:anywhere; }
+.reference-image-viewport { min-height:0; flex:1; overflow:auto; padding:12px; background:var(--surface2); }
+#references-viewer-image { display:block; max-width:none; height:auto; background:#fff; }
+#reference-tables :is(button,input,textarea):focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+@media(max-width:600px) {
+ #references-viewer > header { padding:10px; }
+ .reference-zoom { padding:8px; gap:6px; }
+ #references-viewer-description { padding:0 10px 8px; }
+ #size-settings .size-admin-row .btn { min-height:36px; }
 }

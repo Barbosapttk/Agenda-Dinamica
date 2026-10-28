@@ -11,7 +11,7 @@ const checks = `
 try {
  await load();
  await evaluate("showView('ferramentas')");
- assert.equal(await evaluate("document.querySelectorAll('#quick-tools > button').length"),6);
+ assert.equal(await evaluate("document.querySelectorAll('#quick-tools > button').length"),7);
  assert.equal(await evaluate("document.querySelector('#open-sale-price strong').textContent"),'Calculadora de Valor de Venda');
  await evaluate("document.getElementById('open-size-table').click()");
  assert.equal(await evaluate("document.querySelectorAll('#size-rows .size-card').length"),12);
@@ -23,7 +23,7 @@ try {
   await evaluate('document.getElementById("size-type").value='+JSON.stringify(type)+';document.getElementById("size-type").dispatchEvent(new Event("change"))');
   assert.equal(await evaluate("document.querySelectorAll('#size-rows .size-card').length"),count);
  }
- await evaluate("document.getElementById('size-type').value='';document.getElementById('size-type').dispatchEvent(new Event('change'));document.getElementById('close-size-table').click();document.getElementById('open-quick-texts').click();document.getElementById('quick-open-freight').click()");
+ await evaluate("document.getElementById('size-type').value='';document.getElementById('size-type').dispatchEvent(new Event('change'));document.getElementById('close-size-table').click();document.getElementById('open-quick-texts').click();document.getElementById('close-quick-texts').click();document.getElementById('open-freight-quote').click()");
  assert.equal(await evaluate("document.getElementById('quick-texts').hidden"),true);
  async function fill(values) {
   await evaluate('Object.entries('+JSON.stringify(values)+').forEach(([key,value])=>{const el=document.getElementById(key);if(el.type==="checkbox")el.checked=value;else el.value=value;el.dispatchEvent(new Event("input",{bubbles:true}));})');
@@ -86,6 +86,8 @@ try {
  assert.equal(await evaluate("document.getElementById('sc-hypochlorite').checked"),false);
  assert.equal(await evaluate("document.getElementById('sc-hypochlorite-quantity-label').hidden"),true);
  assert.equal((await evaluate("document.getElementById('sc-final').textContent")).replace(/\\s/g,''),'R$0,00');
+ assert.equal(await evaluate("document.getElementById('quick-open-freight')"),null);
+ assert.equal(await evaluate("[...document.querySelectorAll('#quick-tools .tool-page-content button,#quick-tools .tool-page-content a')].some(el=>el.textContent.trim()==='Cotação de Frete')"),false);
  assert.deepEqual(errors,[]); assert.deepEqual(consoleErrors,[]);
  console.log('Tabela: 12 itens, busca obrigatória, filtros e rolagem. Frete: extração, campos manuais, validação e clipboard real. Químicos: seleção, quantidades, total e limpar. Quatro ferramentas em 1440/900/375, claro/escuro, 24 capturas e console OK.');
 } finally { ws.close(); }

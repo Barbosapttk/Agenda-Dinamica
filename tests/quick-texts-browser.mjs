@@ -19,8 +19,9 @@ try {
    assert.equal(await evaluate('document.querySelector(' + JSON.stringify(selector + ' .qt-body') + ').textContent'), model.body);
    assert.equal(await evaluate('document.querySelector(' + JSON.stringify(selector + ' .qt-recipients') + ')?.textContent || ""'), model.recipients.length ? '📧 ' + model.recipients.length + ' destinatários' : '');
    assert.equal(await evaluate('document.querySelectorAll(' + JSON.stringify(selector + ' .qt-actions button') + ').length'), 1);
-   assert.equal(await evaluate('document.querySelectorAll(' + JSON.stringify(selector + ' button') + ').length'), 1);
+   assert.equal(await evaluate('document.querySelectorAll(' + JSON.stringify(selector + ' button') + ').length'), 2);
    assert.equal(await evaluate('document.querySelector(' + JSON.stringify(selector + ' button') + ').textContent'), 'COPIAR TUDO');
+   assert.equal(await evaluate('document.querySelector(' + JSON.stringify(selector + ' .qt-delete') + ').textContent'), 'Excluir');
  }
  await call('Emulation.setFocusEmulationEnabled', {enabled:true});
  await call('Browser.grantPermissions', {origin: baseUrl, permissions: ['clipboardReadWrite', 'clipboardSanitizedWrite']});

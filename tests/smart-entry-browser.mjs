@@ -23,8 +23,8 @@ try {
  }
  async function key(key,code,number) {await call('Input.dispatchKeyEvent',{type:'keyDown',key,code,windowsVirtualKeyCode:number});await call('Input.dispatchKeyEvent',{type:'keyUp',key,code,windowsVirtualKeyCode:number});}
  const open=id=>evaluate('document.querySelector(".tools-central-link").click();document.getElementById("open-'+id+'").click()');
- assert.equal(await evaluate("document.querySelectorAll('#quick-tools > button').length"),6);
- assert.equal(await evaluate("document.querySelectorAll('#tools-dropdown button').length"),6);
+ assert.equal(await evaluate("document.querySelectorAll('#quick-tools > button').length"),7);
+ assert.equal(await evaluate("document.querySelectorAll('#tools-dropdown button').length"),7);
  assert.equal(await evaluate("document.getElementById('budget-desk')"),null);
  await click('.qa-tools');assert.equal(await evaluate("document.getElementById('tools-dropdown').hidden"),true);
  assert.equal(await evaluate("document.querySelector('#view-ferramentas').classList.contains('active')"),true);
@@ -72,7 +72,7 @@ try {
   }
  }
  assert.deepEqual(errors,[]);assert.deepEqual(consoleErrors,[]);
- console.log('Entrada real: clique/toque + digitação substituem zeros e valores existentes; monetários, percentuais, quantidade, horas/km; edição parcial, Delete, Backspace e Tab. Margem 40/30, Serviço preservado, peso 150 KG no clipboard. Menu principal e seis ferramentas: desktop/notebook/mobile claro/escuro OK.');
+ console.log('Entrada real: clique/toque + digitação substituem zeros e valores existentes; monetários, percentuais, quantidade, horas/km; edição parcial, Delete, Backspace e Tab. Margem 40/30, Serviço preservado, peso 150 KG no clipboard. Menu principal e sete ferramentas: desktop/notebook/mobile claro/escuro OK.');
 } finally {ws.close();}
 `;
 fs.mkdirSync('test-results',{recursive:true});const runner=new URL('../test-results/smart-entry-runner.mjs',import.meta.url);fs.writeFileSync(runner,harness+checks);await import(runner.href);
