@@ -48,7 +48,7 @@ try {
   }
  }
  assert.deepEqual(errors,[]);assert.deepEqual(consoleErrors,[]);
- console.log('Layout: 7/7 ferramentas com cabeçalho compartilhado; 0 layouts antigos; corpo abre Central, seta somente menu; Central/dropdown/retorno testados individualmente para todas em 1440/900/375, claro/escuro; 48 capturas e zero overflow/erros.');
+ console.log('Layout: 7/7 ferramentas com cabeçalho compartilhado, incluindo Fretes; 0 layouts antigos; corpo abre Central, seta somente menu; Central/dropdown/retorno testados individualmente para todas em 1440/900/375, claro/escuro; 42 capturas e zero overflow/erros.');
 } finally {ws.close();}
 `;
 fs.mkdirSync('test-results',{recursive:true});const runner=new URL('../test-results/tool-page-layout-runner.mjs',import.meta.url);fs.writeFileSync(runner,harness+checks);await import(runner.href);

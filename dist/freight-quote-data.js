@@ -11,6 +11,23 @@ export const CARGO_FIELDS = [
   ['goods', 'Mercadoria'], ['invoice', 'Valor da NF'], ['weight', 'Peso Total'], ['dimensions', 'Dimensões por volume'],
 ];
 
+// Somente correspondências estruturadas explícitas; nunca extrair endereço/peso do texto.
+export function mapSolicitacaoParaFrete(sol, cliente = {}) {
+  const text = value => typeof value === 'string' ? value.trim() : '';
+  const cidade = text(sol.cidade) || text(cliente.cidade);
+  const uf = text(sol.uf) || text(sol.estado) || text(cliente.estado);
+  const produto=text(sol.produto),descricao=text(sol.descricao);
+  return {
+    company:text(sol.empresa) || text(cliente.empresa) || text(sol.nome) || text(cliente.nome),
+    cnpj:text(sol.cnpj) || text(cliente.cnpj),
+    address:text(sol.endereco) || text(cliente.endereco), district:text(sol.bairro) || text(cliente.bairro),
+    cep:text(sol.cep) || text(cliente.cep), city:[cidade,uf].filter(Boolean).join(' - '),
+    goods:[produto,descricao!==produto?descricao:''].filter(Boolean).join(' — '), invoice:'',
+    weight:typeof sol.pesoKg === 'number' && Number.isFinite(sol.pesoKg) && sol.pesoKg>=0 ? String(sol.pesoKg) : '',
+    dimensions:text(sol.dimensoes)
+  };
+}
+
 // Extrai somente valores explicitamente presentes no texto, sem consultar serviços.
 export function identifyRecipient(text) {
   const result = Object.fromEntries(RECIPIENT_FIELDS.map(([key]) => [key, '']));

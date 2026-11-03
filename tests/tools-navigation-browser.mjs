@@ -4,8 +4,8 @@ const harness=existing.slice(0,existing.indexOf('\ntry {\n await load();'));
 const checks=`
 try {
  await load();
- const ids=['sale-price','service-calculator','freight-quote','quick-texts','size-table','quick-notes','reference-tables'];
- const names=['Calculadora de Valor de Venda','Calculadora de Valor de Serviço','Cotação de Frete','Textos Rápidos','Tabela de Tamanhos','Anotações Rápidas','Tabelas de Referência'];
+ const ids=['sale-price','service-calculator','fretes','quick-texts','size-table','quick-notes','reference-tables'];
+ const names=['Calculadora de Valor de Venda','Calculadora de Valor de Serviço','Fretes','Textos Rápidos','Tabela de Tamanhos','Anotações Rápidas','Tabelas de Referência'];
  await evaluate("document.querySelector('.tools-central-link').click()");
  assert.equal(await evaluate("document.querySelector('#view-ferramentas .page-header h2').textContent"),'Central de Ferramentas');
  assert.deepEqual(await evaluate("[...document.querySelectorAll('#quick-tools > button strong')].map(el=>el.textContent)"),names);
@@ -58,7 +58,7 @@ try {
   }
  }
  assert.deepEqual(errors,[]);assert.deepEqual(consoleErrors,[]);
- console.log('Central: sete ferramentas na ordem exata. Dropdown: sete acessos diretos, fora fecha, link abre Central. Defaults/ordem dos campos e Tamanhos visível. Desktop/mobile claro/escuro: 12 capturas, sem cortes ou erros.');
+ console.log('Central: sete ferramentas na ordem exata, com Fretes na terceira posição. Dropdown: sete acessos diretos, fora fecha, link abre Central. Defaults/ordem dos campos e Tamanhos visível. Desktop/mobile claro/escuro: 12 capturas, sem cortes ou erros.');
 } finally {ws.close();}
 `;
 fs.mkdirSync('test-results',{recursive:true});const runner=new URL('../test-results/tools-navigation-runner.mjs',import.meta.url);fs.writeFileSync(runner,harness+checks);await import(runner.href);

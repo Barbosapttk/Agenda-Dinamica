@@ -12,6 +12,9 @@ import { registerComprasHandlers } from './handlers/compras-handlers.js';
 import { createExecutionContext, INSTANCE_STORAGE_KEY } from './context/execution-context.js';
 import { createAtomicSnapshotPort } from './repositories/atomic-snapshot-port.js';
 import { PERSISTENCE_MODE } from './persistence-config.js';
+import { createBackupService } from './services/backup-service.js';
+import { installBackupUi } from './adapters/backup-ui-adapter.js';
+import { createCarriersService } from './services/carriers-service.js';
 
 const APPLICATION_KEY = Symbol.for('agenda-dinamica.application');
 
@@ -29,12 +32,23 @@ export function bootstrapApplication(scope = window, { persistenceMode = PERSIST
     ? createAtomicSnapshotPort({ getClient:legacy.getClient, getExecutionIdentity:auth.getExecutionIdentity }) : null;
   const snapshot = createSnapshotRepository({
     state, loadSnapshot: legacy.loadSnapshot, writeSnapshot: legacy.writeSnapshot,
-    isConfigured: legacy.isConfigured, migratedCollections: ['cotacoesCompras'], executionContext, atomicPersistence
+    isConfigured: legacy.isConfigured, migratedCollections: ['cotacoesCompras','transportadoras','solicitacoesOrcamento'], executionContext, atomicPersistence,
+    readSnapshot:legacy.readSnapshot
   });
   legacy.connectRepository(snapshot);
+  const backup = createBackupService({ state, repository:snapshot, storage:scope.localStorage,
+    async beforeReplace() {
+      clearTimeout(saveTimer); saveTimer = null;
+      const result = await snapshot.saveLegacy();
+      if (!result.ok) throw result.error;
+    },
+    afterReplace:() => renderizarDadosSincronizados()
+  });
+  installBackupUi({ scope, service:backup });
   const bus = createEventBus();
   const compras = createComprasService({ repository: snapshot, eventBus: bus, getActorId: auth.getActorId, today: legacy.today,
-    createCommandId: executionContext.createCommandId, getExecutionContext: executionContext.capture });
+    createCommandId: executionContext.createCommandId, getExecutionContext: executionContext.capture,
+    getSolicitacao:id=>state.getCollection('solicitacoesOrcamento').find(item=>String(item.id)===String(id)) });
   registerComprasHandlers(bus, { render: legacy.renderPurchases });
   let resolveReady, rejectReady;
   const ready = new Promise((resolve, reject) => { resolveReady = resolve; rejectReady = reject; });
@@ -42,7 +56,7 @@ export function bootstrapApplication(scope = window, { persistenceMode = PERSIST
   const application = Object.freeze({
     version: 1, state, legacy, executionContext,
     events: Object.freeze({ bus, types: EVENT_TYPES, createEnvelope: createEventEnvelope }),
-    services: Object.freeze({ compras }),
+    services: Object.freeze({ compras, backup, transportadoras:createCarriersService({repository:snapshot}) }),
     adapters: Object.freeze({ compras: createComprasUiAdapter({ service: compras, createCommandId: executionContext.createCommandId }) }),
     repositories: Object.freeze({
       snapshot,

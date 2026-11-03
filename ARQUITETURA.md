@@ -1,5 +1,71 @@
 # Arquitetura incremental da Agenda Dinâmica
 
+## Versão de Teste Oficial — B2, B3 e B5
+
+Escopo funcional congelado para testes em **03/11/2026**. Contratos, inventário,
+mapeamento e limites em [VERSAO-TESTE-OFICIAL.md](VERSAO-TESTE-OFICIAL.md).
+
+Solicitação abre a cotação única em Central → Fretes com cópia inicial de campos
+compatíveis, sem escrita bidirecional, e retorno por ID à origem. Compras usa o
+Service atual e recebe apenas `solicitacaoId` como relação; o formulário herda
+produto/descrição/observações, sem espelhar clientes. Reutiliza Compra existente e
+mostra navegação nos dois sentidos. Nenhuma etapa ou preço é atualizado automaticamente.
+
+`proximaAcao: {texto,data}` pertence à Solicitação, com edição compacta, remoção,
+data opcional ISO e exibição DD/MM/AAAA no card. Retorno só é reaproveitado se já
+tiver referência explícita à Solicitação; não há inferência por cliente nem novos
+Retornos automáticos. Usa o Repository existente, sem novas coleções ou armazenamento.
+Fluxos legados e modo legacy preservados, sem mudança de concorrência, login ou
+integração externa. Após validar, parar: sem B4, commit, push ou publicação.
+
+## Bloco B1 — Fretes
+
+Decisão revisada: [Fretes](FRETES-B1.md) é a terceira ferramenta da **Central de
+Ferramentas**, com Cotação, Transportadoras e Correios internamente. Não há aba
+principal, entrada lateral ou `view-fretes`. Card e dropdown compartilham a seção
+`#fretes`, montada por `mountFretes` junto das outras ferramentas; o retorno padrão
+abre a Central e devolve o foco ao card. São sete ferramentas, sem card independente
+de Cotação. A implementação da cotação permanece única e as outras seis ferramentas
+continuam intactas.
+Não há integração com solicitações, tamanhos, transportadoras ou APIs externas.
+
+`CarriersService` grava `transportadoras` pelo mesmo AppState, adapter e Repository,
+na chave `secta_transportadoras` da tabela atual. IDs UUID, CRUD confirmado e
+pesquisa por nome/atendente/região; sem armazenamento paralelo. Backup, restauração
+e exclusão incluem a nova coleção: 12 coleções + tema. JSON v1 anterior ao B1
+continua legível, mostrando zero transportadoras antes de confirmar a restauração.
+O modo legacy não mudou; fonte SQL/port inativos apenas reconhecem a chave nova.
+Sem aplicação remota, ativação RPC/CAS, login, commit, push ou publicação.
+
+Observações opcionais seguem o textarea já usado no editor, sem campos obrigatórios
+novos; registros anteriores continuam válidos e preservam seus IDs. A revisão de
+navegação não modifica a estratégia de persistência descrita acima.
+
+Correios contém somente links oficiais em nova guia. Contratos, limites e
+justificativa dos ajustes dos testes históricos estão no documento B1.
+
+## Consolidação do Bloco A — 31/10/2026
+
+O estado atual e o inventário completo de persistência estão em
+[CONSOLIDACAO-BLOCO-A.md](CONSOLIDACAO-BLOCO-A.md). Esta seção prevalece sobre
+contagens e limitações de backup descritas nos registros históricos abaixo.
+Hoje são sete ferramentas, incluindo Tabelas de Referência.
+
+Solicitações exigem telefone válido; e-mail e canal permanecem opcionais.
+Formatadores existentes usam normalização conservadora que preserva nomes,
+siglas, códigos e unidades. Concluídas saíram da fila operacional, permanecendo
+em Propostas/Histórico. Datas concretas usam DD/MM/AAAA, com ISO no contrato
+interno dos inputs e na persistência. Login continua desabilitado, sem flash.
+
+`BackupService` e seu adapter usam o único SnapshotRepository. JSON versão 1
+inclui todas as onze coleções persistidas, tema e preferências locais de alarmes.
+Restauração exige validação, resumo, confirmação, cópia anterior durável e leitura
+de verificação; a exclusão usa o mesmo caminho com escopo explícito. Ferramentas
+pessoais e arquivos remotos de anexos ficam fora dessas operações. CSS de
+consolidação corrige geometria dos cards e conflitos da barra de ações no zoom,
+preservando identidade visual. O modo legacy e seu limite de concorrência entre
+navegadores permanecem; não houve ativação remota de migrations/RPCs.
+
 ## Layout unificado das seis ferramentas (25/10/2026)
 
 Inventário: antes desta etapa, navegação e CSS eram compartilhados, mas cada

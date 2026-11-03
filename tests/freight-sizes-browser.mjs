@@ -23,7 +23,7 @@ try {
   await evaluate('document.getElementById("size-type").value='+JSON.stringify(type)+';document.getElementById("size-type").dispatchEvent(new Event("change"))');
   assert.equal(await evaluate("document.querySelectorAll('#size-rows .size-card').length"),count);
  }
- await evaluate("document.getElementById('size-type').value='';document.getElementById('size-type').dispatchEvent(new Event('change'));document.getElementById('close-size-table').click();document.getElementById('open-quick-texts').click();document.getElementById('close-quick-texts').click();document.getElementById('open-freight-quote').click()");
+ await evaluate("document.getElementById('size-type').value='';document.getElementById('size-type').dispatchEvent(new Event('change'));document.getElementById('close-size-table').click();document.getElementById('open-quick-texts').click();document.getElementById('close-quick-texts').click();document.querySelector('.tools-central-link').click();document.getElementById('open-fretes').click();document.getElementById('fretes-tab-cotacao').click()");
  assert.equal(await evaluate("document.getElementById('quick-texts').hidden"),true);
  async function fill(values) {
   await evaluate('Object.entries('+JSON.stringify(values)+').forEach(([key,value])=>{const el=document.getElementById(key);if(el.type==="checkbox")el.checked=value;else el.value=value;el.dispatchEvent(new Event("input",{bubbles:true}));})');
@@ -56,7 +56,7 @@ try {
  assert.equal(await evaluate("document.getElementById('freight-goods').value"),'Peças');
  assert.equal(await evaluate("document.getElementById('freight-form').checkValidity()"),false);
  await fill({'freight-source':${JSON.stringify(example)}});
- await evaluate("document.getElementById('freight-identify').click();document.getElementById('close-freight-quote').click();document.getElementById('open-service-calculator').click()");
+ await evaluate("document.getElementById('freight-identify').click();showView('ferramentas');document.getElementById('open-service-calculator').click()");
  await fill({'sc-salary':'6000','sc-hours':'4','sc-hypochlorite':true,'sc-hypochlorite-quantity':'2','sc-hydroxide':true,'sc-hydroxide-quantity':'5','sc-peracetic':true,'sc-peracetic-quantity':'2'});
  assert.ok((await evaluate("document.getElementById('sc-breakdown').textContent")).includes('178,00'));
  assert.equal((await evaluate("document.getElementById('sc-final').textContent")).replace(/\\s/g,''),'R$719,65');
@@ -69,7 +69,7 @@ try {
  await fill({'sc-hypochlorite-quantity':'2'});
  await evaluate("window.checkAlarms=()=>{};window.checkAlarmsComerciais=()=>{};document.getElementById('alarmOverlay')?.remove()");
  for (const tool of ['service-calculator','size-table','freight-quote','quick-texts']) {
-  await evaluate("[...document.querySelectorAll('#quick-tools > section')].filter(el=>!el.hidden).forEach(el=>document.getElementById('close-'+el.id).click());document.getElementById('open-"+tool+"').click()");
+  await evaluate("[...document.querySelectorAll('#quick-tools > section')].filter(el=>!el.hidden).forEach(el=>document.getElementById('close-'+el.id).click());"+(tool==='freight-quote'?"document.querySelector('.tools-central-link').click();document.getElementById('open-fretes').click();document.getElementById('fretes-tab-cotacao').click()":"showView('ferramentas');document.getElementById('open-"+tool+"').click()"));
   for (const width of [1440,900,375]) {
    await call('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width===375});
    for (const theme of ['light','dark']) {
@@ -87,7 +87,8 @@ try {
  assert.equal(await evaluate("document.getElementById('sc-hypochlorite-quantity-label').hidden"),true);
  assert.equal((await evaluate("document.getElementById('sc-final').textContent")).replace(/\\s/g,''),'R$0,00');
  assert.equal(await evaluate("document.getElementById('quick-open-freight')"),null);
- assert.equal(await evaluate("[...document.querySelectorAll('#quick-tools .tool-page-content button,#quick-tools .tool-page-content a')].some(el=>el.textContent.trim()==='Cotação de Frete')"),false);
+ assert.equal(await evaluate("[...document.querySelectorAll('#quick-tools .tool-page-content button,#quick-tools .tool-page-content a')].filter(el=>!el.closest('#fretes')).some(el=>el.textContent.trim()==='Cotação de Frete')"),false);
+ assert.equal(await evaluate("document.querySelectorAll('#fretes #fretes-tab-cotacao').length"),1,'Uma única aba Cotação dentro de Fretes');
  assert.deepEqual(errors,[]); assert.deepEqual(consoleErrors,[]);
  console.log('Tabela: 12 itens, busca obrigatória, filtros e rolagem. Frete: extração, campos manuais, validação e clipboard real. Químicos: seleção, quantidades, total e limpar. Quatro ferramentas em 1440/900/375, claro/escuro, 24 capturas e console OK.');
 } finally { ws.close(); }

@@ -7,7 +7,7 @@ function failure(operation, error) {
 
 // Os ports reutilizam o único leitor/escritor Supabase do legado.
 export function createSnapshotRepository({ state, loadSnapshot, writeSnapshot, isConfigured = () => true, migratedCollections = [],
-  executionContext = null, atomicPersistence = null }) {
+  executionContext = null, atomicPersistence = null, readSnapshot = null }) {
   const migrated = new Set(migratedCollections);
   if ([...migrated].some(name => !COLLECTION_NAMES.includes(name))) throw new TypeError('Coleção migrada desconhecida.');
   let loading = null;
@@ -21,8 +21,10 @@ export function createSnapshotRepository({ state, loadSnapshot, writeSnapshot, i
   let serverProtected = false;
   let lastWrite = null;
   let recovering = false;
+  let replacing = false;
 
   function load({ recovery = false } = {}) {
+    if (replacing) return Promise.resolve(failure('load', new Error('Substituição de dados em andamento.')));
     if (loading) return loading;
     if (atomicPersistence && pendingWrites.size && !recovery) return Promise.resolve({ ok:false,
       reason:'ERROR', status:'ERROR', operation:'load', recoveryRequired:true,
@@ -54,6 +56,7 @@ export function createSnapshotRepository({ state, loadSnapshot, writeSnapshot, i
   }
 
   function scheduleWrite(operation, action, options = {}) {
+    if (replacing && !options.maintenance) return Promise.resolve(failure(operation, new Error('Substituição de dados em andamento.')));
     if (state.getLoadStatus().status !== LOAD_STATUS.READY) {
       const result = { ...options.auditMetadata,
         ...failure(operation, new Error('Gravação bloqueada: carga bem-sucedida obrigatória.')), context: options.context || null };
@@ -182,12 +185,57 @@ export function createSnapshotRepository({ state, loadSnapshot, writeSnapshot, i
     }, { ...options, auditMetadata });
   }
 
+  function replaceSnapshot(snapshot, { applySettings = () => {}, rollbackSettings = () => {} } = {}) {
+    let candidate;
+    try {
+      candidate = structuredClone(validateState(snapshot));
+      if (!readSnapshot && !atomicPersistence) throw new Error('Leitura de verificação indisponível.');
+      if (replacing || loading || pendingWrites.size) throw new Error('Resolva cargas/gravações pendentes antes de substituir dados.');
+    } catch (error) { return Promise.resolve(failure('replace',error)); }
+    replacing = true;
+    return scheduleWrite('replace', async context => {
+      const previous = state.getSnapshot();
+      let acknowledged = false;
+      const read = async () => structuredClone(validateState(atomicPersistence ? (await atomicPersistence.load()).snapshot : await readSnapshot()));
+      // JSONB pode devolver propriedades em outra ordem, preservando o mesmo conteúdo.
+      const canonical = value => Array.isArray(value) ? value.map(canonical) : value && typeof value === 'object'
+        ? Object.fromEntries(Object.keys(value).sort().map(key=>[key,canonical(value[key])])) : value;
+      const equal = (a,b) => JSON.stringify(canonical(a)) === JSON.stringify(canonical(b));
+      try {
+        await write(candidate, STATE_NAMES, { context });
+        acknowledged = true;
+        const verified = await read();
+        if (!equal(verified,candidate)) throw new Error('A leitura de verificação diverge do backup.');
+        await applySettings();
+        state.setState(verified);
+        confirmedSnapshot = structuredClone(verified);
+        return { ok:true, operation:'replace', snapshot:verified };
+      } catch (error) {
+        // Um único upsert/RPC envia todas as coleções. Nunca aplicar um candidato parcial à UI.
+        // Timeout sem confirmação exige recuperação, não uma segunda escrita cega.
+        state.setState(previous);
+        if (acknowledged) {
+          try {
+            await write(previous, STATE_NAMES, { context: executionContext ? await executionContext.capture() : null });
+            if (!equal(await read(),previous)) throw new Error('Rollback não confirmado.');
+            await rollbackSettings();
+            confirmedSnapshot = structuredClone(previous);
+          } catch (rollbackError) {
+            state.setLoadStatus(LOAD_STATUS.ERROR, rollbackError);
+            return { ...failure('replace',error), recoveryRequired:true, rollbackError };
+          }
+        } else state.setLoadStatus(LOAD_STATUS.ERROR,error);
+        return failure('replace',error);
+      }
+    }, { maintenance:true }).finally(() => { replacing = false; });
+  }
+
   function getStatus() {
     return { ...state.getLoadStatus(), configured: Boolean(isConfigured()), pendingSaves, lastResult,
       concurrency: { mode: atomicPersistence ? 'GLOBAL_REVISION' : 'UNVERSIONED', serverVersionKnown: revision !== null,
         revision, protected: Boolean(atomicPersistence && serverProtected), recoveryRequired: Boolean(atomicPersistence && pendingWrites.size) } };
   }
-  return Object.freeze({ load, save, saveLegacy, commitCollection, getStatus,
+  return Object.freeze({ load, save, saveLegacy, commitCollection, replaceSnapshot, getStatus,
     getPendingWrites: () => structuredClone([...pendingWrites.values()]),
     discardPendingWrite: attemptId => {
       if (atomicPersistence && !recovering) return false;

@@ -18,7 +18,7 @@ function audit(item) {
 export function createComprasService({ repository, eventBus, createEnvelope = createEventEnvelope,
   getActorId = () => null, today = () => new Date().toISOString().slice(0, 10),
   now = () => new Date().toISOString(), createCommandId = () => globalThis.crypto.randomUUID(),
-  createId = () => Date.now(), getExecutionContext = null }) {
+  createId = () => Date.now(), getExecutionContext = null, getSolicitacao = () => null }) {
   // Idempotência local: mesmo comando em andamento compartilha a Promise.
   // Sucessos não são regravados nem republicados; falhas podem ser tentadas novamente.
   const commands = new Map();
@@ -85,10 +85,17 @@ export function createComprasService({ repository, eventBus, createEnvelope = cr
     return command.pending;
   }
 
-  function criar({ descricao, status = 'enviado' } = {}, options) {
+  function criar({ descricao, status = 'enviado', solicitacaoId = null } = {}, options) {
     const text = typeof descricao === 'string' ? descricao.trim() : '';
     const selected = normalizeStatus(status);
-    return run('criar', { descricao: text, status: selected }, options, (list, command, commandId) => {
+    return run('criar', { descricao: text, status: selected, ...(solicitacaoId!==null?{solicitacaoId}:{}) }, options, (list, command, commandId) => {
+      if(solicitacaoId!==null) {
+        if(!Number.isSafeInteger(solicitacaoId)||solicitacaoId<=0)throw new Error('Solicitação de origem inválida.');
+        const linked=list.find(item=>item&&sameId(item.solicitacaoId,solicitacaoId));
+        if(linked)return {changed:false,value:{item:linked}};
+        const source=getSolicitacao(solicitacaoId);
+        if(!source || source.etapa!=='aguardando_cotacao')throw new Error('A solicitação deve estar aguardando cotação de peças.');
+      }
       if (!text) throw new Error('Informe a descrição dos itens para salvar a solicitação.');
       const existing = list.find(item => item?.creationCommandId === commandId);
       if (existing) return { changed: false, value: { item: existing } };
@@ -98,7 +105,8 @@ export function createComprasService({ repository, eventBus, createEnvelope = cr
       command.creationId = id;
       const date = today();
       const item = { id, descricao: text, status: selected, concluida: selected === 'concluido',
-        criadoEm: date, atualizadoEm: date, creationCommandId: commandId };
+        criadoEm: date, atualizadoEm: date, creationCommandId: commandId,
+        ...(solicitacaoId!==null?{solicitacaoId}:{}) };
       return { changed: true, next: [...list, item], value: { item,
         eventType: EVENT_TYPES.SOLICITACAO_COMPRA_CRIADA, payload: { ...audit(item) } } };
     });

@@ -8,6 +8,40 @@ import { registerComprasHandlers } from '../public/application/handlers/compras-
 
 const sample = { id: 10, descricao: 'Item existente', status: 'enviado', concluida: false,
   criadoEm: '2026-10-01', atualizadoEm: '2026-10-01' };
+
+test('B3: origem por ID, sem cópia de cliente; duas criações simultâneas não duplicam nem mudam a solicitação',async()=>{
+  const f=await fixture();const source={id:77,clienteId:1,etapa:'aguardando_cotacao',descricao:'Peça genérica',proximaAcao:{texto:'Consultar',data:''}};
+  const before=structuredClone(source);
+  const service=createComprasService({...f.serviceOptions,getSolicitacao:id=>id===77?source:null});
+  const results=await Promise.all([service.criar({descricao:'Peça genérica',solicitacaoId:77}),service.criar({descricao:'Peça genérica',solicitacaoId:77})]);
+  assert.ok(results.every(result=>result.ok));assert.equal(f.state.getCollection('cotacoesCompras').length,1);
+  assert.equal(results[0].item.id,results[1].item.id);assert.equal(results[0].item.solicitacaoId,77);
+  assert.equal(Object.hasOwn(results[0].item,'clienteId'),false);assert.deepEqual(source,before);
+  assert.equal(f.writes.length,1);assert.equal(f.events.length,1);
+  await service.editar(results[0].item.id,{descricao:'Descrição editada'});
+  assert.equal(f.state.getCollection('cotacoesCompras')[0].solicitacaoId,77);
+});
+test('B3: rejeita origem inválida/ausente/fora da etapa sem escrever ou publicar',async()=>{
+  const f=await fixture();const service=createComprasService({...f.serviceOptions,getSolicitacao:()=>({id:77,etapa:'nova'})});
+  for(const id of [77,0,-1,'77'])assert.equal((await service.criar({descricao:'Peça',solicitacaoId:id})).ok,false);
+  const missing=createComprasService({...f.serviceOptions,getSolicitacao:()=>null});
+  assert.equal((await missing.criar({descricao:'Peça',solicitacaoId:88})).ok,false);
+  assert.equal(f.writes.length,0);assert.equal(f.events.length,0);
+});
+test('B3: vínculo existente concluído é reutilizado após recarga, independentemente de descrição e etapa',async()=>{
+  const linked={...sample,solicitacaoId:77,status:'concluido',concluida:true};const f=await fixture({purchases:[linked]});
+  await f.repository.load();
+  const service=createComprasService({...f.serviceOptions,getSolicitacao:()=>({id:77,etapa:'em_elaboracao'})});
+  const result=await service.criar({descricao:'Não duplicar',solicitacaoId:77});
+  assert.equal(result.ok,true);assert.equal(result.changed,false);assert.equal(result.item.id,linked.id);
+  assert.equal(f.writes.length,0);assert.equal(f.events.length,0);
+});
+test('B3: falha de persistência da origem vinculada não aplica compra ou evento de sucesso',async()=>{
+  const f=await fixture({write:async()=>({ok:false,error:Error('Falha simulada')})});
+  const service=createComprasService({...f.serviceOptions,getSolicitacao:()=>({id:77,etapa:'aguardando_cotacao'})});
+  assert.equal((await service.criar({descricao:'Peça',solicitacaoId:77})).ok,false);
+  assert.equal(f.state.getCollection('cotacoesCompras').length,0);assert.equal(f.events.length,0);
+});
 function deferred() {
   let resolve;
   const promise = new Promise(done => { resolve = done; });

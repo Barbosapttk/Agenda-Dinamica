@@ -135,7 +135,7 @@ BEGIN
   IF p_changes IS NULL OR jsonb_typeof(p_changes) <> 'array' THEN
     RAISE EXCEPTION 'Changes deve ser array' USING ERRCODE = '22023';
   END IF;
-  IF jsonb_array_length(p_changes) NOT BETWEEN 1 AND 12 OR pg_column_size(p_changes) > 16777216 THEN
+  IF jsonb_array_length(p_changes) NOT BETWEEN 1 AND 13 OR pg_column_size(p_changes) > 16777216 THEN
     RAISE EXCEPTION 'Quantidade/tamanho inválido' USING ERRCODE = '22023';
   END IF;
   FOR change IN SELECT value FROM jsonb_array_elements(p_changes) LOOP
@@ -144,7 +144,7 @@ BEGIN
       OR jsonb_typeof(change->'key') <> 'string'
       OR change->>'key' NOT IN ('secta_clientes','secta_contatos','secta_agendamentos',
         'secta_solicitacoes_orcamento','secta_orcamentos','secta_concluidos','secta_hist_clientes',
-        'secta_controle_vendas','secta_cotacoes_compras','secta_alarmed','secta_produtos_solicitacoes','secta_theme') THEN
+        'secta_controle_vendas','secta_cotacoes_compras','secta_alarmed','secta_produtos_solicitacoes','secta_transportadoras','secta_theme') THEN
       RAISE EXCEPTION 'Key/estrutura não permitida' USING ERRCODE = '22023';
     END IF;
     IF (change->>'key' = 'secta_theme' AND jsonb_typeof(change->'value') <> 'string')

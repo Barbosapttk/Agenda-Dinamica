@@ -2,12 +2,12 @@
 import { mountServiceCalculator } from './service-calculator.js';
 import { copyPlainText, normalizeToolText as normalize } from './tools-common.js';
 import { mountSizeTable } from './size-table.js';
-import { mountFreightQuote } from './freight-quote.js';
 import { setupToolsNavigation } from './tools-navigation.js';
 import { mountSalePrice } from './sale-price.js';
 import { mountSizeSettings } from './size-settings.js';
 import { mountQuickNotes } from './quick-notes.js';
 import { mountReferenceTables } from './reference-tables.js';
+import { mountFretes } from './fretes.js';
 import { toolPageHeader } from './tool-page-layout.js';
 const catalog=createQuickTextCatalog();
 const root = document.getElementById('quick-tools');
@@ -23,11 +23,11 @@ root.innerHTML = `<button type="button" class="btn btn-primary" id="open-quick-t
   </section>`;
 mountServiceCalculator(root);
 mountSizeTable(root);
-mountFreightQuote(root);
 mountSalePrice(root);
 mountSizeSettings(root.querySelector('#size-table'));
 mountQuickNotes(root);
 mountReferenceTables(root);
+mountFretes(root);
 const search = root.querySelector('#qt-search');
 const feedback = root.querySelector('#qt-feedback');
 search.oninput = render;

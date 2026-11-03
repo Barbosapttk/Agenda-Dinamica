@@ -11,6 +11,7 @@ export function createLegacyUiAdapter() {
     historicoClientes: [() => historicoClientes, value => { historicoClientes = value; }],
     controleVendas: [() => controleVendas, value => { controleVendas = value; }],
     cotacoesCompras: [() => cotacoesCompras, value => { cotacoesCompras = value; }],
+    transportadoras: [() => transportadoras, value => { transportadoras = value; }],
     alarmedIds: [() => alarmedIds, value => { alarmedIds = value; }],
     produtosSolicitacoes: [() => produtosSolicitacoes, value => { produtosSolicitacoes = value; }],
     appTheme: [() => appTheme, value => { appTheme = value; }]
@@ -31,6 +32,7 @@ export function createLegacyUiAdapter() {
     getCurrentUser: () => usuarioLogado,
     isConfigured: () => Boolean(supabaseClient),
     async loadSnapshot() { await originalLoad(); return getState(); },
+    readSnapshot: () => originalLoad({ apply:false }),
     writeSnapshot: (snapshot, options) => originalPersist(snapshot, options),
     today: () => today(),
     renderPurchases: () => renderCotacoesComprasPainel(),

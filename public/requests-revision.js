@@ -180,5 +180,94 @@ function salvarEdicaoProposta(event) {
   notify('✓ Número e valor da proposta atualizados.', '#0d3d2a');
 }
 
+// B2/B3/B5: contexto por ID, sem novas coleções ou inferência por nome/descrição.
+function comprasDaSolicitacao(id) {
+  return getCotacoesCompras().filter(item=>String(item.solicitacaoId)===String(id));
+}
+function proximaAcaoSolicitacao(sol) {
+  if(Object.hasOwn(sol,'proximaAcao')) {
+    const action=sol.proximaAcao;
+    return action && typeof action.texto==='string' && action.texto.trim()
+      ? {texto:action.texto,data:AgendaFormat.isoDate(action.data),origem:'manual'} : null;
+  }
+  // Cliente igual não prova relação com a Solicitação. Exige referência explícita.
+  const retorno=agendamentos.filter(item=>String(item.solicitacaoId)===String(sol.id) && AgendaFormat.isoDate(item.data) && item.data>=today() && item.motivo)
+    .sort((a,b)=>a.data.localeCompare(b.data))[0];
+  return retorno ? {texto:retorno.motivo,data:retorno.data,origem:'retorno'} : null;
+}
+function blocoProximaAcao(sol) {
+  const action=proximaAcaoSolicitacao(sol),esc=escaparHtmlCotacaoCompras;
+  return action ? `<div class="sol-proxima-acao"><small>Próxima ação</small><span>${esc(action.texto)}</span>${action.data?`<time datetime="${action.data}">${fmtDate(action.data)}</time>`:''}</div>` : '';
+}
+function acoesOperacionaisSolicitacao(sol) {
+  const esc=escaparHtmlCotacaoCompras,linked=comprasDaSolicitacao(sol.id),action=proximaAcaoSolicitacao(sol);
+  return `<div class="sol-operacional">
+    <div class="mini-actions"><button type="button" class="btn btn-ghost btn-sm" onclick="cotarFreteDaSolicitacao(${sol.id})">Cotar Frete</button>
+    ${linked.length?linked.map(item=>`<button type="button" class="btn btn-ghost btn-sm" onclick="abrirCompraDaSolicitacao(${sol.id},${Number(item.id)})">Abrir compra #${esc(item.id)}</button>`).join('')
+      :sol.etapa==='aguardando_cotacao'?`<button type="button" class="btn btn-ghost btn-sm" onclick="solicitarPecasDaSolicitacao(${sol.id})">Solicitar cotação de peças</button>`:''}</div>
+    ${linked.length?`<p class="field-note">Cotação de peças vinculada: ${linked.map(item=>`Compra #${esc(item.id)}`).join(', ')}</p>`:''}
+    <form id="sol-proxima-form" onsubmit="salvarProximaAcaoSolicitacao(event,${sol.id})">
+      <div class="form-group"><label for="sol-proxima-texto">Próxima ação</label><input id="sol-proxima-texto" value="${esc(action?.texto || '')}" placeholder="Ex.: acompanhar cotação"></div>
+      <div class="form-group"><label for="sol-proxima-data">Data (opcional)</label><input id="sol-proxima-data" type="date" value="${esc(action?.data || '')}"></div>
+      <div class="mini-actions"><button class="btn btn-ghost btn-sm" type="submit">Salvar próxima ação</button><button class="btn btn-ghost btn-sm" type="button" onclick="document.getElementById('sol-proxima-texto').value='';document.getElementById('sol-proxima-data').value='';document.getElementById('sol-proxima-form').requestSubmit()">Remover ação</button></div>
+    </form>
+  </div>`;
+}
+function voltarParaSolicitacao(id) {
+  const sol=solicitacoesOrcamento.find(item=>String(item.id)===String(id));
+  if(!sol){notify('Solicitação de origem concluída ou removida.','#6a4a00');return;}
+  closeModal('modalCotacaoCompras');showView('solicitacoes');abrirFluxoSolicitacao(sol.id);
+}
+function cotarFreteDaSolicitacao(id) {
+  const sol=solicitacoesOrcamento.find(item=>item.id===id);
+  if(!sol)return;
+  const cliente=clientes.find(item=>item.id===sol.clienteId) || {};
+  if(window.abrirFreteComSolicitacao?.(sol,cliente))closeModal('modalFluxoSolicitacao');
+}
+function abrirCompraDaSolicitacao(solicitacaoId,compraId) {
+  const item=comprasDaSolicitacao(solicitacaoId).find(item=>String(item.id)===String(compraId));
+  if(!item){notify('Compra vinculada não encontrada.','#6a4a00');return;}
+  closeModal('modalFluxoSolicitacao');showView('dashboard');abrirModalCotacaoCompras(item.id);
+}
+function solicitarPecasDaSolicitacao(id) {
+  const sol=solicitacoesOrcamento.find(item=>item.id===id);
+  if(!sol)return;
+  const linked=comprasDaSolicitacao(id)[0];
+  if(linked){abrirCompraDaSolicitacao(id,linked.id);return;}
+  if(sol.etapa!=='aguardando_cotacao'){notify('Selecione a etapa Aguardando cotação de peças.','#6a4a00');return;}
+  closeModal('modalFluxoSolicitacao');showView('dashboard');abrirModalCotacaoCompras();
+  document.getElementById('modalCotacaoCompras').dataset.solicitacaoId=String(id);
+  document.getElementById('cotacao-compras-descricao').value=[sol.produto?`Produto/serviço: ${sol.produto}`:'',sol.descricao||'',sol.obs?`Observações: ${sol.obs}`:''].filter(Boolean).join('\n');
+  atualizarOrigemCompraModal({solicitacaoId:id});
+}
+function origemCompraHtml(item) {
+  const id=Number(item?.solicitacaoId);
+  if(!Number.isSafeInteger(id)||id<=0)return '';
+  const sol=solicitacoesOrcamento.find(item=>item.id===id),esc=escaparHtmlCotacaoCompras;
+  return `<div class="compra-origem">Solicitação de origem: #${id}${sol?` — ${esc(dadosSolicitacaoCliente(sol).nome)} <button type="button" class="btn btn-ghost btn-sm" onclick="voltarParaSolicitacao(${id})">Abrir solicitação</button>`:' (concluída ou removida)'}</div>`;
+}
+function atualizarOrigemCompraModal(item) {
+  document.getElementById('compra-origem-context').innerHTML=origemCompraHtml(item);
+}
+async function salvarProximaAcaoSolicitacao(event,id) {
+  event.preventDefault();const form=event.currentTarget;
+  if(form.dataset.pending)return;
+  const field=document.getElementById('sol-proxima-data'),texto=document.getElementById('sol-proxima-texto').value.trim(),data=field.value;
+  if(!field.checkValidity()){field.reportValidity();return;}
+  if(data&&!texto){notify('Informe a ação para associar uma data.','#6a4a00');return;}
+  form.dataset.pending='true';form.querySelectorAll('button,input').forEach(el=>el.disabled=true);
+  try {
+    const result=await AgendaApplication.repositories.snapshot.commitCollection('solicitacoesOrcamento',list=>{
+      const index=list.findIndex(item=>item.id===id);if(index<0)throw new Error('Solicitação não encontrada.');
+      const item={...list[index],proximaAcao:texto?{texto,data}:null};
+      const next=[...list];next[index]=item;
+      return {changed:JSON.stringify(item)!==JSON.stringify(list[index]),next,value:{item}};
+    });
+    if(!result.ok)throw result.error || new Error('Gravação não confirmada.');
+    renderSolicitacoesTabela();renderDashboard();notify('Próxima ação salva.','#0d3d2a');
+  }catch(error){notify(`Não foi possível salvar a próxima ação: ${error.message}`,'#7a1a1a');}
+  finally {delete form.dataset.pending;form.querySelectorAll('button,input').forEach(el=>el.disabled=false);}
+}
+
 renderProdutosSolicitacoes();
 atualizarSelectProdutosSolicitacoes();

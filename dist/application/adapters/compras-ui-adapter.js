@@ -59,7 +59,8 @@ export function createComprasUiAdapter({ service, createCommandId = () => global
       return Promise.resolve({ ok: false, validation: true });
     }
     const editId = modal.dataset.editId;
-    const fingerprint = JSON.stringify([editId || null, descricao, status]);
+    const solicitacaoId=modal.dataset.solicitacaoId ? Number(modal.dataset.solicitacaoId) : null;
+    const fingerprint = JSON.stringify([editId || null, descricao, status, solicitacaoId]);
     if (!modal.dataset.compraCommandId || modal.dataset.compraCommandFingerprint !== fingerprint) {
       modal.dataset.compraCommandId = createCommandId();
       modal.dataset.compraCommandFingerprint = fingerprint;
@@ -69,14 +70,20 @@ export function createComprasUiAdapter({ service, createCommandId = () => global
       try {
         const result = await (editId
           ? service.editar(editId, { descricao, status }, { commandId })
-          : service.criar({ descricao, status }, { commandId }));
+          : service.criar({ descricao, status, solicitacaoId }, { commandId }));
         if (!result.ok) return reportFailure(result);
         // Não fecha outro formulário que o usuário tenha aberto durante o await.
-        if (modal.dataset.compraCommandId === commandId) {
+        const sameForm=modal.dataset.compraCommandId === commandId;
+        const showLinked=sameForm && modal.classList.contains('open');
+        if (sameForm) {
           closeModal('modalCotacaoCompras');
           limparModalCotacaoCompras();
         }
         notify('✓ Solicitação salva.', '#0d3d2a');
+        if(solicitacaoId && result.item) {
+          renderSolicitacoesTabela();
+          if(showLinked)abrirModalCotacaoCompras(result.item.id);
+        }
         return result;
       } finally { formPending = null; }
     })();

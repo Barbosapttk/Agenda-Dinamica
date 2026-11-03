@@ -1,4 +1,13 @@
-﻿Agenda Dinâmica — evolução das ferramentas (28/10/2026)
+Atualização B1 — Fretes
+
+Versão de Teste Oficial (01/11/2026): a Solicitação agora pode abrir a cotação
+existente com preenchimento inicial e retorno à origem. Não há nova ferramenta,
+cálculo ou integração externa. Compras vinculadas e Próxima Ação estão descritas
+em [VERSAO-TESTE-OFICIAL.md](VERSAO-TESTE-OFICIAL.md). Escopo congelado para 03/11.
+
+Decisão revisada: Fretes pertence à Central de Ferramentas, sem aba principal ou entrada lateral. Central e dropdown apresentam sete ferramentas, nesta ordem: Venda, Serviço, Fretes, Textos Rápidos, Tamanhos, Anotações e Tabelas de Referência. Fretes reúne Cotação, Transportadoras e os links oficiais dos Correios, com o mesmo cabeçalho/retorno das outras ferramentas. Cotação não tem card separado; implementação única, dados, cálculos e demais ferramentas preservados. Transportadoras mantém a persistência existente e inclui observações opcionais. Detalhes em [FRETES-B1.md](FRETES-B1.md). Os registros abaixo descrevem etapas anteriores.
+
+Agenda Dinâmica — evolução das ferramentas (28/10/2026)
 
 Tamanhos: gerenciamento migrado para a própria Tabela de Tamanhos, em uma seção recolhível e compacta antes dos resultados. A interface antiga não é mais montada em Configurações. O catálogo singleton, a chave agenda-tool-sizes-v1, as validações, os campos e a persistência foram preservados. Consulta, busca, filtros, cópia, criação, edição, exclusão e recarga foram verificados.
 

@@ -143,3 +143,11 @@ html body .mini-actions .orcamento-card-mini-actions { margin: 0 !important; fle
 .proposta-edit-row input { width: 100%; }
 #modalEditarProposta .modal { background: var(--surface); }
 #modalSolicitacao :is(.modal, input, select, textarea) { opacity: 1 !important; backdrop-filter: none !important; background-color: var(--surface) !important; }
+.sol-operacional { grid-column:1/-1; min-width:0; padding-top:10px; border-top:1px solid var(--border); }
+#sol-proxima-form { display:grid; grid-template-columns:minmax(0,2fr) minmax(150px,1fr); gap:10px; margin-top:12px; }
+#sol-proxima-form .mini-actions { grid-column:1/-1; }
+.sol-proxima-acao { margin:8px 0; padding:6px 0; border-block:1px solid var(--border); font-size:12px; line-height:1.45; overflow-wrap:anywhere; }
+.sol-proxima-acao small { display:block; color:var(--text2); }
+.sol-proxima-acao time { display:block; color:var(--text2); }
+.compra-origem { font-size:12px; line-height:1.5; overflow-wrap:anywhere; }
+@media(max-width:600px) { #sol-proxima-form { grid-template-columns:minmax(0,1fr); } }

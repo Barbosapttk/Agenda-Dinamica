@@ -1,7 +1,7 @@
 export const COLLECTION_NAMES = Object.freeze([
   'clientes', 'contatos', 'agendamentos', 'solicitacoesOrcamento', 'orcamentos',
   'concluidos', 'historicoClientes', 'controleVendas', 'cotacoesCompras',
-  'alarmedIds', 'produtosSolicitacoes'
+  'alarmedIds', 'produtosSolicitacoes', 'transportadoras'
 ]);
 export const STATE_NAMES = Object.freeze([...COLLECTION_NAMES, 'appTheme']);
 export const LOAD_STATUS = Object.freeze({ IDLE: 'IDLE', LOADING: 'LOADING', READY: 'READY', ERROR: 'ERROR' });

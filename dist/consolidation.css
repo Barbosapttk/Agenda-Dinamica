@@ -1,0 +1,32 @@
+/* Ajustes de geometria, preservando tokens, cores e aparência existentes. */
+.backup-preview { max-width:min(560px,calc(100vw - 32px)); max-height:90vh; overflow:auto; background:var(--surface); color:var(--text); border:1px solid var(--border); border-radius:12px; padding:24px; }
+.backup-preview::backdrop { background:rgba(0,0,0,.65); }
+.backup-preview pre { white-space:pre-wrap; font:inherit; line-height:1.6; }
+html body :is(.card,.client-card,.kanban-card,.orcamento-kanban-col,.propostas-kanban-col,.orcamento-kanban-card,.orcamento-card,.proposta-kanban-card,.cotacao-compras-card,.hist-event,.settings-card,.tool-launch-card) { min-width:0; max-width:100%; overflow-wrap:anywhere; }
+html body :is(.card-header,.history-header,.kanban-card-header,.orcamento-card-header,.proposta-kanban-header,.cotacao-compras-card-header,.client-card-header) { flex-wrap:wrap; gap:8px; }
+html body :is(.card-header,.history-header,.kanban-card,.client-card,.orcamento-card,.proposta-kanban-card,.cotacao-compras-card) > * { min-width:0; }
+html body :is(.kanban-actions,.orcamento-card-actions,.proposta-kanban-actions,.cotacao-compras-acoes,.client-card-actions,.settings-actions,.mini-actions) { flex-wrap:wrap; }
+html body :is(.kanban-card,.client-card,.orcamento-card,.proposta-kanban-card,.cotacao-compras-card) :is(.btn,.badge) { max-width:100%; white-space:normal; overflow-wrap:anywhere; }
+html body #view-solicitacoes #solicitacoes-kanban { grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr)) !important; overflow:visible !important; }
+html body #view-solicitacoes #solicitacoes-kanban > .orcamento-kanban-col { width:auto !important; min-width:0 !important; }
+html body #view-solicitacoes :is(.orcamento-kanban-body,.propostas-kanban-body) { max-height:none !important; overflow:visible !important; }
+html body .solicitacoes-overview { grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr)) !important; }
+html body :is(.client-card,.kanban-card,.orcamento-card,.proposta-kanban-card) :is(h3,h4,.history-text,.kanban-desc,.orcamento-card-desc) { white-space:normal; overflow-wrap:anywhere; }
+html body .mini-heading :is(.orcamento-card-title,.proposta-kanban-title) { text-transform:none; }
+@media(min-width:901px) and (max-width:1180px) {
+  html body .sidebar { width:180px !important; }
+  html body .sidebar .quick-action-card { flex:0 0 auto; }
+}
+@media(max-width:900px) {
+  /* Regras antigas misturavam lateral estreita com body-row em coluna,
+     deixando ações com 190px de altura e empurrando a Agenda para fora da tela. */
+  html body .sidebar { width:100% !important; height:auto !important; min-height:0 !important; top:0 !important; position:relative; }
+  html body .sidebar .quick-action-grid { flex:0 0 auto; flex-direction:row !important; align-items:stretch !important; overflow-x:auto; padding:10px 12px !important; }
+  html body .sidebar .quick-action-grid .quick-action-card { flex:0 0 160px !important; width:160px !important; height:auto !important; min-height:46px !important; }
+}
+@media(max-width:760px) {
+  html body :is(.dashboard-grid-1,.dashboard-grid-2,.settings-grid,.cotacoes-compras-kanban) { grid-template-columns:minmax(0,1fr) !important; }
+  html body .mini-heading { grid-template-columns:minmax(0,1fr); }
+  html body :is(.mini-deadline,.mini-proposal-numbers) { text-align:left; }
+  html body .card-header > :is(div,select,input) { max-width:100%; }
+}

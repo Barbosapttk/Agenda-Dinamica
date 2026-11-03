@@ -3,7 +3,7 @@ import { STATE_NAMES, validateState } from '../state/app-state.js';
 export const SNAPSHOT_KEYS = Object.freeze(Object.fromEntries(STATE_NAMES.map((name, index) => [name,
   ['secta_clientes','secta_contatos','secta_agendamentos','secta_solicitacoes_orcamento',
     'secta_orcamentos','secta_concluidos','secta_hist_clientes','secta_controle_vendas',
-    'secta_cotacoes_compras','secta_alarmed','secta_produtos_solicitacoes','secta_theme'][index]])));
+    'secta_cotacoes_compras','secta_alarmed','secta_produtos_solicitacoes','secta_transportadoras','secta_theme'][index]])));
 const isRevision = value => typeof value === 'string' && /^(0|[1-9][0-9]*)$/.test(value) && BigInt(value) <= 9223372036854775807n;
 export function decodeAtomicSnapshot(data) {
   if (data?.status !== 'SUCCESS' || !isRevision(data.revision) || !Array.isArray(data.rows) || typeof data.protected !== 'boolean') {

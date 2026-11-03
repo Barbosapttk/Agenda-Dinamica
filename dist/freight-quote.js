@@ -2,12 +2,10 @@ import { SENDER, RECIPIENT_FIELDS, CARGO_FIELDS, identifyRecipient, validCnpj, v
 import { copyPlainText } from './tools-common.js';
 import { parseServiceNumber } from './service-calculator-math.js';
 import { attachSmartNumberInput } from './smart-number-input.js';
-import { toolPageHeader } from './tool-page-layout.js';
 
 export function mountFreightQuote(root) {
-  root.insertAdjacentHTML('beforeend', `<button type="button" class="btn btn-primary" id="open-freight-quote">🚚 Cotação de Frete</button>
-    <section id="freight-quote" hidden aria-labelledby="freight-title">
-      ${toolPageHeader('freight-quote')}
+  root.insertAdjacentHTML('beforeend', `<section id="freight-quote" aria-labelledby="freight-title">
+      <h3 id="freight-title" tabindex="-1">Cotação de Frete</h3>
       <div class="card sc-panel"><h3>Colar dados da proposta</h3>
         <label for="freight-source">Cole o trecho com os dados do destinatário</label>
         <textarea id="freight-source" rows="6" placeholder="Razão social, CNPJ, endereço, bairro, cidade e CEP"></textarea>
@@ -75,6 +73,15 @@ export function mountFreightQuote(root) {
     validate(); refresh();
   };
   attachSmartNumberInput(field('invoice'),'money');attachSmartNumberInput(field('weight'));
+  // Campos textuais técnicos: selecionar para substituir, sem interpretar códigos/unidades.
+  for (const key of ['cnpj','cep','dimensions']) {
+    const input=field(key);
+    let firstClick=false;
+    input.addEventListener('pointerdown',()=>{firstClick=document.activeElement!==input;});
+    input.addEventListener('focus',()=>input.select());
+    input.addEventListener('click',()=>{if(firstClick){input.select();firstClick=false;}});
+    input.addEventListener('blur',()=>{firstClick=false;});
+  }
   form.onsubmit = async event => {
     event.preventDefault();
     validate(); refresh();
@@ -89,4 +96,13 @@ export function mountFreightQuote(root) {
     finally { button.disabled = false; }
   };
   refresh();
+  const values=()=>Object.fromEntries([...RECIPIENT_FIELDS,...CARGO_FIELDS].map(([key])=>[key,field(key).value]).concat([['source',field('source').value]]));
+  let baseline=JSON.stringify(values());
+  return Object.freeze({
+    hasDraft:()=>JSON.stringify(values())!==baseline,
+    prefill(data) {
+      for(const [key] of [...RECIPIENT_FIELDS,...CARGO_FIELDS])field(key).value=data[key]??'';
+      field('source').value='';feedback.textContent='';validate();refresh();baseline=JSON.stringify(values());
+    }
+  });
 }
