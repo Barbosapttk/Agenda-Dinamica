@@ -5,6 +5,7 @@ import { createSnapshotRepository } from '../public/application/repositories/sna
 import { createEventBus } from '../public/application/events/event-bus.js';
 import { createComprasService, COMPRA_STATUS, COMPRA_EVENT_TYPES } from '../public/application/services/compras-service.js';
 import { registerComprasHandlers } from '../public/application/handlers/compras-handlers.js';
+import { prepararFQ09 } from '../public/application/services/compras-excel.js';
 
 const sample = { id: 10, descricao: 'Item existente', status: 'enviado', concluida: false,
   criadoEm: '2026-10-01', atualizadoEm: '2026-10-01' };
@@ -72,6 +73,44 @@ async function fixture({ purchases = [], write, loadFailure = false } = {}) {
   return { state, repository, bus, service: createComprasService(serviceOptions), serviceOptions, writes, events, renders,
     getServer: () => structuredClone(server) };
 }
+
+test('numeração usa o snapshot confirmado, conserva a edição e reaproveita o número de uma escrita recusada', async () => {
+  const f = await fixture({ purchases: [sample], write: async (_, __, attempt) =>
+    attempt === 5 ? { ok: false, error: Object.assign(new Error('Permissão recusada'), { code: '42501' }) } : { ok: true } });
+  const compra = descricao => ({ descricao, nomeReferencia: 'João', prioridade: 'media',
+    itens: [{ quantidade: 2, unidade: 'UN', descricao }] });
+  const created = await Promise.all(['Rolamento', 'Bomba Centrífuga', 'Vedação']
+    .map(descricao => f.service.criar(compra(descricao))));
+  assert.deepEqual(created.map(result => result.item.numero), [1, 2, 3]);
+  const second = created[1].item;
+  assert.equal(prepararFQ09(second).filename, 'Bomba Centrífuga - 2.xlsx');
+  const edited = await f.service.editar(second.id, { ...compra('Bomba Centrífuga 2CV'), numero: 99 });
+  assert.equal(edited.item.numero, 2);
+  assert.equal(prepararFQ09(edited.item).filename, 'Bomba Centrífuga 2CV - 2.xlsx');
+  const rejected = await f.service.criar(compra('Recusada'));
+  assert.equal(rejected.ok, false);
+  assert.equal(rejected.error.response.error.code, '42501');
+  assert.equal(f.writes[4].snapshot.cotacoesCompras.at(-1).numero, 4);
+  assert.deepEqual(f.getServer().cotacoesCompras.slice(1).map(item => item.numero), [1, 2, 3]);
+  await f.repository.load();
+  const reloaded = f.state.getCollection('cotacoesCompras').find(item => item.id === second.id);
+  assert.equal(prepararFQ09(reloaded).filename, 'Bomba Centrífuga 2CV - 2.xlsx');
+  const next = await f.service.criar(compra('Confirmada'));
+  assert.equal(next.item.numero, 4);
+  assert.equal(f.getServer().cotacoesCompras.at(-1).numero, 4);
+});
+
+test('edição da compra 10 muda a descrição no arquivo e mantém o número comercial', async () => {
+  const f = await fixture({ purchases: [{ ...sample, numero: 9 }, { ...sample, id: 11, numero: 3 }] });
+  const compra = descricao => ({ descricao, prioridade: 'media',
+    itens: [{ quantidade: 2, unidade: 'UN', descricao }] });
+  const created = await f.service.criar(compra('Bomba Centrífuga'));
+  assert.equal(created.item.numero, 10);
+  assert.equal(prepararFQ09(created.item).filename, 'Bomba Centrífuga - 10.xlsx');
+  const edited = await f.service.editar(created.item.id, compra('Bomba Centrífuga 2CV'));
+  assert.equal(edited.item.numero, 10);
+  assert.equal(prepararFQ09(edited.item).filename, 'Bomba Centrífuga 2CV - 10.xlsx');
+});
 
 test('criação confirma uma única escrita na chave de compras antes do evento e da renderização', async () => {
   const f = await fixture();

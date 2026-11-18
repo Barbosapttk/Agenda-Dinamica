@@ -41,7 +41,7 @@ async function evaluate(expression) {
 const mock = `window.__supabaseTest={clients:0,reads:0,writes:0,channels:0,sessions:0,failLoad:false,failSave:false,batches:[],pauseNextWrite:false,releaseWrite:null};
 window.supabase={createClient(){window.__supabaseTest.clients++;return {
  auth:{async getSession(){window.__supabaseTest.sessions++;return {data:{session:null},error:null}},onAuthStateChange(){return {data:{subscription:{unsubscribe(){}}}}}},
- from(){return {async select(){window.__supabaseTest.reads++;if(window.__supabaseTest.failLoad)return {data:null,error:{message:'Falha de carga simulada'}};return {data:JSON.parse(sessionStorage.getItem('test-rows')||'[]'),error:null}},async upsert(rows){const copy=JSON.parse(JSON.stringify(rows));window.__supabaseTest.writes++;window.__supabaseTest.batches.push(copy);if(window.__supabaseTest.pauseNextWrite){window.__supabaseTest.pauseNextWrite=false;await new Promise(resolve=>{window.__supabaseTest.releaseWrite=resolve})}if(window.__supabaseTest.failSave)return {error:{message:'Falha de escrita simulada'}};const merged=new Map(JSON.parse(sessionStorage.getItem('test-rows')||'[]').map(row=>[row.key,row]));copy.forEach(row=>merged.set(row.key,row));sessionStorage.setItem('test-rows',JSON.stringify([...merged.values()]));return {error:null}}}},
+ from(){return {async select(){window.__supabaseTest.reads++;if(window.__supabaseTest.failLoad)return {data:null,error:{message:'Falha de carga simulada'}};return {data:JSON.parse(sessionStorage.getItem('test-rows')||'[]'),error:null}},async upsert(rows){const copy=JSON.parse(JSON.stringify(rows));window.__supabaseTest.writes++;window.__supabaseTest.batches.push(copy);if(window.__supabaseTest.pauseNextWrite){window.__supabaseTest.pauseNextWrite=false;await new Promise(resolve=>{window.__supabaseTest.releaseWrite=resolve})}if(window.__supabaseTest.failSave)return {error:{message:'Falha de escrita simulada',code:window.__supabaseTest.failSave === 'permission' ? '42501' : undefined}};const merged=new Map(JSON.parse(sessionStorage.getItem('test-rows')||'[]').map(row=>[row.key,row]));copy.forEach(row=>merged.set(row.key,row));sessionStorage.setItem('test-rows',JSON.stringify([...merged.values()]));return {error:null}}}},
  channel(){return {on(){return this},subscribe(){window.__supabaseTest.channels++;return this}}}
 }}};`;
 await call('Page.navigate', {url:'about:blank'});
@@ -58,6 +58,14 @@ async function load() {
 }
 try {
  await load();
+ if (process.argv.includes('--compras-excel')) {
+  await evaluate("sessionStorage.removeItem('test-rows')");
+  await load();
+  const { runComprasExcelBrowserChecks } = await import('./compras-excel-browser-checks.mjs');
+  await runComprasExcelBrowserChecks({ evaluate, call, load });
+  assert.deepEqual(errors, []);
+  assert.deepEqual(consoleErrors, []);
+ } else {
  await evaluate(`sessionStorage.removeItem('test-rows'); clientes=[{id:1,nome:'Cliente Teste',empresa:'Razão Social Teste',telefone:'11999999999',email:'teste@example.com',produto:'Peças',status:'ativo'}]; produtosSolicitacoes=['Rolamento']; solicitacoesOrcamento=[{id:11,clienteId:1,solicitante:'Maria Teste',produto:'Rolamento',descricao:'Peça para manutenção',dataSolicitacao:today(),prazo:today(),etapa:'nova',prioridade:'normal'}]; cotacoesCompras=[]; contatos=[]; concluidos=[]; controleVendas=[]; agendamentos=[]; orcamentos=[]; renderizarDadosSincronizados();`);
  await evaluate(`abrirModalCotacaoCompras(); document.getElementById('cotacao-compras-descricao').value='Compra teste'; salvarCotacaoCompras();`);
  assert.equal(await evaluate("document.querySelectorAll('.cotacao-compras-card').length"),1);
@@ -217,6 +225,7 @@ try {
  assert.deepEqual(errors,[]);
  assert.deepEqual(consoleErrors,[], 'Sem erros inesperados no console da regressão geral');
  console.log('Console: sem exceções JavaScript. Capturas em 1440, 900 e 600px, ambos os temas.');
+ }
  }
  }
 } finally { ws.close(); }

@@ -1263,3 +1263,27 @@ avaliar a transição de todos os escritores; solicitar a confirmação remota n
 antes de aplicar alterações; e repetir os oito cenários obrigatórios. Até lá, o
 risco original de sobrescrita continua presente. Retornos continua como próximo
 domínio recomendado, mas não foi migrado e depende dessa fundação concluída.
+## Cards comerciais, tela dividida e exportação de Compras
+
+O renderer de Solicitações mostra cliente, descrição, status, próxima ação quando registrada, prazo, informações secundárias e ações. A descrição mantém as quebras de linha e palavras extensas se ajustam à largura do card. O solicitante aparece como informação secundária. O resumo do Dashboard usa o mesmo renderer e a próxima ação continua na fila de Solicitações.
+
+O CSS usa a largura disponível para dimensionar a grade de Solicitações e reorganizar os blocos do Dashboard. Em janelas intermediárias, as ações rápidas passam a quebrar em linhas. Tabelas largas podem ser roladas dentro de seus contêineres. A interface usa os tokens dos temas claro e escuro.
+
+O formulário de Compras grava `nomeReferencia`, `prioridade`, `observacoes` e `itens` na coleção existente `cotacoesCompras`, pelo mesmo adaptador, serviço e repositório em modo legacy. Cada item contém quantidade numérica, unidade, PRD, descrição e aplicação. Registros legados continuam editáveis e podem ser complementados para exportação. A descrição geral da compra continua disponível no card.
+
+**Gerar Excel** usa os dados salvos. `public/modelos/FQ09.xlsx` deriva do arquivo oficial `Planilha solicitaçao de Compras.xls`, convertido pelo Microsoft Excel. A cópia remove o requisitante de exemplo e mantém o rótulo Número no campo correspondente. O navegador usa fflate 0.8.2 (MIT) para copiar o pacote e preencher a planilha e a caixa de prioridade existentes. O logotipo, os vínculos internos, as mesclagens, os estilos, as assinaturas e o rodapé de revisão são preservados. A área de impressão permanece A4 em retrato na aba **FQ 09**.
+
+| Destino no FQ 09 | Origem |
+| --- | --- |
+| Número e data (J2 e J4) | Campo comercial `numero` e data de criação em DD/MM/AAAA |
+| Requisitante (A6) | Patrick Barbosa |
+| Departamento / Setor (G6) | COMERCIAL do modelo |
+| Prioridade | Uma caixa marcada conforme Média, Urgente ou Crítica |
+| Itens (linhas 11 a 22) | Sequência, quantidade numérica, unidade, PRD, descrição do material e aplicação |
+| Observações / Justificativa (A24) | Observações da própria compra |
+
+O serviço de Compras calcula `numero` dentro da fila do repositório ao criar: o maior número da coleção mais um, começando em 1. O mesmo UPSERT persiste o número e a solicitação. A edição preserva o número, e uma gravação recusada sem persistir mantém o número disponível. Compras antigas sem número continuam editáveis e precisam de um número comercial salvo para exportação. Em modo legacy, a fila serializa escritas na mesma instância, e instâncias com snapshots diferentes ainda podem atribuir o mesmo número e sobrescrever a coleção. Como a regra usa os registros existentes, excluir a compra de maior número também permite reutilizá-lo.
+
+O arquivo é baixado como `[Descrição do Material] - [Número].xlsx`, com a descrição do primeiro item sanitizada somente para o nome do arquivo. PRD, aplicação e observações podem ficar vazios. A geração exige número comercial salvo, data válida, prioridade e entre 1 e 12 itens com quantidade positiva, unidade e descrição. Se houver mais de 12 itens, a compra mantém todos os itens e a exportação apresenta uma mensagem de limite. Textos longos aumentam a altura das linhas preenchidas conforme necessário. Se o texto exceder a capacidade de uma célula, a exportação solicita revisão do conteúdo.
+
+Os casos automatizados do formulário estão em `tests/compras-excel.test.mjs`. A regressão de exportação após recarga e a matriz de oito larguras nos dois temas podem ser executadas com `node tests/browser-regression.mjs --compras-excel`, usando o servidor local e o Chrome com depuração na porta 9222.

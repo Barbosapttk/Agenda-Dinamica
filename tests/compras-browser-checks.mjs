@@ -63,11 +63,13 @@ export async function runComprasBrowserChecks({ evaluate, call, baseUrl, setExpe
   const beforeFailure = await evaluate('({writes:__supabaseTest.writes,events:__pilotEvents.length})');
   setExpectedConsoleError(true);
   try {
-    await evaluate("__supabaseTest.failSave=true; abrirModalCotacaoCompras(); document.getElementById('cotacao-compras-descricao').value='Retry UI'; salvarCotacaoCompras()");
+    await evaluate("__supabaseTest.failSave='permission'; abrirModalCotacaoCompras(); document.getElementById('cotacao-compras-descricao').value='Retry UI'; document.getElementById('cotacao-compras-referencia').value='Pedro'; salvarCotacaoCompras()");
   } finally { setExpectedConsoleError(false); }
   assert.equal(await evaluate('getCotacoesCompras().length'), 0);
   assert.equal(await evaluate("document.getElementById('modalCotacaoCompras').classList.contains('open')"), true);
   assert.equal(await evaluate("document.getElementById('cotacao-compras-descricao').value"), 'Retry UI');
+  assert.equal(await evaluate("document.getElementById('cotacao-compras-referencia').value"), 'Pedro');
+  assert.match(await evaluate("document.getElementById('notif').textContent"), /falta de permissão \(42501\)/);
   assert.equal(await evaluate('__pilotEvents.length'), beforeFailure.events);
   await evaluate('__supabaseTest.failSave=false; salvarCotacaoCompras()');
   assert.equal(await evaluate('__supabaseTest.writes'), beforeFailure.writes + 2, 'Uma tentativa falha e uma confirmação, sem debounce extra');

@@ -5373,7 +5373,12 @@ async function persistirDadosSupabase(snapshot = null, { collections = null, sil
 
     if (error) {
       console.error('Erro ao salvar no Supabase:', error);
-      if (!silent) notify('Erro ao salvar no Supabase. Verifique o console.', '#7a1a1a');
+      if (!silent) {
+        const code = typeof error.code === 'string' && /^[A-Z0-9]{5,12}$/.test(error.code) ? ` (${error.code})` : '';
+        notify(error.code === '42501'
+          ? 'O Supabase recusou a gravação por falta de permissão (42501).'
+          : `Não foi possível gravar no Supabase${code}. Abra F12 → Console para ver o motivo.`, '#7a1a1a');
+      }
       return { ok: false, error };
     }
     return { ok: true };
@@ -6798,15 +6803,15 @@ function cardKanbanSolicitacao(sol, classeExtra='') {
   const d = dadosSolicitacaoCliente(sol);
   const esc = escaparHtmlCotacaoCompras;
   const atrasado = !sol._concluida && sol.prazo && sol.prazo < today();
-  // O Dashboard reutiliza este renderer com classe 'solicitacao': preservar sua apresentação.
+  // O Dashboard reutiliza este renderer com classe 'solicitacao'.
   const operacional=classeExtra!=='solicitacao' && !sol._concluida;
   return `<div class="orcamento-card request-mini ${classeExtra || ''}" draggable="${!sol._concluida}" data-sol-id="${sol.id}" ${!sol._concluida ? `ondblclick="irParaSolicitacaoEditar(${sol.id})" title="Duplo clique para editar"` : ''} ondragstart="dragSolicitacaoKanban(event, ${sol.id})" ondragend="dragEndSolicitacaoKanban(event)">
-    <div class="mini-heading">
-      <div class="orcamento-card-title">${esc(d.nome)}</div>
-      <div class="mini-deadline ${atrasado ? 'overdue' : ''}"><small>${sol._concluida ? 'Concluído em' : 'Prazo de envio'}</small><strong>${fmtDate(sol._concluida ? sol.concluidoEm : sol.prazo)}</strong>${atrasado ? '<small>Atrasada</small>' : ''}</div>
-    </div>
-    <div class="mini-item"><small>Item solicitado</small><strong>${esc(sol.produto || 'Não informado')}</strong></div>
-    ${operacional?`<div class="mini-requester">${esc(etapaSolicitacaoLabel(sol.etapa || 'nova'))} • ${esc(sol.prioridade || 'normal')}</div>${blocoProximaAcao(sol)}`:''}
+    <div class="orcamento-card-title">${esc(d.nome)}</div>
+    <div class="mini-item"><small>Descrição do que foi solicitado</small><strong>${esc(sol.descricao || sol.motivo || 'Não informada')}</strong></div>
+    <div class="mini-request-status">${esc(sol._concluida ? 'Concluída' : etapaSolicitacaoLabel(sol.etapa || 'nova'))} • ${esc(sol.prioridade || 'normal')}</div>
+    ${operacional ? blocoProximaAcao(sol) : ''}
+    <div class="mini-deadline ${atrasado ? 'overdue' : ''}"><small>${sol._concluida ? 'Concluído em' : 'Prazo de envio'}</small><strong>${fmtDate(sol._concluida ? sol.concluidoEm : sol.prazo)}</strong>${atrasado ? '<small>Atrasada</small>' : ''}</div>
+    ${sol.produto ? `<div class="mini-requester">Produto/serviço: ${esc(sol.produto)}</div>` : ''}
     ${operacional&&comprasDaSolicitacao(sol.id).length?`<div class="mini-requester">Cotação de peças: ${comprasDaSolicitacao(sol.id).map(item=>`Compra #${esc(item.id)}`).join(', ')}</div>`:''}
     ${d.solicitante ? `<div class="mini-requester">Solicitante: ${esc(d.solicitante)}</div>` : ''}
     ${!sol.clienteId ? '<div class="mini-requester">Sem cliente cadastrado</div>' : ''}
@@ -13894,7 +13899,7 @@ body.theme-light .cotacao-compras-card { background:#fff; }
 </style>
 
 <div class="modal-overlay" id="modalCotacaoCompras">
-  <div class="modal" style="width:540px">
+  <div class="modal compra-modal">
     <div class="modal-header">
       <div class="modal-title" id="modal-cotacao-compras-title"><i class="fa-solid fa-cart-shopping" style="color:var(--warning);margin-right:8px"></i>Nova solicitação para compras</div>
       <button class="modal-close" type="button" onclick="closeModal('modalCotacaoCompras')"><i class="fa-solid fa-xmark"></i></button>
@@ -13913,9 +13918,26 @@ body.theme-light .cotacao-compras-card { background:#fff; }
           <option value="concluido">Concluído</option>
         </select>
       </div>
+      <div class="compra-fields">
+        <div class="form-group">
+          <label for="cotacao-compras-referencia">Nome de referência</label>
+          <input id="cotacao-compras-referencia" type="text">
+        </div>
+        <div class="form-group">
+          <label for="cotacao-compras-prioridade">Prioridade</label>
+          <select id="cotacao-compras-prioridade"></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="cotacao-compras-observacoes">Observações / Justificativa</label>
+        <textarea id="cotacao-compras-observacoes" rows="2"></textarea>
+      </div>
+      <div id="cotacao-compras-itens"></div>
+      <button id="cotacao-compras-adicionar-item" class="btn btn-ghost" type="button" onclick="window.AgendaApplication.adapters.compras.addItem()">Adicionar item</button>
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" type="button" onclick="closeModal('modalCotacaoCompras')">Cancelar</button>
+      <button id="cotacao-compras-excel-salvo" class="btn btn-ghost" type="button" hidden onclick="gerarExcelCotacaoCompras(this.closest('.modal-overlay').dataset.editId, this)">Gerar Excel salvo</button>
       <button class="btn btn-primary" type="button" onclick="salvarCotacaoCompras()"><i class="fa-solid fa-floppy-disk"></i> Salvar solicitação</button>
     </div>
   </div>
@@ -13954,6 +13976,7 @@ function abrirModalCotacaoCompras(id = null) {
   const modal = document.getElementById('modalCotacaoCompras');
   const titulo = document.getElementById('modal-cotacao-compras-title');
   const item = id === null ? null : getCotacoesCompras().find(cotacao => String(cotacao.id) === String(id));
+  window.AgendaApplication.adapters.compras.setPurchaseDetails(item);
   if (item) {
     modal.dataset.editId = String(item.id);
     document.getElementById('cotacao-compras-descricao').value = item.descricao || '';
@@ -13974,6 +13997,10 @@ function atualizarCotacoesCompras() {
 
 function salvarCotacaoCompras() {
   return window.AgendaApplication.adapters.compras.save();
+}
+
+function gerarExcelCotacaoCompras(id, button) {
+  return window.AgendaApplication.adapters.compras.exportExcel(id, button);
 }
 
 function editarCotacaoCompras(id) { abrirModalCotacaoCompras(id); }
@@ -13998,10 +14025,13 @@ function cardCotacaoCompras(item) {
   return `<article class="cotacao-compras-card">
     <div class="cotacao-compras-top"><span class="cotacao-compras-icon"><i class="fa-solid fa-cart-shopping"></i></span><span class="cotacao-compras-titulo">Solicitação para compras</span></div>
     <div class="cotacao-compras-descricao">${escaparHtmlCotacaoCompras(item.descricao)}</div>
+    ${item.nomeReferencia ? `<div class="compra-origem">Nome de referência: <strong>${escaparHtmlCotacaoCompras(item.nomeReferencia)}</strong></div>` : ''}
+    ${item.itens?.length ? `<div class="compra-origem">Itens: ${item.itens.length}</div>` : ''}
     ${origemCompraHtml(item)}
     <div class="cotacao-compras-meta"><span class="cotacao-compras-status${semRetorno}">${statusCotacaoComprasLabel(item.status)}</span>${item.criadoEm ? `<span>Criada em ${fmtDate(item.criadoEm)}</span>` : ''}</div>
     <div class="cotacao-compras-acoes">
       <button type="button" onclick='editarCotacaoCompras(${id})'><i class="fa-solid fa-pen"></i> Editar</button>
+      <button type="button" data-compra-excel onclick='gerarExcelCotacaoCompras(${id}, this)'><i class="fa-solid fa-file-excel"></i> Gerar Excel</button>
       <button type="button" onclick='alterarStatusCotacaoCompras(${id}, "enviado")'>Enviado</button>
       <button type="button" onclick='alterarStatusCotacaoCompras(${id}, "sem_retorno")'>Sem retorno</button>
       <button class="acao-concluir" type="button" onclick='concluirCotacaoCompras(${id})'><i class="fa-solid fa-check"></i> Concluir</button>

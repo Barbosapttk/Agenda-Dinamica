@@ -10,6 +10,12 @@ export const COMPRA_EVENT_TYPES = Object.freeze([
 
 const normalizeStatus = status => COMPRA_STATUS.includes(status) ? status : 'enviado';
 const sameId = (left, right) => String(left) === String(right);
+const detailFields = ['nomeReferencia', 'prioridade', 'observacoes', 'itens'];
+function purchaseDetails(input) {
+  return Object.fromEntries(detailFields
+    .filter(field => input[field] !== undefined)
+    .map(field => [field, structuredClone(input[field])]));
+}
 function audit(item) {
   return { id: item.id, descricao: item.descricao || '', status: item.status || 'enviado',
     concluida: item.concluida === true, criadoEm: item.criadoEm || null, atualizadoEm: item.atualizadoEm || null };
@@ -85,10 +91,12 @@ export function createComprasService({ repository, eventBus, createEnvelope = cr
     return command.pending;
   }
 
-  function criar({ descricao, status = 'enviado', solicitacaoId = null } = {}, options) {
+  function criar(input = {}, options) {
+    const { descricao, status = 'enviado', solicitacaoId = null } = input;
+    const details = purchaseDetails(input);
     const text = typeof descricao === 'string' ? descricao.trim() : '';
     const selected = normalizeStatus(status);
-    return run('criar', { descricao: text, status: selected, ...(solicitacaoId!==null?{solicitacaoId}:{}) }, options, (list, command, commandId) => {
+    return run('criar', { descricao: text, status: selected, ...details, ...(solicitacaoId!==null?{solicitacaoId}:{}) }, options, (list, command, commandId) => {
       if(solicitacaoId!==null) {
         if(!Number.isSafeInteger(solicitacaoId)||solicitacaoId<=0)throw new Error('Solicitação de origem inválida.');
         const linked=list.find(item=>item&&sameId(item.solicitacaoId,solicitacaoId));
@@ -103,29 +111,37 @@ export function createComprasService({ repository, eventBus, createEnvelope = cr
       if (!Number.isSafeInteger(id)) throw new TypeError('ID de compra inválido.');
       while (list.some(item => item && sameId(item.id, id))) id++;
       command.creationId = id;
+      // A preparação roda na fila do repositório. O número só entra no
+      // snapshot local após a confirmação da escrita.
+      const maiorNumero = list.reduce((maior, item) =>
+        Number.isSafeInteger(item?.numero) ? Math.max(maior, item.numero) : maior, 0);
+      if (maiorNumero === Number.MAX_SAFE_INTEGER) throw new Error('Limite de numeração de Compras atingido.');
       const date = today();
-      const item = { id, descricao: text, status: selected, concluida: selected === 'concluido',
-        criadoEm: date, atualizadoEm: date, creationCommandId: commandId,
+      const item = { id, numero: maiorNumero + 1, descricao: text, status: selected, concluida: selected === 'concluido',
+        criadoEm: date, atualizadoEm: date, creationCommandId: commandId, ...details,
         ...(solicitacaoId!==null?{solicitacaoId}:{}) };
       return { changed: true, next: [...list, item], value: { item,
         eventType: EVENT_TYPES.SOLICITACAO_COMPRA_CRIADA, payload: { ...audit(item) } } };
     });
   }
 
-  function editar(id, { descricao, status } = {}, options) {
+  function editar(id, input = {}, options) {
+    const { descricao, status } = input;
+    const details = purchaseDetails(input);
     const text = typeof descricao === 'string' ? descricao.trim() : '';
-    return run('editar', { id: String(id), descricao: text, status: status ?? null }, options, list => {
+    return run('editar', { id: String(id), descricao: text, status: status ?? null, ...details }, options, list => {
       if (!text) throw new Error('Informe a descrição dos itens para salvar a solicitação.');
       const index = list.findIndex(item => item && sameId(item.id, id));
       if (index < 0) throw new Error('Solicitação para compras não encontrada.');
       const previous = list[index];
       const selected = status === undefined ? previous.status || 'enviado' : normalizeStatus(status);
       const changes = {};
-      for (const [field, value] of Object.entries({ descricao: text, status: selected, concluida: selected === 'concluido' })) {
-        if (previous[field] !== value) changes[field] = { de: previous[field] ?? null, para: value };
+      const fields = { descricao: text, status: selected, concluida: selected === 'concluido', ...details };
+      for (const [field, value] of Object.entries(fields)) {
+        if (JSON.stringify(previous[field]) !== JSON.stringify(value)) changes[field] = { de: previous[field] ?? null, para: value };
       }
       if (!Object.keys(changes).length) return { changed: false, value: { item: previous } };
-      const item = { ...previous, descricao: text, status: selected, concluida: selected === 'concluido', atualizadoEm: today() };
+      const item = { ...previous, ...fields, atualizadoEm: today() };
       const next = [...list]; next[index] = item;
       return { changed: true, next, value: { item, eventType: EVENT_TYPES.SOLICITACAO_COMPRA_EDITADA,
         payload: { id: item.id, camposAlterados: changes, anterior: audit(previous), atual: audit(item) } } };

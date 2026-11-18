@@ -30,3 +30,46 @@ html body .mini-heading :is(.orcamento-card-title,.proposta-kanban-title) { text
   html body :is(.mini-deadline,.mini-proposal-numbers) { text-align:left; }
   html body .card-header > :is(div,select,input) { max-width:100%; }
 }
+
+.request-mini .mini-item { margin: 8px 0; }
+.request-mini .mini-item strong { overflow-wrap: anywhere; }
+.request-mini .mini-request-status { color: var(--request-ink, var(--text)); font-size: 12px; font-weight: 700; }
+.request-mini .mini-deadline { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; margin: 8px 0; text-align: left; }
+
+#modalCotacaoCompras .compra-modal { width: min(680px, 100%); min-width: 0; }
+#modalCotacaoCompras .modal-footer { flex-wrap: wrap; }
+#modalCotacaoCompras [hidden] { display: none !important; }
+.compra-fields, .compra-item { display: grid; gap: 10px; }
+.compra-fields { grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr)); }
+.compra-item {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 145px), 1fr));
+  min-width: 0;
+  margin: 0 0 12px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.compra-item .form-group { min-width: 0; margin: 0; }
+.compra-item .form-group:has(textarea), .compra-item > button { grid-column: 1 / -1; }
+.compra-item > button { justify-self: start; }
+.compra-item :is(input, textarea) { width: 100%; min-width: 0; }
+.compra-item .form-group > span { display: block; margin-bottom: 5px; color: var(--text2); font-size: 12px; }
+
+html body :is(.main, .view, .cotacoes-compras-coluna) { min-width: 0; }
+html body .dashboard-grid-2 { grid-template-columns: repeat(auto-fit, minmax(min(100%, max(420px, (100% - 16px) / 2)), 1fr)); }
+html body .dash-card-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)) !important; }
+html body :is(.table-wrap, .cv-table-wrap) { max-width: 100%; overflow-x: auto; }
+
+@media (min-width: 621px) and (max-width: 900px) {
+  html body .sidebar .quick-action-grid { flex-wrap: wrap; }
+  html body .sidebar .quick-action-grid .quick-action-card { flex: 1 1 140px !important; width: auto !important; }
+}
+
+@media (min-width: 621px) and (max-width: 1100px) {
+  html body .topheader > .topnav { flex-wrap: wrap; }
+}
+
+@media (max-width: 1100px) {
+  html body #view-dashboard .dashboard-grid-2 { grid-auto-rows: auto; }
+  html body #view-dashboard .dashboard-grid-2 > .card { height: auto; min-height: 0; }
+}
