@@ -73,3 +73,140 @@ html body :is(.table-wrap, .cv-table-wrap) { max-width: 100%; overflow-x: auto; 
   html body #view-dashboard .dashboard-grid-2 { grid-auto-rows: auto; }
   html body #view-dashboard .dashboard-grid-2 > .card { height: auto; min-height: 0; }
 }
+
+/* Tela dividida: uma linha de navegação, ações legíveis e filtros em uma grade. */
+@media (min-width: 621px) and (max-width: 1100px) {
+  html body .topheader {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    grid-template-rows: auto;
+    min-height: 56px;
+    gap: 8px 12px !important;
+    padding: 8px 16px !important;
+  }
+  html body .topheader > .topnav {
+    grid-area: 1 / 1;
+    justify-content: flex-start;
+    gap: 6px;
+  }
+  html body .topheader > .header-actions {
+    grid-area: 1 / 2;
+    justify-self: end !important;
+    width: auto !important;
+  }
+
+  html body .sidebar .quick-action-grid .quick-action-card {
+    justify-content: flex-start !important;
+    gap: 8px !important;
+    text-align: left;
+  }
+  html body .sidebar .quick-action-grid .quick-action-icon { flex: 0 0 32px; }
+  html body .sidebar .quick-action-grid .quick-action-card > span:nth-child(2) {
+    display: block !important;
+    min-width: 0;
+    font-size: 12px !important;
+    line-height: 1.2;
+    white-space: normal;
+    overflow-wrap: normal;
+  }
+  html body .sidebar .quick-action-grid .tools-quick-group .qa-tools {
+    width: auto !important;
+    min-width: 0;
+    padding: 7px 10px !important;
+    gap: 8px !important;
+  }
+  html body .sidebar .quick-action-grid .tools-quick-group .qa-tools .quick-action-icon {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  html body .sidebar .quick-action-grid .tools-quick-group .qa-tools > span:not(.quick-action-icon) {
+    display: block !important;
+  }
+  html body .sidebar .quick-action-grid .tools-menu-toggle { flex: 0 0 28px; }
+}
+
+@media (min-width: 621px) and (max-width: 900px) {
+  html body .sidebar .quick-action-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    overflow: visible;
+  }
+  html body .sidebar .quick-action-grid > :is(.quick-action-card, .tools-quick-group) {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+  }
+}
+
+@media (max-width: 1100px) {
+  html body #view-solicitacoes > .card:first-child { margin-bottom: 12px; }
+  html body #view-solicitacoes > .card:first-child > .card-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px !important;
+    margin: 0;
+    padding: 12px 16px;
+  }
+  html body #view-solicitacoes > .card:first-child > .card-header > div:last-child {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch !important;
+    width: 100%;
+    max-width: none;
+  }
+  html body #view-solicitacoes > .card:first-child > .card-header :is(select, .btn, .search-bar, label) {
+    box-sizing: border-box;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 36px !important;
+    margin: 0;
+  }
+  html body #view-solicitacoes > .card:first-child .card-header :is(.btn, label) {
+    white-space: normal;
+    line-height: 1.2;
+  }
+  html body #view-solicitacoes > .card:first-child .search-bar {
+    padding: 0 10px;
+    gap: 8px;
+  }
+  html body #view-solicitacoes > .card:first-child .search-bar input {
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  html body #view-solicitacoes > .card:first-child .search-bar:focus-within {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+  html body #view-solicitacoes :is(#solicitacoes-kanban, #propostas-acompanhamento-kanban) > :is(.orcamento-kanban-col, .propostas-kanban-col) {
+    min-height: 0 !important;
+    align-self: start;
+  }
+  html body #view-solicitacoes :is(#solicitacoes-kanban, #propostas-acompanhamento-kanban) :is(.orcamento-kanban-body, .propostas-kanban-body) {
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+  html body #view-solicitacoes :is(#solicitacoes-kanban, #propostas-acompanhamento-kanban) :is(.orcamento-kanban-head, .propostas-kanban-head) {
+    min-height: 54px !important;
+    padding: 8px 12px !important;
+  }
+  html body #view-solicitacoes :is(#solicitacoes-kanban, #propostas-acompanhamento-kanban) :is(.empty, .proposta-kanban-empty) {
+    min-height: 72px !important;
+    padding: 10px !important;
+  }
+  html body :is(#view-solicitacoes, #view-dashboard) .request-mini .mini-item strong {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.45;
+  }
+}
+
+@media (max-width: 620px) {
+  html body #view-solicitacoes > .card:first-child > .card-header > div:last-child {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  html body #view-solicitacoes > .card:first-child .card-header :is(label, .search-bar) { grid-column: 1 / -1; }
+}

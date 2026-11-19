@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { writeFileSync } from 'node:fs';
 import { unzipSync, strFromU8 } from '../public/vendor/fflate/esm/browser.js';
 
 export async function runComprasExcelBrowserChecks({ evaluate, call, load }) {
@@ -62,7 +63,7 @@ export async function runComprasExcelBrowserChecks({ evaluate, call, load }) {
     Fretes: "document.querySelector('.tools-central-link').click(); document.getElementById('open-fretes').click()",
     Tabelas: "showView('controle-vendas')"
   };
-  for (const width of [1920, 1600, 1440, 1366, 1280, 1024, 900, 768]) {
+  for (const width of [1920, 1600, 1440, 1366, 1280, 1024, 936, 900, 768]) {
     await call('Emulation.setDeviceMetricsOverride', { width, height: 900, deviceScaleFactor: 1, mobile: false });
     for (const theme of ['light', 'dark']) {
       await evaluate(`applyTheme('${theme}', false)`);
@@ -85,6 +86,31 @@ export async function runComprasExcelBrowserChecks({ evaluate, call, load }) {
         })()`);
         assert.deepEqual(layout, { page: true, header: true, nav: true, cards: true }, label);
         if (name === 'Solicitações') {
+          if (width >= 768 && width <= 1024) {
+            const alignment = await evaluate(`(() => {
+              const filters = document.getElementById('filtro-situacao-solicitacoes').parentElement;
+              const controls = [...filters.children].map(element => element.getBoundingClientRect());
+              const nav = document.querySelector('.topnav').getBoundingClientRect();
+              const actions = document.querySelector('.header-actions').getBoundingClientRect();
+              const tools = document.querySelector('.qa-tools strong');
+              const toolsButton = tools.closest('button').getBoundingClientRect();
+              const toolsLabel = tools.getBoundingClientRect();
+              const leftEdges = [...document.querySelectorAll('.sidebar .quick-action-icon')]
+                .filter(element => element.getClientRects().length).map(element => element.getBoundingClientRect().left);
+              const same = (first, second) => Math.abs(first - second) <= 2;
+              return {
+                alignedFilters: controls.slice(0, 3).every((rect, column) => same(rect.left, controls[column + 3].left) && same(rect.width, controls[column + 3].width)),
+                alignedNavigation: nav.right <= actions.left && same(nav.top + nav.height / 2, actions.top + actions.height / 2),
+                visibleTools: toolsLabel.width > 20 && toolsLabel.right <= toolsButton.right && parseFloat(getComputedStyle(tools).fontSize) >= 11,
+                alignedSidebar: innerWidth <= 900 || leftEdges.every(left => same(left, leftEdges[0]))
+              };
+            })()`);
+            assert.deepEqual(alignment, { alignedFilters: true, alignedNavigation: true, visibleTools: true, alignedSidebar: true }, label);
+            if (width === 936 && theme === 'dark' && process.env.AGENDA_CAPTURE_SPLIT === '1') {
+              const capture = await call('Page.captureScreenshot', { format: 'png' });
+              writeFileSync('test-results/tela-dividida-solicitacoes.png', Buffer.from(capture.data, 'base64'));
+            }
+          }
           assert.equal(await evaluate(`(() => {
             const card = document.querySelector('#solicitacoes-kanban [data-sol-id="11"]');
             const selectors = ['.orcamento-card-title','.mini-item','.mini-request-status','.sol-proxima-acao','.mini-deadline','.mini-actions'];
@@ -99,5 +125,5 @@ export async function runComprasExcelBrowserChecks({ evaluate, call, load }) {
       }
     }
   }
-  console.log('FQ 09: compra persistida e exportada após recarga. Layout e cards: 96 combinações de largura, tema e tela.');
+  console.log('FQ 09: compra persistida e exportada após recarga. Layout e cards: 108 combinações de largura, tema e tela.');
 }
