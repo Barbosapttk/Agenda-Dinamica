@@ -67,6 +67,7 @@ async function setBrowserZoom(scale) {
   zoomControl.addEventListener('message',({data})=>{const m=JSON.parse(data);if(m.id){waiting.get(m.id)?.(m);waiting.delete(m.id)}});
   zoomControl.call=expression=>new Promise(resolve=>{const id=++sequence;waiting.set(id,resolve);zoomControl.send(JSON.stringify({id,method:'Runtime.evaluate',params:{expression,returnByValue:true,awaitPromise:true}}))});
   for(let i=0;i<50;i++){const r=await zoomControl.call('typeof chrome.settingsPrivate?.setDefaultZoom');if(r.result?.result?.value==='function')break;await new Promise(r=>setTimeout(r,100))}
+  await call('Page.bringToFront');
  }
  const result=await zoomControl.call('chrome.settingsPrivate.setDefaultZoom('+scale+')');
  if(result.result?.exceptionDetails)throw Error('Não foi possível alterar o zoom real do Chrome');
@@ -125,15 +126,60 @@ try {
  const matrix=[];
  await call('Emulation.clearDeviceMetricsOverride');
  const {windowId}=await call('Browser.getWindowForTarget',{targetId:target.id});
- await call('Browser.setWindowBounds',{windowId,bounds:{width:1440,height:1000}});
- for(const zoom of [80,90,100,110,125,150,175]) {
+ for(const windowWidth of [960,1440]) {
+ await call('Browser.setWindowBounds',{windowId,bounds:{width:windowWidth,height:1000}});
+ for(const zoom of [67,80,90,100,110,125,150,175,200]) {
   await setBrowserZoom(zoom/100);
   assert.ok(Math.abs(await evaluate('devicePixelRatio')-zoom/100)<0.02,'Zoom real confirmado pelo devicePixelRatio');
+  assert.ok(Math.abs(await evaluate('innerWidth * devicePixelRatio')-windowWidth)<40,'Largura da janela confirmada');
   for(const theme of ['light','dark'])for(const view of ['dashboard','solicitacoes','clientes','agenda','orcamentos','controle-vendas','historico','ferramentas']) {
    await evaluate('applyTheme('+JSON.stringify(theme)+',false);showView('+JSON.stringify(view)+')');
+   if (view === 'dashboard') {
+    const layout = await evaluate(`(() => {
+      const tools = document.querySelector('.qa-tools');
+      const contact = document.querySelector('.qa-contato');
+      const label = tools.querySelector('strong').getBoundingClientRect();
+      const button = tools.getBoundingClientRect();
+      const navigation = document.querySelector('.topnav');
+      const nav = navigation.getBoundingClientRect();
+      const actions = document.querySelector('.header-actions').getBoundingClientRect();
+      const logo = document.querySelector('.elo-header-logo img');
+      const logoBox = logo.getBoundingClientRect();
+      const summary = document.querySelector('.header-daily-summary');
+      const summaryBox = summary.getBoundingClientRect();
+      let canScroll = true;
+      if (innerWidth <= 900 && navigation.scrollWidth > navigation.clientWidth + 2) {
+        const initial = navigation.scrollLeft;
+        navigation.scrollLeft = navigation.scrollWidth;
+        canScroll = navigation.scrollLeft > 0;
+        navigation.scrollLeft = initial;
+      }
+      return {
+        color: getComputedStyle(tools).backgroundColor,
+        contact: getComputedStyle(contact).backgroundColor,
+        labelVisible: label.width > 20 && label.left >= button.left && label.right <= button.right + 1,
+        logoOnLeft: logo.naturalWidth > 0 && logoBox.width > 0 && logoBox.left >= 0 && logoBox.right <= nav.left + 1,
+        summaryResponsive: innerWidth <= 900 ? summaryBox.width === 0 :
+          summaryBox.width > 0 && summaryBox.left >= nav.right - 1 && summaryBox.right <= actions.right &&
+          Boolean(summary.querySelector('time').textContent.trim()),
+        scrollableMenu: innerWidth > 900 || (getComputedStyle(navigation).overflowX === 'auto' &&
+          getComputedStyle(navigation).flexWrap === 'nowrap' && canScroll),
+        headerAligned: nav.right <= actions.left + 1 &&
+          Math.abs(nav.top + nav.height / 2 - actions.top - actions.height / 2) < 3
+      };
+    })()`);
+    const context = JSON.stringify({ windowWidth, zoom, theme, layout });
+    assert.notEqual(layout.color, layout.contact, context);
+    assert.equal(layout.labelVisible, true, context);
+    assert.equal(layout.logoOnLeft, true, context);
+    assert.equal(layout.summaryResponsive, true, context);
+    assert.equal(layout.scrollableMenu, true, context);
+    assert.equal(layout.headerAligned, true, context);
+   }
    const result=await evaluate("(()=>{const root=document.querySelector('.view.active');const cards=[...root.querySelectorAll('.kanban-card,.client-card,.request-mini,.proposal-mini,.cotacao-compras-card,.hist-org-item,.tool-launch-card')].filter(e=>e.getClientRects().length);return {mainTop:document.querySelector('.main').getBoundingClientRect().top,viewportHeight:innerHeight,pageOverflow:document.documentElement.scrollWidth>innerWidth+2,cards:cards.length,overflow:cards.flatMap(card=>{const r=card.getBoundingClientRect();return [...card.querySelectorAll('button,input,select')].filter(e=>{if(!e.getClientRects().length)return false;const c=e.getBoundingClientRect();return c.left<r.left-2||c.right>r.right+2||c.top<r.top-2||c.bottom>r.bottom+2}).map(e=>({card:card.className,control:e.className}))}),iso:Array.from(root.innerText.matchAll(/(?:^|[^0-9])([0-9]{4}-[0-9]{2}-[0-9]{2})(?![0-9])/g)).some(match=>Boolean(AgendaFormat.isoDate(match[1])))}})()"); matrix.push({zoom,theme,view,...result}); assert.ok(result.mainTop<result.viewportHeight-100,"Conteudo abaixo da tela: "+JSON.stringify(matrix.at(-1))); assert.equal(result.pageOverflow,false,JSON.stringify(matrix.at(-1)));assert.deepEqual(result.overflow,[],JSON.stringify(matrix.at(-1)));assert.equal(result.iso,false,"ISO visível: "+view);
-   if(!process.env.AGENDA_SKIP_CAPTURES&&[100,175].includes(zoom)&&['dashboard','solicitacoes'].includes(view)){const shot=await call('Page.captureScreenshot',{format:'png'});fs.writeFileSync('test-results/consolidation-'+view+'-'+zoom+'-'+theme+'.png',Buffer.from(shot.data,'base64'))}
+   if(!process.env.AGENDA_SKIP_CAPTURES&&[90,100,175].includes(zoom)&&['dashboard','solicitacoes'].includes(view)){const shot=await call('Page.captureScreenshot',{format:'png'});fs.writeFileSync('test-results/consolidation-'+windowWidth+'-'+view+'-'+zoom+'-'+theme+'.png',Buffer.from(shot.data,'base64'))}
   }
+ }
  }
 
  fs.writeFileSync('test-results/consolidation-matrix.json',JSON.stringify(matrix,null,2));
@@ -147,5 +193,5 @@ try {
  assert.equal(await evaluate("localStorage.getItem('outra-aplicacao')"),'preservar');
  assert.equal(await evaluate("localStorage.getItem('agenda-tool-notes-v1')"),'[]');
  assert.deepEqual(errors,[]);assert.deepEqual(consoleErrors,[]);
- console.log('Consolidação: telefone/email/canal, texto, datas, resumo e cancelamento de restauração, 112 combinações de zoom real (80/90/100/110/125/150/175%) + 48 de viewport/tema, sem ISO visível, overflow ou exceções.');
+ console.log('Consolidação: 288 combinações de zoom real de 67% a 200% em janelas de 960 e 1440 px, mais 48 combinações de viewport e tema.');
 } finally {if(zoomControl){await setBrowserZoom(1);zoomControl.close();await fetch('http://127.0.0.1:9222/json/close/'+zoomPage.id)}ws.close();}

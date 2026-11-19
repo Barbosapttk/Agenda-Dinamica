@@ -12,7 +12,7 @@ export default function App() {
       <iframe
         className="app-iframe"
         src={iframeUrl.toString()}
-        title="Agenda Dinâmica"
+        title="ELO COMERCIAL"
       />
     </div>
   );

@@ -1,4 +1,28 @@
 /* Ajustes de geometria, preservando tokens, cores e aparência existentes. */
+.elo-header-logo { display: block; grid-area: 1 / 1; justify-self: start; }
+.elo-header-logo img { display: block; width: 76px; height: 49px; object-fit: contain; border-radius: 6px; background: #191919; }
+.header-daily-summary { display: none; }
+@media (min-width: 901px) {
+  body:has(#view-dashboard.active) .header-daily-summary {
+    display: grid;
+    order: -1;
+    flex: 0 0 auto;
+    gap: 2px;
+    padding: 4px 9px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface2);
+    color: var(--text);
+    white-space: nowrap;
+    font-size: 11px;
+    line-height: 1.15;
+  }
+  .header-daily-summary > span { color: var(--text2); font-size: 10px; }
+  .header-daily-summary > strong { font-size: 12px; }
+}
+@media (max-width: 760px) {
+  .elo-header-logo img { width: 34px; height: 34px; background: transparent; }
+}
 .backup-preview { max-width:min(560px,calc(100vw - 32px)); max-height:90vh; overflow:auto; background:var(--surface); color:var(--text); border:1px solid var(--border); border-radius:12px; padding:24px; }
 .backup-preview::backdrop { background:rgba(0,0,0,.65); }
 .backup-preview pre { white-space:pre-wrap; font:inherit; line-height:1.6; }
@@ -65,7 +89,7 @@ html body :is(.table-wrap, .cv-table-wrap) { max-width: 100%; overflow-x: auto; 
   html body .sidebar .quick-action-grid .quick-action-card { flex: 1 1 140px !important; width: auto !important; }
 }
 
-@media (min-width: 621px) and (max-width: 1100px) {
+@media (min-width: 621px) and (max-width: 1180px) {
   html body .topheader > .topnav { flex-wrap: wrap; }
 }
 
@@ -75,25 +99,28 @@ html body :is(.table-wrap, .cv-table-wrap) { max-width: 100%; overflow-x: auto; 
 }
 
 /* Tela dividida: uma linha de navegação, ações legíveis e filtros em uma grade. */
-@media (min-width: 621px) and (max-width: 1100px) {
+@media (min-width: 621px) and (max-width: 1180px) {
   html body .topheader {
-    grid-template-columns: minmax(0, 1fr) auto !important;
+    grid-template-columns: auto minmax(0, 1fr) auto !important;
     grid-template-rows: auto;
     min-height: 56px;
     gap: 8px 12px !important;
     padding: 8px 16px !important;
   }
   html body .topheader > .topnav {
-    grid-area: 1 / 1;
+    grid-area: 1 / 2;
     justify-content: flex-start;
     gap: 6px;
   }
   html body .topheader > .header-actions {
-    grid-area: 1 / 2;
+    grid-area: 1 / 3;
     justify-self: end !important;
     width: auto !important;
   }
 
+}
+
+@media (max-width: 1180px) {
   html body .sidebar .quick-action-grid .quick-action-card {
     justify-content: flex-start !important;
     gap: 8px !important;
@@ -124,7 +151,7 @@ html body :is(.table-wrap, .cv-table-wrap) { max-width: 100%; overflow-x: auto; 
   html body .sidebar .quick-action-grid .tools-menu-toggle { flex: 0 0 28px; }
 }
 
-@media (min-width: 621px) and (max-width: 900px) {
+@media (max-width: 900px) {
   html body .sidebar .quick-action-grid {
     display: grid !important;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -137,7 +164,7 @@ html body :is(.table-wrap, .cv-table-wrap) { max-width: 100%; overflow-x: auto; 
   }
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1180px) {
   html body #view-solicitacoes > .card:first-child { margin-bottom: 12px; }
   html body #view-solicitacoes > .card:first-child > .card-header {
     display: grid;
@@ -202,11 +229,51 @@ html body :is(.table-wrap, .cv-table-wrap) { max-width: 100%; overflow-x: auto; 
     font-weight: 500;
     line-height: 1.45;
   }
+  #view-dashboard .daily-action-content { overflow-wrap: anywhere; }
+  #view-dashboard .daily-action-item .action-row { flex-wrap: wrap; }
 }
 
 @media (max-width: 620px) {
+  html body .topheader {
+    grid-template-columns: auto minmax(0, 1fr) auto !important;
+    grid-template-rows: auto;
+    min-height: 56px;
+    gap: 6px !important;
+  }
+  html body .topheader > .topnav {
+    grid-area: 1 / 2;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-inline: 0;
+  }
+  html body .topheader > .header-actions {
+    grid-area: 1 / 3;
+    width: auto !important;
+    justify-self: end !important;
+  }
+  html body .sidebar .quick-action-grid .quick-action-card,
+  html body .sidebar .quick-action-grid .tools-quick-group .qa-tools { gap: 6px !important; padding: 6px !important; }
+  html body .sidebar .quick-action-grid .quick-action-card .quick-action-icon {
+    flex-basis: 24px;
+    width: 24px !important;
+    height: 24px !important;
+  }
+  html body .sidebar .quick-action-grid .quick-action-card > span:nth-child(2) { overflow-wrap: anywhere; }
+  #view-dashboard .daily-action-item .action-row { grid-column: 2; }
   html body #view-solicitacoes > .card:first-child > .card-header > div:last-child {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   html body #view-solicitacoes > .card:first-child .card-header :is(label, .search-bar) { grid-column: 1 / -1; }
+}
+@media (max-width: 900px) {
+  html body .topheader > .topnav {
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+  html body .topheader > .topnav > .topnav-item { flex: 0 0 auto; }
+}
+@media (max-width: 439px) {
+  html body .sidebar .quick-action-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
